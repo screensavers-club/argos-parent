@@ -16,8 +16,8 @@ function App() {
 
   useEffect(() => {
     let peer = new Peer("parent", {
-      host: "192.168.86.204",
-      port: "9000",
+      host: process.env.REACT_APP_PEER_SERVER,
+      port: process.env.REACT_APP_PEER_SERVER_PORT,
       debug: 2,
       path: "/peerjs/myapp",
     });
