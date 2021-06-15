@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import Peer from "peerjs";
+import _ from "lodash";
 
 function App() {
   let [conns, setConns] = useState([]);
@@ -20,6 +21,8 @@ function App() {
       port: process.env.REACT_APP_PEER_SERVER_PORT,
       debug: 2,
       path: "/peerjs/myapp",
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+      sdpSemantics: "unified-plan",
     });
 
     peer.on("open", function () {
@@ -42,7 +45,7 @@ function App() {
         call.answer();
         call.on("stream", (stream) => {
           console.log("a call stream has come in");
-          setIncomingStreams([...incomingStreams, stream]);
+          setIncomingStreams([..._.cloneDeep(incomingStreams), stream]);
         });
       });
     });
