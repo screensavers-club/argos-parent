@@ -6,8 +6,11 @@ import _ from "lodash";
 function App() {
   let [conns, setConns] = useState([]);
   let [incomingStreams, setIncomingStreams] = useState([]);
-  let [videoRefs, setVideoRefs] = useState([]);
+  let [newStream, setNewStream] = useState(null);
   let [peerServerConnection, setPeerServerConnection] = useState(false);
+
+  let [aState, setAState] = useState([]);
+  let peer;
 
   function broadCastMessage() {
     conns.forEach((c) => {
@@ -16,7 +19,14 @@ function App() {
   }
 
   useEffect(() => {
-    let peer = new Peer("parent", {
+    console.log(incomingStreams);
+    console.log(newStream);
+
+    setIncomingStreams([...incomingStreams, newStream]);
+  }, [newStream]);
+
+  useEffect(() => {
+    peer = new Peer("parent", {
       host: process.env.REACT_APP_PEER_SERVER,
       port: process.env.REACT_APP_PEER_SERVER_PORT,
       debug: 2,
@@ -25,6 +35,12 @@ function App() {
       sdpSemantics: "unified-plan",
     });
 
+    return function cleanup() {
+      peer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
     peer.on("open", function () {
       setPeerServerConnection(true);
 
@@ -42,10 +58,11 @@ function App() {
       });
 
       peer.on("call", (call) => {
+        console.log(call);
         call.answer();
         call.on("stream", (stream) => {
-          console.log("a call stream has come in");
-          setIncomingStreams([..._.cloneDeep(incomingStreams), stream]);
+          console.log("a call stream has come in", stream);
+          setNewStream(stream);
         });
       });
     });
@@ -53,21 +70,18 @@ function App() {
     peer.on("disconnected", () => {
       setPeerServerConnection(false);
     });
-
-    return function cleanup() {
-      peer.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {}, [incomingStreams]);
+  }, [peer]);
 
   return (
     <div className="App">
       Connection to server is {peerServerConnection ? "up" : "down"} <br />
+      {/* {JSON.stringify(aState)} */}
       Peers: {conns.length}
+      Streams: {Object.keys(incomingStreams).length}
       <br />
       {conns.map((c, i) => (
         <button
+          key={i}
           onClick={() => {
             c.send("Hola");
           }}
@@ -76,10 +90,10 @@ function App() {
         </button>
       ))}
       <br />
-      <button onClick={broadCastMessage}>test</button>
+      {/* <button onClick={broadCastMessage}>test</button> */}
       <br />
-      {incomingStreams.map((s, i) => {
-        return <IncomingVideo key={`video_${i}`} stream={s} />;
+      {Object.keys(incomingStreams).map((s, i) => {
+        return <IncomingVideo key={`video_${i}`} stream={incomingStreams[s]} />;
       })}
     </div>
   );
@@ -92,12 +106,11 @@ function IncomingVideo({ stream }) {
       ref.current.srcObject = stream;
       ref.current.play();
     }
-  }, [ref]);
+  }, [ref, stream]);
   return (
-    <>
-      hi
-      <video ref={ref} autoPlay={true} />
-    </>
+    <div>
+      <video ref={ref} autoPlay={true} width="400" />
+    </div>
   );
 }
 
