@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import Peer from "peerjs";
 import _ from "lodash";
+import VideoFrame from "./components/video-frame";
+import TabBar from "./components/tab-bar";
+import PeerList from "./components/peers";
+import { People } from "react-ikonate";
 
 function App() {
   let [conns, setConns] = useState([]);
@@ -9,7 +13,6 @@ function App() {
   let [newStream, setNewStream] = useState(null);
   let [peerServerConnection, setPeerServerConnection] = useState(false);
 
-  let [aState, setAState] = useState([]);
   let peer;
 
   function broadCastMessage() {
@@ -18,10 +21,9 @@ function App() {
     });
   }
 
-  useEffect(() => {
-    console.log(incomingStreams);
-    console.log(newStream);
+  function listPeers() {}
 
+  useEffect(() => {
     setIncomingStreams([...incomingStreams, newStream]);
   }, [newStream]);
 
@@ -30,9 +32,12 @@ function App() {
       host: process.env.REACT_APP_PEER_SERVER,
       port: process.env.REACT_APP_PEER_SERVER_PORT,
       debug: 2,
+      key: "tiger",
       path: "/peerjs/myapp",
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-      sdpSemantics: "unified-plan",
+      config: {
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+        sdpSemantics: "unified-plan",
+      },
     });
 
     return function cleanup() {
@@ -74,6 +79,24 @@ function App() {
 
   return (
     <div className="App">
+      {/* Brian insert tab bar here */}
+      <TabBar
+        tabs={[
+          { subtitle: "Streams", selected: "true" },
+          { subtitle: "Monitor", selected: "" },
+          { subtitle: "Out", selected: "" },
+          { subtitle: "Tab 4", selected: "" },
+        ]}
+      />
+      <PeerList
+        peers={[
+          { role: "parent", id: "parent1", connection_quality: 3 },
+          { role: "parent", id: "parent2", connection_quality: 5 },
+          { role: "children", id: "child1", connection_quality: 2 },
+          { role: "children", id: "child2", connection_quality: 1 },
+          { role: "children", id: "child3", connection_quality: 5 },
+        ]}
+      />
       Connection to server is {peerServerConnection ? "up" : "down"} <br />
       {/* {JSON.stringify(aState)} */}
       Peers: {conns.length}
