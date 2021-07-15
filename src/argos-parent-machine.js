@@ -7,12 +7,31 @@ let argosParentMachine = createMachine({
   states: {
     start: { on: { CREATE_ROOM: { target: "create_room" } } },
 
-    cool: {},
-
     create_room: {
+      on: {
+        SUCESS: {
+          target: "room_name_generated",
+        },
+        FAILURE: {
+          target: "retry",
+        },
+      },
+    },
+
+    retry: {
+      on: { RETRY: "start" },
+    },
+
+    room_name_generated: {
       initial: "get_room_name",
 
       states: {
+        // error_getting_room: {
+        //   invoke:{
+        //     id: "error_getting_room"
+        //   }
+        // },f
+
         get_room_name: {
           invoke: {
             id: "do_get_room_name",
@@ -20,8 +39,11 @@ let argosParentMachine = createMachine({
               return new Promise((resolve, reject) => {
                 window.setTimeout(() => {
                   Math.random() > 0.5
-                    ? resolve({ room: "hello" })
-                    : reject({ error: "couldn't get a name" });
+                    ? resolve({ room: "generated_room_name" })
+                    : reject({
+                        error: "couldn't get a name",
+                        room: "couldn't generate room",
+                      });
                 }, 2000);
               });
             },
@@ -34,7 +56,12 @@ let argosParentMachine = createMachine({
               }),
             },
             onError: {
-              actions: send("RESET"),
+              //ADD POP UP MESSAGE FOR ERROR AND ASKS FOR RETRY
+              actions: assign({
+                room: (context, event) => {
+                  return { ...context.room, name: event.data.room };
+                },
+              }),
             },
           },
         },
@@ -56,7 +83,7 @@ let argosParentMachine = createMachine({
       },
 
       on: {
-        RESET: { target: "start" },
+        RESET: { target: "start", room: "Not Connected" },
       },
     },
   },
