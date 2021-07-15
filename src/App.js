@@ -7,68 +7,60 @@ import TabBar from "./components/tab-bar";
 import PeerList from "./components/peers";
 import { People } from "react-ikonate";
 
-import styled from "styled-components";
+import _ from "lodash";
 
-import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
+import argosParentMachine from "./argos-parent-machine.js";
 
 function App() {
   let peer;
 
-  let argosParentMachine = createMachine({
-    id: "ArgosParent",
-    initial: "start",
-    context: { room_name: null, children: [] },
-    states: {
-      start: {},
-      create_room: {
-        initial: "check_room_name_availability",
-        actions: assign({
-          room_name: () => {
-            return "cow";
-          },
-        }),
-        states: {
-          check_room_name_availability: {
-            invoke: {
-              id: "check-room-name-availability",
-              src: (context) => {
-                return new Promise((resolve, reject) => {
-                  window.setTimeout(() => {
-                    resolve({ a: "hello" });
-                  }, 2000);
-                });
-              },
-
-              onDone: {
-                target: "create_room_with_available_name",
-                actions: assign({
-                  room_name: (context, event) => event.name,
-                }),
-              },
-            },
-            on: {},
-          },
-          create_room_with_available_name: {},
-        },
-      },
-    },
-    on: {
-      CREATE_ROOM: {
-        target: ".create_room",
-        // actions: assign({ room_name: (context, event) => event.name }),
-      },
-    },
-  });
-
-  let [state, send] = useMachine(argosParentMachine);
+  let [state, send] = useMachine(argosParentMachine, { devTools: true });
+  let [pw, setPw] = useState("");
 
   return (
     <div className="App">
       <AppFrame>
-        <StatusBar room={state.context.room_name} />
+        <StatusBar room={_.get(state, "context.room.name")} />
 
         <Screen state={state.value} context={state.context} />
+
+        {state.value === "start" ? (
+          <button
+            onClick={() => {
+              send("CREATE_ROOM");
+            }}
+          >
+            Create Room
+          </button>
+        ) : (
+          <></>
+        )}
+        {state.value.create_room === "set_password" ? (
+          <>
+            <input
+              type="text"
+              onChange={(e) => setPw(e.target.value)}
+              value={pw}
+            />
+            <button
+              onClick={() => {
+                send("SET_PASSWORD", { password: pw });
+              }}
+            >
+              Create Room
+            </button>
+          </>
+        ) : (
+          <></>
+        )}
+        <button
+          onClick={() => {
+            send("RESET");
+          }}
+        >
+          send reset
+        </button>
       </AppFrame>
     </div>
   );

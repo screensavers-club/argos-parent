@@ -30,6 +30,8 @@ export default function StatusBar({ room }) {
 }
 
 const Bar = styled.div`
+  pointer-events: none;
+  user-select: none;
   display: flex;
   background: #000;
   color: white;
