@@ -30,7 +30,6 @@ inspect({
 
 // `
 
-console.log(a);
 function App() {
   let peer;
 
@@ -59,12 +58,44 @@ function App() {
         ) : (
           <></>
         )}
-        {state.value.create_room === "set_password" ? (
+
+        {state.value === "create_room" ? (
+          <>
+            <button
+              onClick={() => {
+                send("SUCCESS");
+              }}
+            >
+              Success
+            </button>
+
+            <button
+              onClick={() => {
+                send("FAILURE");
+              }}
+            >
+              Failure
+            </button>
+          </>
+        ) : (
+          <></>
+        )}
+
+        {state.value === "failure_alert" ? (
+          <>
+            <p>Failure to create room. Please try again.</p>
+          </>
+        ) : (
+          <></>
+        )}
+
+        {state.value === "assigned_room_name" ? (
           <>
             <input
               type="text"
               onChange={(e) => setPw(e.target.value)}
               value={pw}
+              room={pw}
             />
             <button
               onClick={() => {
