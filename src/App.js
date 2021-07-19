@@ -63,7 +63,7 @@ function App() {
           <>
             <button
               onClick={() => {
-                send("SUCCESS");
+                send("SUCCESS", { name: "room name" });
               }}
             >
               Success

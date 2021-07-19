@@ -1,68 +1,82 @@
 import { createMachine, assign, send } from "xstate";
 
-let argosParentMachine = createMachine({
-  id: "ArgosParent",
-  initial: "start",
-  context: { room: {}, children: [] },
-  states: {
-    start: { on: { CREATE_ROOM: { target: "create_room" } } },
+let argosParentMachine = createMachine(
+  {
+    id: "ArgosParent",
+    initial: "start",
+    context: { room: {}, children: [] },
+    states: {
+      start: { on: { CREATE_ROOM: { target: "create_room" } } },
 
-    create_room: {
-      context: {
-        room: "hello",
+      create_room: {
+        context: {
+          room: "hello",
+        },
+
+        on: {
+          SUCCESS: {
+            target: "assigned_room_name",
+            actions: ["assign_room_name"],
+          },
+
+          FAILURE: {
+            target: "failure_alert",
+            room: "Fail to get room",
+          },
+        },
+
+        actions: assign({
+          room: (context, event) => {
+            return { ...context.room, name: event.data.room };
+          },
+        }),
       },
 
-      on: {
-        SUCCESS: {
-          target: "assigned_room_name",
-          room: "roomID_#",
+      failure_alert: {
+        context: {
+          room: "hello",
         },
-        FAILURE: {
-          target: "failure_alert",
-          room: "Fail to get room",
+        on: {
+          RETRY: "start",
         },
+        actions: assign({
+          room: (context, event) => {
+            return { ...context.room, name: event.data.room };
+          },
+        }),
       },
 
+      assigned_room_name: {
+        actions: assign({
+          room: (context, event) => {
+            return { ...context.room, name: event.data.room };
+          },
+        }),
+        on: { SET_PASSWORD: "room_created" },
+      },
+
+      room_created: {},
+    },
+
+    on: {
       actions: assign({
         room: (context, event) => {
           return { ...context.room, name: event.data.room };
         },
       }),
+      RESET: { target: "start", room: "Not Connected" },
     },
-
-    failure_alert: {
-      context: {
-        room: "hello",
-      },
-      on: {
-        RETRY: "start",
-      },
-      actions: assign({
-        room: (context, event) => {
-          return { ...context.room, name: event.data.room };
-        },
-      }),
-    },
-
-    assigned_room_name: {
-      actions: assign({
-        room: (context, event) => {
-          return { ...context.room, name: event.data.room };
-        },
-      }),
-      on: { SET_PASSWORD: "room_created" },
-    },
-
-    room_created: {},
   },
-  on: {
-    actions: assign({
-      room: (context, event) => {
-        return { ...context.room, name: event.data.room };
+  {
+    actions: {
+      assign_room_name: (context, event) => {
+        console.log(context, event);
+        if (event.type === "SUCCESS") {
+          context.room.name = event.name;
+        }
       },
-    }),
-    RESET: { target: "start", room: "Not Connected" },
-  },
-});
+    },
+  }
+);
 
 export default argosParentMachine;
