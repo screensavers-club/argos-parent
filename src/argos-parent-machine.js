@@ -19,13 +19,16 @@ let argosParentMachine = createMachine(
   {
     id: "ArgosParent",
     initial: "start",
-    context: { room: {}, children: [] },
+    context: { room: {}, children: [], error: {} },
     states: {
       start: { on: { CREATE_ROOM: { target: "create_room" } } },
 
       error: {
         context: {
           room: "error",
+          error: (context, event) => {
+            return { ...context.error, message: event.data.message };
+          },
         },
       },
 
@@ -79,10 +82,6 @@ let argosParentMachine = createMachine(
               error: (context, event) => {
                 console.log(event.data.message);
                 return { message: event.data.message };
-              },
-              room: (context, event) => {
-                console.log(event);
-                return { name: event.data.message };
               },
             }),
           },

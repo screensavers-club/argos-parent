@@ -8,6 +8,9 @@ import PeerList from "./components/peers";
 import { People } from "react-ikonate";
 import styled from "styled-components";
 import RoomStart from "./pages/room_start";
+import FetchedRoom from "./pages/fetched_room";
+import Error from "./pages/error";
+import RoomCreated from "./pages/room_created";
 
 import _ from "lodash";
 
@@ -41,72 +44,68 @@ function App() {
   });
 
   let [pw, setPw] = useState("");
-
+  let [number, setNumber] = useState();
   return (
     <div className="App">
       <AppFrame>
         <StatusBar room={_.get(state, "context.room.name")} />
-
         <Screen state={state.value} context={state.context} />
-
         {state.value === "start" ? (
           <RoomStart
             newRoomClick={() => {
               send("CREATE_ROOM");
             }}
             joinRoomClick=""
-            buttonClick={() => {
-              send("RESET");
-            }}
           />
         ) : (
           <></>
         )}
-        {/* {state.value === "create_room" ? (
-          <>
-            <button
-              onClick={() => {
-                send("SUCCESS", { name: "room name" });
-              }}
-            >
-              Success
-            </button>
-
-            <button
-              onClick={() => {
-                send("FAILURE");
-              }}
-            >
-              Failure
-            </button>
-          </>
-        ) : (
-          <></>
-        )} */}
 
         {state.value === "fetched_room" ? (
           <>
-            <input />
-            <Button
-              onClick={() => {
+            <FetchedRoom
+              passwords={[
+                { password: number },
+                { password: number },
+                { password: number },
+                { password: number },
+                { password: number },
+              ]}
+              roomName={_.get(state, "context.room.name")}
+              resetClick={() => {
+                send("RESET");
+              }}
+              reRoll={() => {}}
+              goClick={() => {
                 send("SET_PASSWORD");
               }}
-            >
-              Set Password
-            </Button>
+            />
           </>
         ) : (
           <></>
         )}
-
         {state.value === "room_created" ? (
+          <RoomCreated
+            resetClick={() => {
+              send("RESET");
+            }}
+            error={_.get(state, "context.error.message")}
+          />
+        ) : (
+          <></>
+        )}
+        {state.value === "error" ? (
           <>
-            <p> room created </p>
+            <Error
+              resetClick={() => {
+                send("RESET");
+              }}
+              error={_.get(state, "context.error.message")}
+            />
           </>
         ) : (
           <></>
         )}
-
         {/* {state.value === "assigned_room_name" ? (
           <>
             <input
