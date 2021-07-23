@@ -13,6 +13,7 @@ import _ from "lodash";
 import { useMachine } from "@xstate/react";
 import argosParentMachine from "./argos-parent-machine.js";
 import { inspect } from "@xstate/inspect";
+import Button from "./components/button";
 
 inspect({
   // options
@@ -137,6 +138,19 @@ function IncomingVideo({ stream }) {
 
 export default App;
 
-function Screen() {
+function Screen({ context, state }) {
+  console.log(state);
+  switch (state) {
+    case "start":
+      return <CreateRoomScreen />;
+  }
   return <div></div>;
+}
+
+function CreateRoomScreen() {
+  return (
+    <div>
+      <Button>Test</Button>
+    </div>
+  );
 }
