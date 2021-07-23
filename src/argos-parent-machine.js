@@ -7,58 +7,61 @@ let argosParentMachine = createMachine({
   states: {
     start: { on: { CREATE_ROOM: { target: "create_room" } } },
 
-    cool: {},
-
     create_room: {
-      initial: "get_room_name",
-
-      states: {
-        get_room_name: {
-          invoke: {
-            id: "do_get_room_name",
-            src: (context) => {
-              return new Promise((resolve, reject) => {
-                window.setTimeout(() => {
-                  Math.random() > 0.5
-                    ? resolve({ room: "hello" })
-                    : reject({ error: "couldn't get a name" });
-                }, 2000);
-              });
-            },
-            onDone: {
-              target: "set_password",
-              actions: assign({
-                room: (context, event) => {
-                  return { ...context.room, name: event.data.room };
-                },
-              }),
-            },
-            onError: {
-              actions: send("RESET"),
-            },
-          },
-        },
-
-        set_password: {
-          on: {
-            SET_PASSWORD: {
-              target: "room_created",
-              actions: assign({
-                room: (context, event) => {
-                  return { ...context.room, password: event.password };
-                },
-              }),
-            },
-          },
-        },
-
-        room_created: {},
+      context: {
+        room: "hello",
       },
 
       on: {
-        RESET: { target: "start" },
+        SUCCESS: {
+          target: "assigned_room_name",
+          room: "roomID_#",
+        },
+        FAILURE: {
+          target: "failure_alert",
+          room: "Fail to get room",
+        },
       },
+
+      actions: assign({
+        room: (context, event) => {
+          return { ...context.room, name: event.data.room };
+        },
+      }),
     },
+
+    failure_alert: {
+      context: {
+        room: "hello",
+      },
+      on: {
+        RETRY: "start",
+      },
+      actions: assign({
+        room: (context, event) => {
+          return { ...context.room, name: event.data.room };
+        },
+      }),
+    },
+
+    assigned_room_name: {
+      actions: assign({
+        room: (context, event) => {
+          return { ...context.room, name: event.data.room };
+        },
+      }),
+      on: { SET_PASSWORD: "room_created" },
+    },
+
+    room_created: {},
+  },
+  on: {
+    actions: assign({
+      room: (context, event) => {
+        return { ...context.room, name: event.data.room };
+      },
+    }),
+    RESET: { target: "start", room: "Not Connected" },
   },
 });
 

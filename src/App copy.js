@@ -6,38 +6,16 @@ import VideoFrame from "./components/video-frame";
 import TabBar from "./components/tab-bar";
 import PeerList from "./components/peers";
 import { People } from "react-ikonate";
-import styled from "styled-components";
 
 import _ from "lodash";
 
 import { useMachine } from "@xstate/react";
 import argosParentMachine from "./argos-parent-machine.js";
-import { inspect } from "@xstate/inspect";
-
-inspect({
-  // options
-  // url: 'https://statecharts.io/inspect', // (default)
-  iframe: false, // open in new window
-});
-
-// const Button = styled.div`
-
-// background: red;
-
-// :hover{
-//   cursor: pointer;
-// }
-
-// `
 
 function App() {
   let peer;
 
-  let [state, send] = useMachine(argosParentMachine, {
-    devTools:
-      process.env.NODE_ENV === "development" && typeof window !== "undefined",
-  });
-
+  let [state, send] = useMachine(argosParentMachine, { devTools: true });
   let [pw, setPw] = useState("");
 
   return (
@@ -58,44 +36,12 @@ function App() {
         ) : (
           <></>
         )}
-
-        {state.value === "create_room" ? (
-          <>
-            <button
-              onClick={() => {
-                send("SUCCESS");
-              }}
-            >
-              Success
-            </button>
-
-            <button
-              onClick={() => {
-                send("FAILURE");
-              }}
-            >
-              Failure
-            </button>
-          </>
-        ) : (
-          <></>
-        )}
-
-        {state.value === "failure_alert" ? (
-          <>
-            <p>Failure to create room. Please try again.</p>
-          </>
-        ) : (
-          <></>
-        )}
-
-        {state.value === "assigned_room_name" ? (
+        {state.value.create_room === "set_password" ? (
           <>
             <input
               type="text"
               onChange={(e) => setPw(e.target.value)}
               value={pw}
-              room={pw}
             />
             <button
               onClick={() => {
@@ -118,6 +64,68 @@ function App() {
       </AppFrame>
     </div>
   );
+
+  // function broadCastMessage() {
+  //   conns.forEach((c) => {
+  //     c.send("hello");
+  //   });
+  // }
+
+  // function listPeers() {}
+
+  // useEffect(() => {
+  //   setIncomingStreams([...incomingStreams, newStream]);
+  // }, [newStream]);
+
+  // useEffect(() => {
+  //   peer = new Peer("parent", {
+  //     host: process.env.REACT_APP_PEER_SERVER,
+  //     port: process.env.REACT_APP_PEER_SERVER_PORT,
+  //     debug: 2,
+  //     key: "tiger",
+  //     path: "/peerjs/myapp",
+  //     config: {
+  //       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  //       sdpSemantics: "unified-plan",
+  //     },
+  //   });
+
+  //   return function cleanup() {
+  //     peer.disconnect();
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   peer.on("open", function () {
+  //     setPeerServerConnection(true);
+
+  //     peer.on("connection", (connection) => {
+  //       console.log("connection received");
+  //       setConns([...conns, connection]);
+
+  //       connection.on("data", (data) => {
+  //         console.log("received data " + data);
+  //       });
+
+  //       connection.on("open", () => {
+  //         console.log("connection opened");
+  //       });
+  //     });
+
+  //     peer.on("call", (call) => {
+  //       console.log(call);
+  //       call.answer();
+  //       call.on("stream", (stream) => {
+  //         console.log("a call stream has come in", stream);
+  //         setNewStream(stream);
+  //       });
+  //     });
+  //   });
+
+  //   peer.on("disconnected", () => {
+  //     setPeerServerConnection(false);
+  //   });
+  // }, [peer]);
 }
 
 function IncomingVideo({ stream }) {
