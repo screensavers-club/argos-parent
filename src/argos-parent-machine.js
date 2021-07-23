@@ -1,4 +1,5 @@
 import { createMachine, assign, send } from "xstate";
+import axios from "axios";
 
 let argosParentMachine = createMachine(
   {
@@ -8,9 +9,45 @@ let argosParentMachine = createMachine(
     states: {
       start: { on: { CREATE_ROOM: { target: "create_room" } } },
 
-      create_room: {
-        context: {
-          room: "hello",
+    create_room: {
+      context: {
+        room: "hello",
+      },
+
+      invoke: {
+        id: "fetch_room_name",
+        src: (context, event) => {
+          return axios.get(
+            `${process.env.REACT_APP_PEER_SERVER}:${process.env.REACT_APP_PEER_SERVER_PORT}`
+          );
+          //return a promise
+        },
+        onDone: {
+          target: "fetched_room",
+          actions: assign({
+            room: (context, event) => {
+              return { name: event.data.data.roomName };
+            },
+          }),
+        },
+        onError: {
+          target: "error",
+          actions: assign({
+            error: (context, event) => {
+              return {
+                message: "",
+              };
+            },
+          }),
+        },
+      },
+
+      on: {
+        SUCCESS: {
+          target: "assigned_room_name",
+          actions: assign({
+            room: { name: "roomID_#" },
+          }),
         },
 
         on: {
@@ -32,18 +69,20 @@ let argosParentMachine = createMachine(
         }),
       },
 
-      failure_alert: {
-        context: {
-          room: "hello",
-        },
-        on: {
-          RETRY: "start",
-        },
-        actions: assign({
-          room: (context, event) => {
-            return { ...context.room, name: event.data.room };
-          },
-        }),
+      // actions: assign({
+      //   room: (context, event) => {
+      //     return { ...context.room, name: event.data.room };
+      //   },
+      // }),
+    },
+
+    fetched_room: {},
+
+    error: {},
+
+    failure_alert: {
+      context: {
+        room: "hello",
       },
 
       assigned_room_name: {
