@@ -7,6 +7,7 @@ import TabBar from "./components/tab-bar";
 import PeerList from "./components/peers";
 import { People } from "react-ikonate";
 import styled from "styled-components";
+import RoomStart from "./pages/room_start";
 
 import _ from "lodash";
 
@@ -49,18 +50,19 @@ function App() {
         <Screen state={state.value} context={state.context} />
 
         {state.value === "start" ? (
-          <button
-            onClick={() => {
+          <RoomStart
+            newRoomClick={() => {
               send("CREATE_ROOM");
             }}
-          >
-            Create Room
-          </button>
+            joinRoomClick=""
+            buttonClick={() => {
+              send("RESET");
+            }}
+          />
         ) : (
           <></>
         )}
-
-        {state.value === "create_room" ? (
+        {/* {state.value === "create_room" ? (
           <>
             <button
               onClick={() => {
@@ -80,17 +82,32 @@ function App() {
           </>
         ) : (
           <></>
-        )}
+        )} */}
 
-        {state.value === "failure_alert" ? (
+        {state.value === "fetched_room" ? (
           <>
-            <p>Failure to create room. Please try again.</p>
+            <input />
+            <Button
+              onClick={() => {
+                send("SET_PASSWORD");
+              }}
+            >
+              Set Password
+            </Button>
           </>
         ) : (
           <></>
         )}
 
-        {state.value === "assigned_room_name" ? (
+        {state.value === "room_created" ? (
+          <>
+            <p> room created </p>
+          </>
+        ) : (
+          <></>
+        )}
+
+        {/* {state.value === "assigned_room_name" ? (
           <>
             <input
               type="text"
@@ -108,14 +125,7 @@ function App() {
           </>
         ) : (
           <></>
-        )}
-        <button
-          onClick={() => {
-            send("RESET");
-          }}
-        >
-          send reset
-        </button>
+        )}*/}
       </AppFrame>
     </div>
   );
@@ -148,9 +158,5 @@ function Screen({ context, state }) {
 }
 
 function CreateRoomScreen() {
-  return (
-    <div>
-      <Button>Test</Button>
-    </div>
-  );
+  return <div></div>;
 }

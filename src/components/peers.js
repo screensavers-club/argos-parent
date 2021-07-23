@@ -3,7 +3,7 @@ import styled from "styled-components";
 const PeersWrapper = styled.div`
   width: 100px;
   height: 100%;
-  border = 1px solid;
+  border: 1px solid;
 `;
 
 const ParentWrapper = styled.div``;
