@@ -25,7 +25,7 @@ export default function RoomCreated({ resetClick }) {
         <h3>Room Created</h3>
       </div>
 
-      <Button onClick={resetClick}>Send Reset</Button>
+      <Button onClick={resetClick}>Back</Button>
     </StyledPage>
   );
 }

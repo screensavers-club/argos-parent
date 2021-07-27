@@ -97,30 +97,20 @@ const StyledPage = styled.div`
 
 // let [number, setNumber] = useState();
 
-export default function FetchedRoom({
-  roomName,
-  resetClick,
-  passwords,
-  goClick,
-  reRoll,
-}) {
+export default function EnterPassword({ roomName, resetClick, joinRoom }) {
   return (
     <StyledPage>
-      <div className="roomName">
-        <h3>room name</h3>
-        <div className="nameBox">
-          <h3>{roomName}</h3>
-          <Button onClick={reRoll}>Re-Roll</Button>
-        </div>
+      <div className="room">
+        <h3>{roomName}</h3>
       </div>
-      <h3>Set a passcode</h3>
+      <h3>Enter password</h3>
       <div className="password">
         <div className="passwordBox">
           <input className="passInput" type="text" min="0" max="9" />
         </div>
       </div>
       <div className="buttonBox">
-        <Button onClick={goClick}>Go</Button>
+        <Button onClick={joinRoom}>Go</Button>
         <Button onClick={resetClick}>Back</Button>
       </div>
     </StyledPage>

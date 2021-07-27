@@ -11,6 +11,9 @@ import RoomStart from "./pages/room_start";
 import FetchedRoom from "./pages/fetched_room";
 import Error from "./pages/error";
 import RoomCreated from "./pages/room_created";
+import SelectRooms from "./pages/select_room";
+import EnterPassword from "./pages/enter_password";
+import RoomJoined from "./pages/room_joined";
 
 import _ from "lodash";
 
@@ -55,7 +58,9 @@ function App() {
             newRoomClick={() => {
               send("CREATE_ROOM");
             }}
-            joinRoomClick=""
+            joinRoomClick={() => {
+              send("JOIN_ROOM");
+            }}
           />
         ) : (
           <></>
@@ -75,7 +80,9 @@ function App() {
               resetClick={() => {
                 send("RESET");
               }}
-              reRoll={() => {}}
+              reRoll={() => {
+                send("REROLL_ROOM_NAME");
+              }}
               goClick={() => {
                 send("SET_PASSWORD");
               }}
@@ -94,6 +101,58 @@ function App() {
         ) : (
           <></>
         )}
+        {state.value === "error" ? (
+          <>
+            <Error
+              resetClick={() => {
+                send("RESET");
+              }}
+              error={_.get(state, "context.error.message")}
+            />
+          </>
+        ) : (
+          <></>
+        )}
+
+        {state.value === "select_room" ? (
+          <SelectRooms
+            roomName={_.get(state, "context.room.name")}
+            resetClick={() => {
+              send("RESET");
+            }}
+            gotoEnterPassword={() => {
+              send("ROOM_SELECTED");
+            }}
+          />
+        ) : (
+          <></>
+        )}
+
+        {state.value === "enter_password" ? (
+          <EnterPassword
+            roomName={_.get(state, "context.room.name")}
+            resetClick={() => {
+              send("RESET");
+            }}
+            joinRoom={() => {
+              send("JOIN_ROOM");
+            }}
+          />
+        ) : (
+          <></>
+        )}
+
+        {state.value === "room_joined" ? (
+          <RoomJoined
+            roomName={_.get(state, "context.room.name")}
+            resetClick={() => {
+              send("RESET");
+            }}
+          />
+        ) : (
+          <></>
+        )}
+
         {state.value === "error" ? (
           <>
             <Error
