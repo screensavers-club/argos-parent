@@ -7,6 +7,10 @@ import TabBar from "./components/tab-bar";
 import PeerList from "./components/peers";
 import { People } from "react-ikonate";
 import styled from "styled-components";
+import RoomStart from "./pages/room_start";
+import FetchedRoom from "./pages/fetched_room";
+import Error from "./pages/error";
+import RoomCreated from "./pages/room_created";
 
 import _ from "lodash";
 
@@ -40,57 +44,69 @@ function App() {
   });
 
   let [pw, setPw] = useState("");
-
+  let [number, setNumber] = useState();
   return (
     <div className="App">
       <AppFrame>
         <StatusBar room={_.get(state, "context.room.name")} />
-
         <Screen state={state.value} context={state.context} />
-
         {state.value === "start" ? (
-          <button
-            onClick={() => {
+          <RoomStart
+            newRoomClick={() => {
               send("CREATE_ROOM");
             }}
-          >
-            Create Room
-          </button>
+            joinRoomClick=""
+          />
         ) : (
           <></>
         )}
 
-        {state.value === "create_room" ? (
+        {state.value === "fetched_room" ? (
           <>
-            <button
-              onClick={() => {
-                send("SUCCESS");
+            <FetchedRoom
+              passwords={[
+                { password: number },
+                { password: number },
+                { password: number },
+                { password: number },
+                { password: number },
+              ]}
+              roomName={_.get(state, "context.room.name")}
+              resetClick={() => {
+                send("RESET");
               }}
-            >
-              Success
-            </button>
-
-            <button
-              onClick={() => {
-                send("FAILURE");
+              reRoll={() => {}}
+              goClick={() => {
+                send("SET_PASSWORD");
               }}
-            >
-              Failure
-            </button>
+            />
           </>
         ) : (
           <></>
         )}
-
-        {state.value === "failure_alert" ? (
+        {state.value === "room_created" ? (
+          <RoomCreated
+            resetClick={() => {
+              send("RESET");
+            }}
+            error={_.get(state, "context.error.message")}
+          />
+        ) : (
+          <></>
+        )}
+        {state.value === "error" ? (
           <>
-            <p>Failure to create room. Please try again.</p>
+            <Error
+              resetClick={() => {
+                send("RESET");
+              }}
+              error={_.get(state, "context.error.message")}
+            />
           </>
         ) : (
           <></>
         )}
-
-        {state.value === "assigned_room_name" ? (
+        {/* {state.value === "assigned_room_name" ? (
           <>
             <input
               type="text"
@@ -108,14 +124,7 @@ function App() {
           </>
         ) : (
           <></>
-        )}
-        <button
-          onClick={() => {
-            send("RESET");
-          }}
-        >
-          send reset
-        </button>
+        )}*/}
       </AppFrame>
     </div>
   );
@@ -148,9 +157,5 @@ function Screen({ context, state }) {
 }
 
 function CreateRoomScreen() {
-  return (
-    <div>
-      <Button>Test</Button>
-    </div>
-  );
+  return <div></div>;
 }
