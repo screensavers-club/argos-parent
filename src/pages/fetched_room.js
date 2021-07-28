@@ -59,7 +59,6 @@ const StyledPage = styled.div`
   }
 
   div.passwordBox {
-    border: 1px solid black;
     padding: 25px;
     margin: 12.5px;
     width: 45%;
@@ -72,15 +71,16 @@ const StyledPage = styled.div`
     width: 10px;
     position: absolute;
     text-align: center;
-    font-size: 1em;
   }
 
   input,
   select {
-    font-size: 1em;
+    font-size: 2em;
     border-style: none;
     width: 100%;
     height: auto;
+    border-radius: 0;
+    border: 1px solid black;
   }
 
   div.buttonBox {
@@ -116,7 +116,11 @@ export default function FetchedRoom({
       <h3>Set a passcode</h3>
       <div className="password">
         <div className="passwordBox">
-          <input className="passInput" type="text" min="0" max="9" />
+          <input
+            className="passInput"
+            type="password"
+            placeholder="set password"
+          />
         </div>
       </div>
       <div className="buttonBox">

@@ -23,6 +23,29 @@ let argosParentMachine = createMachine(
     context: { room: {}, children: [], error: {} },
     states: {
       start: {
+        invoke: {
+          id: "fetch_room_name",
+          src: (context, event) => {
+            return axios.get(
+              `${process.env.REACT_APP_PEER_SERVER}:${process.env.REACT_APP_PEER_SERVER_PORT}`
+            );
+          },
+
+          onDone: {
+            target: "connected",
+          },
+          onError: {
+            target: "error",
+            actions: assign({
+              error: (context, event) => {
+                return { message: "cannot connect to server" };
+              },
+            }),
+          },
+        },
+      },
+
+      connected: {
         on: {
           CREATE_ROOM: { target: "create_room" },
           JOIN_ROOM: { target: "select_room" },
@@ -176,7 +199,7 @@ let argosParentMachine = createMachine(
           return { ...context.room, name: event.data.room };
         },
       }),
-      RESET: { target: "start", room: "Not Connected" },
+      RESET: { target: "connected", room: "Not Connected" },
     },
   },
   {

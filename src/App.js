@@ -53,7 +53,7 @@ function App() {
       <AppFrame>
         <StatusBar room={_.get(state, "context.room.name")} />
         <Screen state={state.value} context={state.context} />
-        {state.value === "start" ? (
+        {state.value === "connected" ? (
           <RoomStart
             newRoomClick={() => {
               send("CREATE_ROOM");
@@ -153,18 +153,6 @@ function App() {
           <></>
         )}
 
-        {state.value === "error" ? (
-          <>
-            <Error
-              resetClick={() => {
-                send("RESET");
-              }}
-              error={_.get(state, "context.error.message")}
-            />
-          </>
-        ) : (
-          <></>
-        )}
         {/* {state.value === "assigned_room_name" ? (
           <>
             <input
@@ -209,7 +197,7 @@ export default App;
 function Screen({ context, state }) {
   console.log(state);
   switch (state) {
-    case "start":
+    case "connected":
       return <CreateRoomScreen />;
   }
   return <div></div>;
