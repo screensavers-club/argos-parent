@@ -10,7 +10,7 @@ import styled from "styled-components";
 import RoomStart from "./pages/room_start";
 import FetchedRoom from "./pages/fetched_room";
 import Error from "./pages/error";
-import RoomCreated from "./pages/room_created";
+import StreamRoom from "./pages/stream_room";
 import SelectRooms from "./pages/select_room";
 import EnterPassword from "./pages/enter_password";
 import RoomJoined from "./pages/room_joined";
@@ -91,8 +91,8 @@ function App() {
         ) : (
           <></>
         )}
-        {state.value === "room_created" ? (
-          <RoomCreated
+        {state.value === "stream_room" ? (
+          <StreamRoom
             resetClick={() => {
               send("RESET");
             }}
@@ -116,13 +116,11 @@ function App() {
 
         {state.value === "select_room" ? (
           <SelectRooms
-            roomName={_.get(state, "context.room.name")}
+            rooms={_.get(state, "context.rooms_available")}
             resetClick={() => {
               send("RESET");
             }}
-            gotoEnterPassword={() => {
-              send("ROOM_SELECTED");
-            }}
+            send={send}
           />
         ) : (
           <></>

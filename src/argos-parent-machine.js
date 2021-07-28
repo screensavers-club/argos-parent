@@ -20,7 +20,7 @@ let argosParentMachine = createMachine(
   {
     id: "ArgosParent",
     initial: "start",
-    context: { room: {}, children: [], error: {} },
+    context: { room: {}, children: [], error: {}, rooms_available: [] },
     states: {
       start: {
         invoke: {
@@ -62,7 +62,7 @@ let argosParentMachine = createMachine(
           id: "fetch_room_name",
           src: (context, event) => {
             return axios.get(
-              `${process.env.REACT_APP_PEER_SERVER}:${process.env.REACT_APP_PEER_SERVER_PORT}`
+              `http://${process.env.REACT_APP_LIVEKIT_SERVER}/generate-room-name`
             );
           },
 
@@ -71,7 +71,7 @@ let argosParentMachine = createMachine(
             actions: assign({
               room: (context, event) => {
                 console.log(event);
-                return { name: event.data.data.roomName };
+                return { name: event.data.data };
               },
             }),
           },
@@ -106,7 +106,7 @@ let argosParentMachine = createMachine(
           },
         }),
         on: {
-          SET_PASSWORD: "room_created",
+          SET_PASSWORD: "stream_room",
           REROLL_ROOM_NAME: {
             action: () => {
               console.log("test");
@@ -128,9 +128,9 @@ let argosParentMachine = createMachine(
         },
       },
 
-      room_created: {
+      stream_room: {
         context: {
-          room: "room_created",
+          room: "stream_room",
         },
       },
 
@@ -144,31 +144,37 @@ let argosParentMachine = createMachine(
           id: "fetch_room_name",
           src: (context, event) => {
             return axios.get(
-              `${process.env.REACT_APP_PEER_SERVER}:${process.env.REACT_APP_PEER_SERVER_PORT}`
+              `http://${process.env.REACT_APP_LIVEKIT_SERVER}/rooms`
             );
           },
 
           onDone: {
             actions: assign({
-              room: (context, event) => {
+              rooms_available: (context, event) => {
                 console.log(event);
-                return { name: event.data.data.roomName };
+                return event.data.data;
               },
             }),
           },
           onError: {
-            actions: assign({
-              error: (context, event) => {
-                console.log(event.data.message);
-                return { message: event.data.message };
-              },
-            }),
+            // actions: assign({
+            //   error: (context, event) => {
+            //     console.log(event.data.message);
+            //     return { message: event.data.message };
+            //   },
+            // }),
           },
         },
 
         on: {
           ROOM_SELECTED: {
             target: "enter_password",
+            actions: assign({
+              room: (context, event) => {
+                console.log(event);
+                return { name: event.name };
+              },
+            }),
           },
         },
       },
@@ -178,6 +184,14 @@ let argosParentMachine = createMachine(
           room: "enter_password",
           id: "enter_password",
         },
+
+        actions: assign({
+          room: (context, event) => {
+            console.log(event);
+            return context.data.data;
+          },
+        }),
+
         on: {
           JOIN_ROOM: {
             target: "room_joined",

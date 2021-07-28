@@ -18,11 +18,19 @@ const StyledPage = styled.div`
   }
 `;
 
-export default function RoomCreated({ resetClick }) {
+export default function StreamRoom({ resetClick, tabs }) {
   return (
     <StyledPage>
-      <div className="roomCreated">
-        <h3>Room Created</h3>
+      <div className="streamTabs">
+        {(tabs = [
+          { tab: "stream" },
+          { tab: "monitor" },
+          { tab: "out" },
+          { tab: "Tab 4" },
+        ]).map(function ({ tab }, i) {
+          let key = `key_${i}`;
+          return <div key={key}>{tab}</div>;
+        })}
       </div>
 
       <Button onClick={resetClick}>Back</Button>

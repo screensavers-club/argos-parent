@@ -39,16 +39,25 @@ const StyledPage = styled.div`
   }
 `;
 
-export default function SelectRooms({
-  roomName,
-  resetClick,
-  gotoEnterPassword,
-}) {
+export default function SelectRooms({ rooms, resetClick, send }) {
   return (
     <StyledPage>
       <div className="availableRooms">
         <h3>Available Rooms</h3>
-        <Button onClick={gotoEnterPassword}>{roomName}</Button>
+
+        {rooms.map(function ({ name }, i) {
+          let key = `key_${i}`;
+          return (
+            <Button
+              onClick={() => {
+                send("ROOM_SELECTED", { name });
+              }}
+              key={key}
+            >
+              {name}
+            </Button>
+          );
+        })}
       </div>
       <div className="buttonBox">
         <Button onClick={resetClick}>Back</Button>
