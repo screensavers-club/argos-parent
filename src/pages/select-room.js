@@ -72,7 +72,16 @@ export default function SelectRoom({ send, context }) {
       <div className="buttonBox">
         <Button
           onClick={() => {
-            send("RETRIEVE_ROOMS");
+            axios
+              .get(`${process.env.REACT_APP_PEER_SERVER}/rooms/`)
+              .then((result) => {
+                return send("RETRIEVE_ROOMS", {
+                  rooms_available: result.data,
+                });
+              })
+              .catch((err) => {
+                console.log(err.response);
+              });
           }}
         >
           Refresh

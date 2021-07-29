@@ -133,21 +133,17 @@ let argosParentMachine = createMachine(
       },
 
       enter_password: {
-        context: {
-          room: "enter_password",
-          id: "enter_password",
-        },
-
-        actions: assign({
-          room: (context, event) => {
-            console.log(event);
-            return context.data.data;
-          },
-        }),
-
         on: {
           CHECK_INPUT: {
             target: "room_joined",
+            actions: assign({
+              token: (context, event) => {
+                return event.token;
+              },
+              room: (context, event) => {
+                return { name: context.joining_room };
+              },
+            }),
           },
         },
       },

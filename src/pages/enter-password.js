@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import Button from "../components/button";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
+import "../animate.min.css";
 
 const StyledPage = styled.div`
   display: block;
@@ -98,15 +99,15 @@ const StyledPage = styled.div`
 
 // let [number, setNumber] = useState();
 
-export default function EnterPassword({ roomName, send, context }) {
+export default function EnterPassword({ send, context }) {
   let [passcode, setPasscode] = useState();
+  let ref = useRef();
   return (
     <StyledPage>
       <div className="room">
-        <h3>{roomName}</h3>
+        <h3>{context.joining_room}</h3>
       </div>
-      <h3>Enter password</h3>
-      <div className="password">
+      <div className="password" ref={ref}>
         <div className="passwordBox">
           <input
             className="passInput"
@@ -139,8 +140,22 @@ export default function EnterPassword({ roomName, send, context }) {
               })
               .catch((err) => {
                 console.log(err.response);
+                if (
+                  err.response.data.err ===
+                  `Wrong passcode provided for room ${context.joining_room}`
+                ) {
+                  ref.current.classList.add(
+                    "animate__animated",
+                    "animate__shakeX"
+                  );
+                  window.setTimeout(() => {
+                    ref.current.classList.remove(
+                      "animate__animated",
+                      "animate__shakeX"
+                    );
+                  }, 2000);
+                }
               });
-            // send("CHECK_INPUT", payload);
           }}
         >
           Go

@@ -6,8 +6,6 @@ import StatusBar from "./components/status-bar";
 import StartScreen from "./pages/start-screen";
 import RoomStartScreen from "./pages/room-start-screen";
 import ErrorScreen from "./pages/error-screen";
-
-import RoomStart from "./pages/room-start-screen";
 import FetchedRoom from "./pages/create-room-screen";
 import StreamRoom from "./pages/stream-room";
 import SelectRoom from "./pages/select-room";
@@ -35,43 +33,6 @@ function App() {
       <AppFrame>
         <StatusBar room={_.get(state, "context.room.name")} />
         <Screen state={state.value} context={state.context} send={send} />
-        {/*
-        
-        {state.value === "select_room" ? (
-          <SelectRooms
-            rooms={_.get(state, "context.rooms_available")}
-            resetClick={() => {
-              send("RESET");
-            }}
-            send={send}
-          />
-        ) : (
-          <></>
-        )}
-        {state.value === "enter_password" ? (
-          <EnterPassword
-            roomName={_.get(state, "context.room.name")}
-            resetClick={() => {
-              send("RESET");
-            }}
-            joinRoom={() => {
-              send("JOIN_ROOM");
-            }}
-          />
-        ) : (
-          <></>
-        )}
-        {state.value === "room_joined" ? (
-          <RoomJoined
-            roomName={_.get(state, "context.room.name")}
-            resetClick={() => {
-              send("RESET");
-            }}
-          />
-        ) : (
-          <></>
-        )}
-        } */}
       </AppFrame>
     </div>
   );
@@ -103,18 +64,12 @@ function Screen({ context, state, send }) {
       );
 
     case "select_room":
-      return (
-        <SelectRoom
-          //rooms={_.get(state, "context.rooms_available")}
-          send={send}
-          context={context}
-        />
-      );
-
-    case "room_joined":
-      return <RoomJoined send={send} context={context} />;
+      return <SelectRoom send={send} context={context} />;
 
     case "enter_password":
       return <EnterPassword send={send} context={context} />;
+
+    case "room_joined":
+      return <RoomJoined send={send} context={context} />;
   }
 }
