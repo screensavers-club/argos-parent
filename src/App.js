@@ -9,7 +9,7 @@ import ErrorScreen from "./pages/error-screen";
 
 import RoomStart from "./pages/room-start-screen";
 import FetchedRoom from "./pages/create-room-screen";
-import StreamRoom from "./pages/stream_room";
+import StreamRoom from "./pages/stream-room";
 import SelectRooms from "./pages/select_room";
 import EnterPassword from "./pages/enter_password";
 import RoomJoined from "./pages/room_joined";
@@ -31,7 +31,7 @@ function App() {
   });
 
   let [pw, setPw] = useState("");
-  let [number, setNumber] = useState();
+
   return (
     <div className="App">
       <AppFrame>
@@ -151,5 +151,14 @@ function Screen({ context, state, send }) {
 
     case "create_room":
       return <FetchedRoom send={send} context={context} />;
+
+    case "stream_room":
+      return (
+        <StreamRoom
+          send={send}
+          context={context}
+          error={_.get(state, "context.error.message")}
+        />
+      );
   }
 }

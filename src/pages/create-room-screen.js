@@ -93,12 +93,14 @@ const StyledPage = styled.div`
 `;
 
 export default function FetchedRoom({ context, send }) {
+  let [passcode, setPasscode] = useState();
+
   return (
     <StyledPage>
       <div className="roomName">
         <h3>room name</h3>
         <div className="nameBox">
-          <h3>{context.room.name}</h3>
+          <p>{context.room.name}</p>
           <Button
             onClick={() => {
               // send("REROLL_ROOM_NAME");
@@ -123,11 +125,37 @@ export default function FetchedRoom({ context, send }) {
             className="passInput"
             type="password"
             placeholder="set password"
+            minLength="5"
+            maxLength="5"
+            value={passcode}
+            onChange={(e) => {
+              setPasscode(e.target.value);
+            }}
           />
         </div>
       </div>
       <div className="buttonBox">
-        <Button onClick={() => {}}>Go</Button>
+        <Button
+          onClick={() => {
+            const payload = {
+              room: context.room.name,
+              passcode: passcode,
+              identity: context.identity,
+            };
+
+            axios
+              .post(
+                `${process.env.REACT_APP_PEER_SERVER}/parent/room/new`,
+                payload
+              )
+              .then((result) => {
+                console.log(result);
+                return send("RECEIVE_TOKEN", { token: result.data.token });
+              });
+          }}
+        >
+          Go
+        </Button>
         <Button
           onClick={() => {
             send("RESET");

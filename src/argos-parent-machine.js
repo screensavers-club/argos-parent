@@ -12,6 +12,7 @@ let argosParentMachine = createMachine(
       children: [],
       error: {},
       rooms_available: [],
+      token: "",
     },
     states: {
       start: {
@@ -84,7 +85,16 @@ let argosParentMachine = createMachine(
           },
         },
         on: {
-          SET_PASSWORD: "stream_room",
+          RECEIVE_TOKEN: {
+            target: "stream_room",
+            actions: assign({
+              token: (context, event) => {
+                console.log(event);
+                return event.token;
+                // return { ...context.token, token: event.data.token };
+              },
+            }),
+          },
 
           SET_NEW_ROOM_NAME: {
             actions: assign({

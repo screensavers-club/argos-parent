@@ -18,7 +18,7 @@ const StyledPage = styled.div`
   }
 `;
 
-export default function StreamRoom({ resetClick, tabs }) {
+export default function StreamRoom({ tabs, context, send }) {
   return (
     <StyledPage>
       <div className="streamTabs">
@@ -33,7 +33,13 @@ export default function StreamRoom({ resetClick, tabs }) {
         })}
       </div>
 
-      <Button onClick={resetClick}>Back</Button>
+      <Button
+        onClick={() => {
+          send("RESET");
+        }}
+      >
+        Back
+      </Button>
     </StyledPage>
   );
 }
