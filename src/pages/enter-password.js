@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import Button from "../components/button";
-import React, { useState } from "react";
-
+import React, { useState, useRef } from "react";
 import axios from "axios";
+import "../animate.min.css";
 
 const StyledPage = styled.div`
   display: block;
@@ -92,41 +92,28 @@ const StyledPage = styled.div`
   }
 `;
 
-export default function FetchedRoom({ context, send }) {
-  let [passcode, setPasscode] = useState();
+// function passwords({}){
+//   return
+//   <div
+// }
 
+// let [number, setNumber] = useState();
+
+export default function EnterPassword({ send, context }) {
+  let [passcode, setPasscode] = useState();
+  let ref = useRef();
   return (
     <StyledPage>
-      <div className="roomName">
-        <h3>room name</h3>
-        <div className="nameBox">
-          <p>{context.room.name}</p>
-          <Button
-            onClick={() => {
-              // send("REROLL_ROOM_NAME");
-              axios
-                .get(`${process.env.REACT_APP_PEER_SERVER}/generate-room-name`)
-                .then((result) => {
-                  if (result.data?.name) {
-                    console.log(result);
-                    send("SET_NEW_ROOM_NAME", { name: result.data.name });
-                  }
-                });
-            }}
-          >
-            Re-Roll
-          </Button>
-        </div>
+      <div className="room">
+        <h3>{context.joining_room}</h3>
       </div>
-      <h3>Set a passcode</h3>
-      <div className="password">
+      <div className="password" ref={ref}>
         <div className="passwordBox">
           <input
             className="passInput"
             type="password"
-            placeholder="set password"
-            minLength="5"
             maxLength="5"
+            placeholder="enter password"
             value={passcode}
             onChange={(e) => {
               setPasscode(e.target.value);
@@ -137,20 +124,37 @@ export default function FetchedRoom({ context, send }) {
       <div className="buttonBox">
         <Button
           onClick={() => {
-            const payload = {
-              room: context.room.name,
+            let payload = {
+              room: context.joining_room,
               passcode: passcode,
               identity: context.identity,
             };
-
             axios
               .post(
-                `${process.env.REACT_APP_PEER_SERVER}/parent/room/new`,
+                `${process.env.REACT_APP_PEER_SERVER}/parent/room/join`,
                 payload
               )
               .then((result) => {
                 console.log(result);
-                return send("RECEIVE_TOKEN", { token: result.data.token });
+                return send("CHECK_INPUT", { token: result.data.token });
+              })
+              .catch((err) => {
+                console.log(err.response);
+                if (
+                  err.response.data.err ===
+                  `Wrong passcode provided for room ${context.joining_room}`
+                ) {
+                  ref.current.classList.add(
+                    "animate__animated",
+                    "animate__shakeX"
+                  );
+                  window.setTimeout(() => {
+                    ref.current.classList.remove(
+                      "animate__animated",
+                      "animate__shakeX"
+                    );
+                  }, 2000);
+                }
               });
           }}
         >

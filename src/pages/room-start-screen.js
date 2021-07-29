@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import Button from "../components/button";
+import axios from "axios";
 
 const StyledPage = styled.div`
   display: flex;

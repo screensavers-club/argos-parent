@@ -1,6 +1,11 @@
 import styled from "styled-components";
 import Button from "../components/button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { mapContext } from "xstate/lib/utils";
+
+import { createLocalVideoTrack } from "livekit-client";
+
+import { useRoom } from "livekit-react";
 
 const StyledPage = styled.div`
   display: block;
@@ -59,6 +64,7 @@ const StyledPage = styled.div`
   }
 
   div.passwordBox {
+    border: 1px solid black;
     padding: 25px;
     margin: 12.5px;
     width: 45%;
@@ -71,16 +77,15 @@ const StyledPage = styled.div`
     width: 10px;
     position: absolute;
     text-align: center;
+    font-size: 1em;
   }
 
   input,
   select {
-    font-size: 2em;
+    font-size: 1em;
     border-style: none;
     width: 100%;
     height: auto;
-    border-radius: 0;
-    border: 1px solid black;
   }
 
   div.buttonBox {
@@ -90,33 +95,38 @@ const StyledPage = styled.div`
   }
 `;
 
-// function passwords({}){
-//   return
-//   <div
-// }
+export default function RoomJoined({ context, send, state }) {
+  const { connect, isConnecting, room, error, participants, audioTracks } =
+    useRoom();
 
-// let [number, setNumber] = useState();
-
-export default function EnterPassword({ roomName, resetClick, joinRoom }) {
+  useEffect(() => {
+    connect(process.env.REACT_APP_LIVEKIT_SERVER, context.token);
+  }, []);
+  console.log(participants);
   return (
     <StyledPage>
       <div className="room">
-        <h3>{roomName}</h3>
+        <h3>You have entered</h3>
+        <h3>{context.joining_room}</h3>
+        {isConnecting ? "connecting" : "-"}
+        {/* {JSON.stringify([participants])} */}
+        <Button
+          onClick={async () => {
+            const videoTrack = await createLocalVideoTrack();
+            room.localParticipant.publishTrack(videoTrack);
+          }}
+        >
+          button
+        </Button>
       </div>
-      <h3>Enter password</h3>
-      <div className="password">
-        <div className="passwordBox">
-          <input
-            className="passInput"
-            type="password"
-            placeholder="enter password"
-          />
-        </div>
-      </div>
-      <div className="buttonBox">
-        <Button onClick={joinRoom}>Go</Button>
-        <Button onClick={resetClick}>Back</Button>
-      </div>
+
+      <Button
+        onClick={() => {
+          send("RESET");
+        }}
+      >
+        Restart
+      </Button>
     </StyledPage>
   );
 }
