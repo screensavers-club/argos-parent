@@ -22,24 +22,14 @@ import argosParentMachine from "./argos-parent-machine.js";
 import { inspect } from "@xstate/inspect";
 import Button from "./components/button";
 
-inspect({
-  // options
-  // url: 'https://statecharts.io/inspect', // (default)
-  iframe: false, // open in new window
-});
-
-// const Button = styled.div`
-
-// background: red;
-
-// :hover{
-//   cursor: pointer;
-// }
-
-// `
-
 function App() {
   let peer;
+
+  if (process.env.NODE_ENV !== "production") {
+    inspect({
+      iframe: false,
+    });
+  }
 
   let [state, send] = useMachine(argosParentMachine, {
     devTools:
