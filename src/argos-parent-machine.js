@@ -2,20 +2,6 @@ import { createMachine, assign, send } from "xstate";
 import axios from "axios";
 import { result } from "lodash";
 
-function newPromise() {
-  return new Promise(function (resolve, reject) {
-    if (Math.random() > 0.5) {
-      window.setTimeout(() => {
-        resolve("success");
-      }, 1000);
-    } else {
-      window.setTimeout(() => {
-        reject("failure");
-      }, 1000);
-    }
-  });
-}
-
 let argosParentMachine = createMachine(
   {
     id: "ArgosParent",
@@ -23,26 +9,25 @@ let argosParentMachine = createMachine(
     context: { room: {}, children: [], error: {}, rooms_available: [] },
     states: {
       start: {
-        invoke: {
-          id: "fetch_room_name",
-          src: (context, event) => {
-            return axios.get(
-              `${process.env.REACT_APP_PEER_SERVER}:${process.env.REACT_APP_PEER_SERVER_PORT}`
-            );
-          },
-
-          onDone: {
-            target: "connected",
-          },
-          onError: {
-            target: "error",
-            actions: assign({
-              error: (context, event) => {
-                return { message: "cannot connect to server" };
-              },
-            }),
-          },
-        },
+        // invoke: {
+        //   id: "fetch_room_name",
+        //   src: (context, event) => {
+        //     return axios.get(
+        //       `${process.env.REACT_APP_PEER_SERVER}:${process.env.REACT_APP_PEER_SERVER_PORT}`
+        //     );
+        //   },
+        //   onDone: {
+        //     target: "connected",
+        //   },
+        //   onError: {
+        //     target: "error",
+        //     actions: assign({
+        //       error: (context, event) => {
+        //         return { message: "cannot connect to server" };
+        //       },
+        //     }),
+        //   },
+        // },
       },
 
       connected: {
