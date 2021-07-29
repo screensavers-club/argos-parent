@@ -42,17 +42,27 @@ const StyledPage = styled.div`
   }
 `;
 
-export default function RoomStart({ newRoomClick, joinRoomClick }) {
+export default function RoomStartScreen({ send }) {
   return (
     <StyledPage>
       <div className="rooms">
-        <div className="roomButton" onClick={newRoomClick}>
-          New Room
-        </div>
+        <Button
+          variant="big"
+          onClick={() => {
+            send("CREATE_ROOM");
+          }}
+        >
+          Create Room
+        </Button>
 
-        <div className="roomButton" onClick={joinRoomClick}>
+        <Button
+          variant="big"
+          onClick={() => {
+            send("JOIN_ROOM");
+          }}
+        >
           Join Room
-        </div>
+        </Button>
       </div>
     </StyledPage>
   );

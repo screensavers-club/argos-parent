@@ -2,8 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import Peer from "peerjs";
 import AppFrame from "./components/app-frame";
 import StatusBar from "./components/status-bar";
+
 import StartScreen from "./pages/start-screen";
-import RoomStart from "./pages/room_start";
+import RoomStartScreen from "./pages/room-start-screen";
+
+import RoomStart from "./pages/room-start-screen";
 import FetchedRoom from "./pages/fetched_room";
 import Error from "./pages/error";
 import StreamRoom from "./pages/stream_room";
@@ -143,8 +146,9 @@ function Screen({ context, state, send }) {
   switch (state) {
     case "start":
       return <StartScreen />;
+
     case "connected":
-      return <CreateRoomScreen />;
+      return <RoomStartScreen send={send} />;
   }
   return <div></div>;
 }
