@@ -59,6 +59,7 @@ const StyledPage = styled.div`
   }
 
   div.passwordBox {
+    border: 1px solid black;
     padding: 25px;
     margin: 12.5px;
     width: 45%;
@@ -71,16 +72,15 @@ const StyledPage = styled.div`
     width: 10px;
     position: absolute;
     text-align: center;
+    font-size: 1em;
   }
 
   input,
   select {
-    font-size: 2em;
+    font-size: 1em;
     border-style: none;
     width: 100%;
     height: auto;
-    border-radius: 0;
-    border: 1px solid black;
   }
 
   div.buttonBox {
@@ -90,43 +90,15 @@ const StyledPage = styled.div`
   }
 `;
 
-// function passwords({}){
-//   return
-//   <div
-// }
-
-// let [number, setNumber] = useState();
-
-export default function FetchedRoom({
-  roomName,
-  resetClick,
-  passwords,
-  goClick,
-  reRoll,
-}) {
+export default function RoomJoined({ roomName, resetClick }) {
   return (
     <StyledPage>
-      <div className="roomName">
-        <h3>room name</h3>
-        <div className="nameBox">
-          <h3>{roomName}</h3>
-          <Button onClick={reRoll}>Re-Roll</Button>
-        </div>
+      <div className="room">
+        <h3>You have entered</h3>
+        <h3>{roomName}</h3>
       </div>
-      <h3>Set a passcode</h3>
-      <div className="password">
-        <div className="passwordBox">
-          <input
-            className="passInput"
-            type="password"
-            placeholder="set password"
-          />
-        </div>
-      </div>
-      <div className="buttonBox">
-        <Button onClick={goClick}>Go</Button>
-        <Button onClick={resetClick}>Back</Button>
-      </div>
+
+      <Button onClick={resetClick}>Restart</Button>
     </StyledPage>
   );
 }

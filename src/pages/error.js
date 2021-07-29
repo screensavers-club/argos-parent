@@ -29,7 +29,7 @@ export default function Error({ resetClick, error }) {
         <h3>{error}</h3>
       </div>
 
-      <Button onClick={resetClick}>Send Reset</Button>
+      <Button onClick={resetClick}>Back</Button>
     </StyledPage>
   );
 }

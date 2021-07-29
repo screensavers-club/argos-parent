@@ -2,10 +2,13 @@ import styled from "styled-components";
 import Button from "../components/button";
 
 const StyledPage = styled.div`
-  div.roomCreated {
-    text-align: center;
-    font-size: 1.5rem;
+  display: block;
+  margin: auto;
+  padding: auto;
+
+  div.errorMessage {
     margin-top: 10%;
+    text-align: center;
   }
 
   Button {
@@ -13,19 +16,16 @@ const StyledPage = styled.div`
     top: 300px;
     left: 50%;
     transform: translate(-50%, 0);
-    height: 100px;
     width: 200px;
+    height: 100px;
   }
 `;
 
-export default function RoomCreated({ resetClick }) {
+export default function Start({ resetClick }) {
   return (
     <StyledPage>
-      <div className="roomCreated">
-        <h3>Room Created</h3>
-      </div>
-
-      <Button onClick={resetClick}>Send Reset</Button>
+      <div className="requestServer"></div>
+      {/* <Button onClick={resetClick}>Back</Button> */}
     </StyledPage>
   );
 }

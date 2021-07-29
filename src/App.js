@@ -10,7 +10,10 @@ import styled from "styled-components";
 import RoomStart from "./pages/room_start";
 import FetchedRoom from "./pages/fetched_room";
 import Error from "./pages/error";
-import RoomCreated from "./pages/room_created";
+import StreamRoom from "./pages/stream_room";
+import SelectRooms from "./pages/select_room";
+import EnterPassword from "./pages/enter_password";
+import RoomJoined from "./pages/room_joined";
 
 import _ from "lodash";
 
@@ -50,12 +53,14 @@ function App() {
       <AppFrame>
         <StatusBar room={_.get(state, "context.room.name")} />
         <Screen state={state.value} context={state.context} />
-        {state.value === "start" ? (
+        {state.value === "connected" ? (
           <RoomStart
             newRoomClick={() => {
               send("CREATE_ROOM");
             }}
-            joinRoomClick=""
+            joinRoomClick={() => {
+              send("JOIN_ROOM");
+            }}
           />
         ) : (
           <></>
@@ -75,7 +80,9 @@ function App() {
               resetClick={() => {
                 send("RESET");
               }}
-              reRoll={() => {}}
+              reRoll={() => {
+                send("REROLL_ROOM_NAME");
+              }}
               goClick={() => {
                 send("SET_PASSWORD");
               }}
@@ -84,8 +91,8 @@ function App() {
         ) : (
           <></>
         )}
-        {state.value === "room_created" ? (
-          <RoomCreated
+        {state.value === "stream_room" ? (
+          <StreamRoom
             resetClick={() => {
               send("RESET");
             }}
@@ -106,6 +113,44 @@ function App() {
         ) : (
           <></>
         )}
+
+        {state.value === "select_room" ? (
+          <SelectRooms
+            rooms={_.get(state, "context.rooms_available")}
+            resetClick={() => {
+              send("RESET");
+            }}
+            send={send}
+          />
+        ) : (
+          <></>
+        )}
+
+        {state.value === "enter_password" ? (
+          <EnterPassword
+            roomName={_.get(state, "context.room.name")}
+            resetClick={() => {
+              send("RESET");
+            }}
+            joinRoom={() => {
+              send("JOIN_ROOM");
+            }}
+          />
+        ) : (
+          <></>
+        )}
+
+        {state.value === "room_joined" ? (
+          <RoomJoined
+            roomName={_.get(state, "context.room.name")}
+            resetClick={() => {
+              send("RESET");
+            }}
+          />
+        ) : (
+          <></>
+        )}
+
         {/* {state.value === "assigned_room_name" ? (
           <>
             <input
@@ -150,7 +195,7 @@ export default App;
 function Screen({ context, state }) {
   console.log(state);
   switch (state) {
-    case "start":
+    case "connected":
       return <CreateRoomScreen />;
   }
   return <div></div>;
