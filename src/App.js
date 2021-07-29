@@ -5,10 +5,10 @@ import StatusBar from "./components/status-bar";
 
 import StartScreen from "./pages/start-screen";
 import RoomStartScreen from "./pages/room-start-screen";
+import ErrorScreen from "./pages/error-screen";
 
 import RoomStart from "./pages/room-start-screen";
-import FetchedRoom from "./pages/fetched_room";
-import Error from "./pages/error";
+import FetchedRoom from "./pages/create-room-screen";
 import StreamRoom from "./pages/stream_room";
 import SelectRooms from "./pages/select_room";
 import EnterPassword from "./pages/enter_password";
@@ -20,14 +20,10 @@ import { useMachine } from "@xstate/react";
 import argosParentMachine from "./argos-parent-machine.js";
 import { inspect } from "@xstate/inspect";
 
+inspect({ iframe: false });
+
 function App() {
   let peer;
-
-  if (process.env.NODE_ENV !== "production") {
-    inspect({
-      iframe: false,
-    });
-  }
 
   let [state, send] = useMachine(argosParentMachine, {
     devTools:
@@ -149,10 +145,11 @@ function Screen({ context, state, send }) {
 
     case "connected":
       return <RoomStartScreen send={send} />;
-  }
-  return <div></div>;
-}
 
-function CreateRoomScreen() {
-  return <div></div>;
+    case "error":
+      return <ErrorScreen send={send} context={context} />;
+
+    case "create_room":
+      return <FetchedRoom send={send} context={context} />;
+  }
 }

@@ -2,6 +2,8 @@ import styled from "styled-components";
 import Button from "../components/button";
 import React, { useState } from "react";
 
+import axios from "axios";
+
 const StyledPage = styled.div`
   display: block;
   margin: auto;
@@ -90,27 +92,28 @@ const StyledPage = styled.div`
   }
 `;
 
-// function passwords({}){
-//   return
-//   <div
-// }
-
-// let [number, setNumber] = useState();
-
-export default function FetchedRoom({
-  roomName,
-  resetClick,
-  passwords,
-  goClick,
-  reRoll,
-}) {
+export default function FetchedRoom({ context, send }) {
   return (
     <StyledPage>
       <div className="roomName">
         <h3>room name</h3>
         <div className="nameBox">
-          <h3>{roomName}</h3>
-          <Button onClick={reRoll}>Re-Roll</Button>
+          <h3>{context.room.name}</h3>
+          <Button
+            onClick={() => {
+              // send("REROLL_ROOM_NAME");
+              axios
+                .get(`${process.env.REACT_APP_PEER_SERVER}/generate-room-name`)
+                .then((result) => {
+                  if (result.data?.name) {
+                    console.log(result);
+                    send("SET_NEW_ROOM_NAME", { name: result.data.name });
+                  }
+                });
+            }}
+          >
+            Re-Roll
+          </Button>
         </div>
       </div>
       <h3>Set a passcode</h3>
@@ -124,8 +127,14 @@ export default function FetchedRoom({
         </div>
       </div>
       <div className="buttonBox">
-        <Button onClick={goClick}>Go</Button>
-        <Button onClick={resetClick}>Back</Button>
+        <Button onClick={() => {}}>Go</Button>
+        <Button
+          onClick={() => {
+            send("RESET");
+          }}
+        >
+          Back
+        </Button>
       </div>
     </StyledPage>
   );

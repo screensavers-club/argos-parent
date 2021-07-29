@@ -41,48 +41,6 @@ let argosParentMachine = createMachine(
         },
       },
 
-      connected: {
-        on: {
-          CREATE_ROOM: { target: "create_room" },
-          JOIN_ROOM: { target: "select_room" },
-        },
-      },
-
-      create_room: {
-        context: {
-          id: "create_room",
-          room: "create_room",
-        },
-
-        invoke: {
-          id: "fetch_room_name",
-          src: (context, event) => {
-            return axios.get(
-              `http://${process.env.REACT_APP_LIVEKIT_SERVER}/generate-room-name`
-            );
-          },
-
-          onDone: {
-            target: "fetched_room",
-            actions: assign({
-              room: (context, event) => {
-                console.log(event);
-                return { name: event.data.data };
-              },
-            }),
-          },
-          onError: {
-            target: "error",
-            actions: assign({
-              error: (context, event) => {
-                console.log(event.data.message);
-                return { message: event.data.message };
-              },
-            }),
-          },
-        },
-      },
-
       error: {
         context: {
           room: "error",
@@ -92,34 +50,48 @@ let argosParentMachine = createMachine(
         },
       },
 
-      fetched_room: {
-        context: {
-          room: "fetched",
+      connected: {
+        on: {
+          CREATE_ROOM: { target: "create_room" },
+          JOIN_ROOM: { target: "select_room" },
         },
-        actions: assign({
-          room: (context, event) => {
-            return { ...context.room, name: event.data.room };
+      },
+
+      create_room: {
+        invoke: {
+          id: "fetch_room_name",
+          src: (context, event) => {
+            return axios.get(
+              `${process.env.REACT_APP_PEER_SERVER}/generate-room-name`
+            );
           },
-        }),
+
+          onDone: {
+            actions: assign({
+              room: (context, event) => {
+                return { ...context.room, name: event.data.data.name };
+              },
+            }),
+          },
+
+          onError: {
+            target: "error",
+            actions: assign({
+              error: (context, event) => {
+                return { message: event.data.message };
+              },
+            }),
+          },
+        },
         on: {
           SET_PASSWORD: "stream_room",
-          REROLL_ROOM_NAME: {
-            action: () => {
-              console.log("test");
-            },
-            // actions: assign({
-            //   room: (context, event) => {
-            //     console.log({ context, event });
-            //     return axios
-            //       .get(
-            //         `${process.env.REACT_APP_PEER_SERVER}:${process.env.REACT_APP_PEER_SERVER_PORT}`
-            //       )
-            //       .then((result) => {
-            //         console.log({ name: result.data.roomName });
-            //         return { name: result.data.roomName };
-            //       });
-            //   },
-            // }),
+
+          SET_NEW_ROOM_NAME: {
+            actions: assign({
+              room: (context, event) => {
+                return { ...context.room, name: event.name };
+              },
+            }),
           },
         },
       },
