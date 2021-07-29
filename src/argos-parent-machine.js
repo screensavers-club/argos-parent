@@ -6,28 +6,39 @@ let argosParentMachine = createMachine(
   {
     id: "ArgosParent",
     initial: "start",
-    context: { room: {}, children: [], error: {}, rooms_available: [] },
+    context: {
+      identity: null,
+      room: {},
+      children: [],
+      error: {},
+      rooms_available: [],
+    },
     states: {
       start: {
-        // invoke: {
-        //   id: "fetch_room_name",
-        //   src: (context, event) => {
-        //     return axios.get(
-        //       `${process.env.REACT_APP_PEER_SERVER}:${process.env.REACT_APP_PEER_SERVER_PORT}`
-        //     );
-        //   },
-        //   onDone: {
-        //     target: "connected",
-        //   },
-        //   onError: {
-        //     target: "error",
-        //     actions: assign({
-        //       error: (context, event) => {
-        //         return { message: "cannot connect to server" };
-        //       },
-        //     }),
-        //   },
-        // },
+        invoke: {
+          id: "generate_new_identity",
+          src: (context, event) => {
+            return axios.post(
+              `${process.env.REACT_APP_PEER_SERVER}/session/new`
+            );
+          },
+          onDone: {
+            target: "connected",
+            actions: assign({
+              identity: (context, event) => {
+                return event.data.data.identity;
+              },
+            }),
+          },
+          onError: {
+            target: "error",
+            actions: assign({
+              error: (context, event) => {
+                return { message: "cannot connect to server" };
+              },
+            }),
+          },
+        },
       },
 
       connected: {
