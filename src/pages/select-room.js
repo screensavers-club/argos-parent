@@ -50,7 +50,7 @@ export default function SelectRoom({ send, context }) {
       .catch((err) => {
         console.log(err.response);
       });
-  });
+  }, []);
 
   return (
     <StyledPage>
