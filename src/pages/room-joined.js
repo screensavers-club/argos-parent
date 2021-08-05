@@ -1,9 +1,6 @@
 import styled from "styled-components";
 import Button from "../components/button";
-import React, { useEffect, useState } from "react";
-import { mapContext } from "xstate/lib/utils";
-
-import { createLocalVideoTrack } from "livekit-client";
+import React, { useEffect } from "react";
 
 import { useRoom } from "livekit-react";
 
@@ -101,32 +98,14 @@ export default function RoomJoined({ context, send, state }) {
 
   useEffect(() => {
     connect(process.env.REACT_APP_LIVEKIT_SERVER, context.token);
+    return () => {
+      room.disconnect();
+    };
   }, []);
   console.log(participants);
   return (
     <StyledPage>
-      <div className="room">
-        <h3>You have entered</h3>
-        <h3>{context.joining_room}</h3>
-        {isConnecting ? "connecting" : "-"}
-        {/* {JSON.stringify([participants])} */}
-        <Button
-          onClick={async () => {
-            const videoTrack = await createLocalVideoTrack();
-            room.localParticipant.publishTrack(videoTrack);
-          }}
-        >
-          button
-        </Button>
-      </div>
-
-      <Button
-        onClick={() => {
-          send("RESET");
-        }}
-      >
-        Restart
-      </Button>
+      <div className="room"></div>
     </StyledPage>
   );
 }

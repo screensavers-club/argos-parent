@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import styled from "styled-components";
 import Button from "../components/button";
+import { useRoom } from "livekit-react";
 
 const StyledPage = styled.div`
   position: relative;
@@ -78,12 +80,19 @@ const StyledPage = styled.div`
 `;
 
 export default function StreamRoom({
+  state,
   tabs,
   context,
   send,
   parents,
   performers,
 }) {
+  const { room, connect } = useRoom();
+
+  useEffect(() => {
+    connect(`${process.env.REACT_APP_LIVEKIT_SERVER}`, context.token);
+  });
+
   return (
     <StyledPage>
       <div className="button">

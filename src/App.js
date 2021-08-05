@@ -43,7 +43,7 @@ export default App;
 function Screen({ context, state, send }) {
   switch (state) {
     case "start":
-      return <StartScreen />;
+      return <StartScreen send={send} />;
 
     case "server_connected":
       return <RoomStartScreen send={send} />;

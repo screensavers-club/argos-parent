@@ -1,6 +1,5 @@
 import { createMachine, assign, send } from "xstate";
 import axios from "axios";
-import { result } from "lodash";
 
 let argosParentMachine = createMachine(
   {
@@ -17,26 +16,12 @@ let argosParentMachine = createMachine(
     },
     states: {
       start: {
-        invoke: {
-          id: "generate_new_identity",
-          src: (context, event) => {
-            return axios.post(
-              `${process.env.REACT_APP_PEER_SERVER}/session/new`
-            );
-          },
-          onDone: {
+        on: {
+          SET_IDENTITY: {
             target: "server_connected",
             actions: assign({
               identity: (context, event) => {
-                return event.data.data.identity;
-              },
-            }),
-          },
-          onError: {
-            target: "error",
-            actions: assign({
-              error: (context, event) => {
-                return { message: "cannot connect to server" };
+                return event.identity;
               },
             }),
           },
@@ -91,7 +76,6 @@ let argosParentMachine = createMachine(
             target: "stream_room",
             actions: assign({
               token: (context, event) => {
-                console.log(event);
                 return event.token;
               },
             }),
