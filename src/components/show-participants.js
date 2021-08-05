@@ -27,7 +27,7 @@ const ParticipantsDiv = styled.div`
 
     > div.userVideo {
       position: relative;
-      //min-width: 33%;
+      min-width: 33%;
       width: auto;
       max-width: 100%;
       margin: auto;
