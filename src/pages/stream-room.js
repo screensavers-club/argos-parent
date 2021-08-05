@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import styled from "styled-components";
 import Button from "../components/button";
 import { useRoom } from "livekit-react";
+import { ShowParticipants } from "../components/show-participants";
 
 const StyledPage = styled.div`
   position: relative;
@@ -42,12 +43,11 @@ const StyledPage = styled.div`
     border: 1px solid black;
     padding: 25px;
 
-    caption{
+    caption {
       border: 1px solid black;
-        border-bottom: 2px solid black;
-        font-size: 18px;
-        font-weight: normal;
-      }
+      border-bottom: 2px solid black;
+      font-size: 18px;
+      font-weight: normal;
     }
 
     tr.id {
@@ -55,18 +55,35 @@ const StyledPage = styled.div`
     }
 
     thead {
-      > div{
-      border-top: 2px solid black;
-      padding-top: 10px;
-      margin-bottom: 10px;
+      > div {
+        border-top: 2px solid black;
+        padding-top: 10px;
+        margin-bottom: 10px;
       }
     }
     tbody {
-      > div{
+      > div {
         padding-top: 10px;
-      margin-bottom: 10px;
-      border-top: 2px solid black;
+        margin-bottom: 10px;
+        border-top: 2px solid black;
       }
+    }
+  }
+
+  div.stream {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    border: 1px solid black;
+    padding: 10px;
+    margin: 25px;
+
+    div.userVideos {
+      position: relative;
+
+      border: 1px solid red;
+      min-width: 50%;
+      display: flex;
     }
   }
 
@@ -160,6 +177,23 @@ export default function StreamRoom({
             </div>
           </tbody>
         </table>
+
+        <div className="userVideos">
+          <ShowParticipants
+            participants={[
+              { username: "john", track: "aaa" },
+              { username: "john", track: "aaa" },
+              { username: "john", track: "aaa" },
+              { username: "john", track: "aaa" },
+              { username: "john", track: "aaa" },
+              { username: "john", track: "aaa" },
+              { username: "john", track: "aaa" },
+              { username: "john", track: "aaa" },
+              { username: "john", track: "aaa" },
+              { username: "john", track: "aaa" },
+            ]}
+          />
+        </div>
       </div>
     </StyledPage>
   );

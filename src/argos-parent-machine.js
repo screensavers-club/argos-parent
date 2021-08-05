@@ -119,7 +119,7 @@ let argosParentMachine = createMachine(
       enter_password: {
         on: {
           CHECK_INPUT: {
-            target: "room_joined",
+            target: "stream_room",
             actions: assign({
               token: (context, event) => {
                 return event.token;
