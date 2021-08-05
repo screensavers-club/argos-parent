@@ -2,25 +2,100 @@ import styled from "styled-components";
 import Button from "../components/button";
 
 const StyledPage = styled.div`
+  position: relative;
+  display: block;
+
   div.roomCreated {
     text-align: center;
     font-size: 1.5rem;
     margin-top: 10%;
   }
 
-  Button {
+  div.streamTabs {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    margin-top: 25px;
+    padding: auto;
+
+    > div {
+      border: 1px solid black;
+      padding: 10px 50px;
+
+      &:nth-child(n + 2) {
+        margin-left: -1px;
+      }
+
+      &:hover {
+        z-index: 1;
+        border-bottom: 5px solid black;
+        margin-bottom: -5px;
+        background: #ddd;
+        cursor: pointer;
+      }
+    }
+  }
+
+  table.participants {
+    border: 1px solid black;
+    padding: 25px;
+
+    caption{
+      border: 1px solid black;
+        border-bottom: 2px solid black;
+        font-size: 18px;
+        font-weight: normal;
+      }
+    }
+
+    tr.id {
+      min-width: 200px;
+    }
+
+    thead {
+      > div{
+      border-top: 2px solid black;
+      padding-top: 10px;
+      margin-bottom: 10px;
+      }
+    }
+    tbody {
+      > div{
+        padding-top: 10px;
+      margin-bottom: 10px;
+      border-top: 2px solid black;
+      }
+    }
+  }
+
+  div.button {
     position: absolute;
-    top: 300px;
-    left: 50%;
-    transform: translate(-50%, 0);
-    height: 100px;
-    width: 200px;
+    left: 25px;
+    top: 0;
+    margin: auto;
+    padding: auto;
   }
 `;
 
-export default function StreamRoom({ tabs, context, send }) {
+export default function StreamRoom({
+  tabs,
+  context,
+  send,
+  parents,
+  performers,
+}) {
   return (
     <StyledPage>
+      <div className="button">
+        <Button
+          onClick={() => {
+            send("RESET");
+          }}
+          variant="small"
+        >
+          End Call
+        </Button>
+      </div>
       <div className="streamTabs">
         {(tabs = [
           { tab: "stream" },
@@ -33,13 +108,50 @@ export default function StreamRoom({ tabs, context, send }) {
         })}
       </div>
 
-      <Button
-        onClick={() => {
-          send("RESET");
-        }}
-      >
-        Back
-      </Button>
+      <div className="stream">
+        <table className="participants">
+          <caption>Peers</caption>
+
+          <thead>
+            <div>
+              {parents.map(({ id, status }) => {
+                return (
+                  <tr className="id">
+                    {status === "host" ? (
+                      <th>
+                        <div
+                          style={{
+                            background: "lime",
+                            width: "1em",
+                            height: "1em",
+                            borderRadius: "50%",
+                            marginRight: "10px",
+                          }}
+                        ></div>
+                      </th>
+                    ) : (
+                      <th></th>
+                    )}
+                    <td>{id}</td>
+                  </tr>
+                );
+              })}
+            </div>
+          </thead>
+          <tbody>
+            <div>
+              {performers.map(({ id }) => {
+                return (
+                  <tr className="id">
+                    <th></th>
+                    <td>{id}</td>
+                  </tr>
+                );
+              })}
+            </div>
+          </tbody>
+        </table>
+      </div>
     </StyledPage>
   );
 }
