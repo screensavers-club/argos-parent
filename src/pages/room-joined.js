@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import Button from "../components/button";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { useRoom } from "livekit-react";
+import { RoomEvent } from "livekit-client";
 
 const StyledPage = styled.div`
   display: block;
@@ -96,16 +97,46 @@ export default function RoomJoined({ context, send, state }) {
   const { connect, isConnecting, room, error, participants, audioTracks } =
     useRoom();
 
+  const audioContextRef = useRef();
+
+  useEffect(() => {
+    audioContextRef.current = new window.AudioContext();
+  }, []);
+
   useEffect(() => {
     connect(process.env.REACT_APP_LIVEKIT_SERVER, context.token);
     return () => {
       room.disconnect();
     };
   }, []);
-  console.log(participants);
+
+  useEffect(() => {
+    // console.log(audioContextRef.current);
+    // console.log(audioTracks.mediaStreamTrack);
+
+    audioTracks.forEach((track) => {
+      console.log(track);
+      var audioCtx = audioContextRef.current;
+      var source = audioCtx.createMediaStreamTrackSource(
+        track.mediaStreamTrack
+      );
+
+      var bqf = audioCtx.createBiquadFilter();
+      bqf.type = "lowshelf";
+      bqf.frequency.setValueAtTime(1000, audioCtx.currentTime);
+      bqf.gain.setValueAtTime(25, audioCtx.currentTime);
+
+      source.connect(bqf).connect(audioCtx.destination);
+    });
+  }, [audioTracks]);
+
   return (
     <StyledPage>
-      <div className="room"></div>
+      <div className="room">
+        {audioTracks.map((audioTrack) => {
+          return <div>Audio {audioTrack.sid}</div>;
+        })}
+      </div>
     </StyledPage>
   );
 }
