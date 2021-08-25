@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import Button from "../components/button";
 import { useRoom } from "livekit-react";
@@ -105,6 +105,7 @@ export default function StreamRoom({
   performers,
 }) {
   const { room, connect } = useRoom();
+  const [selectTab, setSelectTab] = useState("stream");
 
   useEffect(() => {
     connect(`${process.env.REACT_APP_LIVEKIT_SERVER}`, context.token);
@@ -127,74 +128,126 @@ export default function StreamRoom({
           { tab: "stream" },
           { tab: "monitor" },
           { tab: "out" },
-          { tab: "Tab 4" },
+          { tab: "mixer" },
         ]).map(function ({ tab }, i) {
           let key = `key_${i}`;
-          return <div key={key}>{tab}</div>;
+          return (
+            <div
+              key={key}
+              // onClick={() => {
+              //   setSelectTab(tab);
+              //   console.log(tab);
+              // }}
+            >
+              {tab}
+            </div>
+          );
         })}
       </div>
 
-      <div className="stream">
-        <table className="participants">
-          <caption>Peers</caption>
+      {(function () {
+        console.log(selectTab);
+        switch (selectTab) {
+          case "stream":
+            return (
+              <div className="stream">
+                <table className="participants">
+                  <caption>Peers</caption>
 
-          <thead>
-            <div>
-              {parents.map(({ id, status }) => {
-                return (
-                  <tr className="id">
-                    {status === "host" ? (
-                      <th>
-                        <div
-                          style={{
-                            background: "lime",
-                            width: "1em",
-                            height: "1em",
-                            borderRadius: "50%",
-                            marginRight: "10px",
-                          }}
-                        ></div>
-                      </th>
-                    ) : (
-                      <th></th>
-                    )}
-                    <td>{id}</td>
-                  </tr>
-                );
-              })}
-            </div>
-          </thead>
-          <tbody>
-            <div>
-              {performers.map(({ id }) => {
-                return (
-                  <tr className="id">
-                    <th></th>
-                    <td>{id}</td>
-                  </tr>
-                );
-              })}
-            </div>
-          </tbody>
-        </table>
+                  <thead>
+                    <div>
+                      {parents.map(({ id, status }) => {
+                        return (
+                          <tr className="id">
+                            {status === "host" ? (
+                              <th>
+                                <div
+                                  style={{
+                                    background: "lime",
+                                    width: "1em",
+                                    height: "1em",
+                                    borderRadius: "50%",
+                                    marginRight: "10px",
+                                  }}
+                                ></div>
+                              </th>
+                            ) : (
+                              <th></th>
+                            )}
+                            <td>{id}</td>
+                          </tr>
+                        );
+                      })}
+                    </div>
+                  </thead>
+                  <tbody>
+                    <div>
+                      {performers.map(({ id }) => {
+                        return (
+                          <tr className="id">
+                            <th></th>
+                            <td>{id}</td>
+                          </tr>
+                        );
+                      })}
+                    </div>
+                  </tbody>
+                </table>
 
-        <div className="userVideos">
-          <ShowParticipants
-            participants={[
-              { username: "john", track: "aaa" },
-              { username: "john", track: "aaa" },
-              { username: "john", track: "aaa" },
-              { username: "john", track: "aaa" },
-              { username: "john", track: "aaa" },
-              { username: "john", track: "aaa" },
-              { username: "john", track: "aaa" },
-              { username: "john", track: "aaa" },
-              { username: "john", track: "aaa" },
-              { username: "john", track: "aaa" },
-            ]}
-          />
-        </div>
-      </div>
+                <div className="userVideos">
+                  <ShowParticipants
+                    participants={[
+                      { username: "john", track: "aaa" },
+                      { username: "john", track: "aaa" },
+                      { username: "john", track: "aaa" },
+                      { username: "john", track: "aaa" },
+                      { username: "john", track: "aaa" },
+                      { username: "john", track: "aaa" },
+                      { username: "john", track: "aaa" },
+                      { username: "john", track: "aaa" },
+                      { username: "john", track: "aaa" },
+                      { username: "john", track: "aaa" },
+                    ]}
+                  />
+                </div>
+              </div>
+            );
+
+          case "mixer":
+            return <div>this is mixer</div>;
+        }
+      })()}
+
+      <AudioControls />
     </StyledPage>
+  );
+}
+
+function AudioControls() {
+  let [solo, setSolo] = useState(false);
+  let [mute, setMute] = useState(false);
+  let [volume, setVolume] = useState(0);
+
+  const Controls = styled.div``;
+  console.log(solo);
+  return (
+    <Controls>
+      <div
+        className="solo"
+        style={{ border: "1px solid black" }}
+        onClick={() => {
+          if (solo === false) {
+            setSolo(true);
+          } else if (solo === true) {
+            setSolo(false);
+          }
+        }}
+      >
+        S
+      </div>
+      <div className="mute">M</div>
+
+      {solo === true ? <div>solo is true</div> : <></>}
+    </Controls>
   );
 }
