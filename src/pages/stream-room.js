@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Button from "../components/button";
 import { useRoom } from "livekit-react";
 import { ShowParticipants } from "../components/show-participants";
+import AudioControls from "../components/audio-controls";
 
 const StyledPage = styled.div`
   position: relative;
@@ -134,10 +135,10 @@ export default function StreamRoom({
           return (
             <div
               key={key}
-              // onClick={() => {
-              //   setSelectTab(tab);
-              //   console.log(tab);
-              // }}
+              onClick={() => {
+                setSelectTab(tab);
+                console.log(tab);
+              }}
             >
               {tab}
             </div>
@@ -217,37 +218,7 @@ export default function StreamRoom({
             return <div>this is mixer</div>;
         }
       })()}
-
-      <AudioControls />
+      <AudioControls selectTab={selectTab} setSelectTab={setSelectTab} />
     </StyledPage>
-  );
-}
-
-function AudioControls() {
-  let [solo, setSolo] = useState(false);
-  let [mute, setMute] = useState(false);
-  let [volume, setVolume] = useState(0);
-
-  const Controls = styled.div``;
-  console.log(solo);
-  return (
-    <Controls>
-      <div
-        className="solo"
-        style={{ border: "1px solid black" }}
-        onClick={() => {
-          if (solo === false) {
-            setSolo(true);
-          } else if (solo === true) {
-            setSolo(false);
-          }
-        }}
-      >
-        S
-      </div>
-      <div className="mute">M</div>
-
-      {solo === true ? <div>solo is true</div> : <></>}
-    </Controls>
   );
 }

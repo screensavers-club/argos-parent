@@ -16,12 +16,45 @@ const StyledButton = styled.button`
   color: #000;
   cursor: pointer;
   font-size: 1.5rem;
-  min-width: ${(p) => (p.variant === "big" ? "10em" : "5em")};
-  min-height: ${(p) => (p.variant === "big" ? "3em" : "auto")};
-  height: ${(p) => (p.variant === "medium" ? "100px" : "auto")};
-  width: ${(p) => (p.variant === "medium" ? "200px" : "auto")};
-  height: ${(p) => (p.variant === "small" ? "auto" : "auto")};
-  width: ${(p) => (p.variant === "small" ? "auto" : "auto")};
+
+  min-width: ${(p) => {
+    if (p.variant === "big") {
+      return "10em";
+    }
+    if (p.variant === "medium") {
+      return "200px";
+    }
+    if (p.variant === "small") {
+      return "auto";
+    }
+    if (p.variant === "tiny") {
+      return "1em";
+    }
+
+    if (p.variant === "custom") {
+      return;
+    }
+  }};
+
+  min-height: ${(p) => {
+    if (p.variant === "big") {
+      return "3em";
+    }
+    if (p.variant === "medium") {
+      return "100px";
+    }
+    if (p.variant === "small") {
+      return "auto";
+    }
+    if (p.variant === "tiny") {
+      return "1em";
+    }
+
+    if (p.variant === "custom") {
+      return;
+    }
+  }};
+
   border-radius: 4px;
   box-shadow: 0 3px black;
   font-family: "Work Sans";
