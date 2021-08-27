@@ -3,7 +3,8 @@ import styled from "styled-components";
 import Button from "../components/button";
 import { useRoom } from "livekit-react";
 import { ShowParticipants } from "../components/show-participants";
-import AudioControls from "../components/audio-controls";
+// import AudioControls from "../components/audio-controls";
+// import VideoControls from "../components/video-controls";
 
 const StyledPage = styled.div`
   position: relative;
@@ -95,6 +96,10 @@ const StyledPage = styled.div`
     margin: auto;
     padding: auto;
   }
+
+  div.controlPanel {
+    display: block;
+  }
 `;
 
 export default function StreamRoom({
@@ -109,7 +114,7 @@ export default function StreamRoom({
   const [selectTab, setSelectTab] = useState("stream");
 
   useEffect(() => {
-    connect(`${process.env.REACT_APP_LIVEKIT_SERVER}`, context.token);
+    connect(`${process.env.REACT_AP_LIVEKIT_SERVER}`, context.token);
   });
 
   return (
@@ -137,7 +142,7 @@ export default function StreamRoom({
               key={key}
               onClick={() => {
                 setSelectTab(tab);
-                console.log(tab);
+                // console.log(tab);
               }}
             >
               {tab}
@@ -147,7 +152,7 @@ export default function StreamRoom({
       </div>
 
       {(function () {
-        console.log(selectTab);
+        // console.log(selectTab);
         switch (selectTab) {
           case "stream":
             return (
@@ -211,6 +216,13 @@ export default function StreamRoom({
                     ]}
                   />
                 </div>
+                <div className="controlPanel">
+                  {/* <AudioControls
+                    selectTab={selectTab}
+                    setSelectTab={setSelectTab}
+                  /> */}
+                  {/* <VideoControls /> */}
+                </div>
               </div>
             );
 
@@ -218,7 +230,6 @@ export default function StreamRoom({
             return <div>this is mixer</div>;
         }
       })()}
-      <AudioControls selectTab={selectTab} setSelectTab={setSelectTab} />
     </StyledPage>
   );
 }
