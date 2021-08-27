@@ -21,7 +21,6 @@ const ControlPanel = styled.div`
   position: relative;
   display: flex;
   width: 250px;
-  height: 250px;
   border: 1px solid black;
   padding: 10px;
   justify-content: center;
@@ -34,24 +33,38 @@ const ControlPanel = styled.div`
     top: 10px;
   }
 
-  div.ids {
-    position: absolute;
-    height: 100px;
-    width: 20px;
-    right: 0;
-    top: 0;
-    transform: translate(100%, 0);
+  div.buttons {
+    display: block;
+    margin: auto;
+    padding: auto;
+    width: 100%;
+    height: 120px;
+  }
 
-    > div {
-      position: relative;
-      border: 1px solid black;
-      height: 20px;
-      width: 20px;
-
-      :hover {
-        cursor: pointer;
-      }
+  div.solo-mute {
+    display: flex;
+    justify-content: center;
+    > button {
+      width: 100%;
+      margin: 10px;
+      height: 50px;
+      background-color: ${(p) => (p.solo === true ? "red" : "white")};
     }
+  }
+
+  div.mixer {
+    display: flex;
+    justify-content: center;
+    > button {
+      width: 100%;
+      height: 50px;
+      margin: 10px;
+    }
+  }
+
+  div.volumeSlider {
+    height: 200px;
+    margin: 40px;
   }
 `;
 
@@ -104,117 +117,103 @@ class ControlledRangeDisableAcross extends React.Component {
 
 const input = [
   {
-    name: "performer 1",
-    id: "p1",
+    performer: "performer 1",
     vol: 0.5,
     solo: false,
     mute: false,
     toggleMixer: false,
-    visible: true,
   },
   {
-    name: "performer 2",
-    id: "p2",
+    performer: "performer 2",
     vol: 0.5,
     solo: false,
     mute: false,
     toggleMixer: false,
-    visible: false,
   },
   {
-    name: "performer 3",
-    id: "p3",
+    performer: "performer 3",
     vol: 0.5,
     solo: false,
     mute: false,
     toggleMixer: false,
-    visible: false,
   },
   {
-    name: "performer 4",
-    id: "p4",
+    performer: "performer 4",
     vol: 0.5,
     solo: false,
     mute: false,
     toggleMixer: false,
-    visible: false,
   },
   {
-    name: "performer 5",
-    id: "p5",
+    performer: "performer 5",
     vol: 0.5,
     solo: false,
     mute: false,
     toggleMixer: false,
-    visible: false,
   },
 ];
 
 export default function AudioControls({ selectTab, setSelectTab }) {
-  let [control, setControl] = useState(input);
-  let [activeControl, setActiveControl] = useState(0);
-
-  // console.log(control);
+  let [solo, setSolo] = useState(false);
+  let [mute, setMute] = useState(false);
+  let [volumeInput, setVolumeInput] = useState(0);
 
   return (
-    <ControlPanel>
+    <ControlPanel solo={solo} mute={mute}>
       <label>audio controls</label>
-      <div>
-        <div>
-          <div>
-            <label>{control[activeControl].name}</label>
-
-            <Slider
-              value={control[activeControl].vol}
-              onChange={(value) => {
-                let _control = control.slice(0);
-                _control[activeControl].vol = value;
-                setControl(_control);
-              }}
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="ids">
-        {control.map((data, i) => {
-          return (
-            <TogglePerformers
-              id={data.id}
-              value={control.visible}
-              onChange={(value) => {
-                setActiveControl(i);
-              }}
-            />
-          );
-        })}
-      </div>
-    </ControlPanel>
-  );
-}
-
-function TogglePerformers({ value, id, onChange }) {
-  return (
-    <div>
-      <button
-        onClick={() => {
-          onChange(!value);
-        }}
-      >
-        {id}
-      </button>
-    </div>
-  );
-}
-
-/* <label>audio controls</label>
       <div className="volumeSlider">
-        <ControlledRangeDisableAcross vertical />
+        <ControlledRangeDisableAcross
+          vertical
+          volumeInput={volumeInput}
+          setVolumeInput={setVolumeInput}
+        />
       </div>
       <div className="buttons">
         <div className="solo-mute">
-          <Button variant="tiny">S</Button>
-          <Button variant="tiny">M</Button>
+          <Button
+            variant="tiny"
+            onClick={() => {
+              if (solo === false) {
+                setSolo(true);
+              } else if (solo === true) {
+                setSolo(false);
+              }
+            }}
+          >
+            S
+          </Button>
+          <Button
+            variant="tiny"
+            onClick={() => {
+              if (mute === false) {
+                setMute(true);
+              } else if (mute === true) {
+                setMute(false);
+              }
+            }}
+          >
+            M
+          </Button>
+
+          <div
+            className="results"
+            style={{ position: "absolute", left: "50%", bottom: "10%" }}
+          >
+            {solo === true ? (
+              <div style={{ position: "relative" }}>
+                solo is true;; bg yellow
+              </div>
+            ) : (
+              <></>
+            )}
+            {mute === true ? (
+              <div style={{ position: "relative" }}>
+                mute is true ;; bg blue
+              </div>
+            ) : (
+              <></>
+            )}
+          </div>
         </div>
 
         <div className="mixer">
@@ -228,4 +227,7 @@ function TogglePerformers({ value, id, onChange }) {
             icon={<Controls />}
           ></Button>
         </div>
-      </div> */
+      </div>
+    </ControlPanel>
+  );
+}

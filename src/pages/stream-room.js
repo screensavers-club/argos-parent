@@ -3,8 +3,8 @@ import styled from "styled-components";
 import Button from "../components/button";
 import { useRoom } from "livekit-react";
 import { ShowParticipants } from "../components/show-participants";
-// import AudioControls from "../components/audio-controls";
-// import VideoControls from "../components/video-controls";
+import AudioControls from "../components/audio-controls";
+import VideoControls from "../components/video-controls";
 
 const StyledPage = styled.div`
   position: relative;
@@ -99,6 +99,8 @@ const StyledPage = styled.div`
 
   div.controlPanel {
     display: block;
+    margin: auto;
+    padding: auto;
   }
 `;
 
@@ -112,10 +114,10 @@ export default function StreamRoom({
 }) {
   const { room, connect } = useRoom();
   const [selectTab, setSelectTab] = useState("stream");
-
+  console.log(room);
   useEffect(() => {
     connect(`${process.env.REACT_AP_LIVEKIT_SERVER}`, context.token);
-  });
+  }, []);
 
   return (
     <StyledPage>
@@ -217,11 +219,11 @@ export default function StreamRoom({
                   />
                 </div>
                 <div className="controlPanel">
-                  {/* <AudioControls
+                  <VideoControls />
+                  <AudioControls
                     selectTab={selectTab}
                     setSelectTab={setSelectTab}
-                  /> */}
-                  {/* <VideoControls /> */}
+                  />
                 </div>
               </div>
             );
