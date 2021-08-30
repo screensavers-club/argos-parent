@@ -108,7 +108,6 @@ export default function StreamPage({
           setControl={setControl}
           soloValue={control[activeControl].solo}
           muteValue={control[activeControl].mute}
-          soloLockValue={control[activeControl].soloLock}
         />
       </div>
     </div>

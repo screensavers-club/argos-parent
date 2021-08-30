@@ -92,7 +92,7 @@ export default function MixerPage({ control, setControl }) {
                 onClick={() => {
                   let _control = control.slice(0);
                   _control.map((a, i) => {
-                    a.solo = [false, "blocked"];
+                    a.solo = false;
                   });
                   _control[i].solo = !_control[i].solo;
 

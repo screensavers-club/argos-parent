@@ -88,7 +88,6 @@ export default function StreamRoom({ context, send, parents }) {
       track: "aaa",
       vol: [0, 0.5, 1],
       solo: false,
-      soloLock: false,
       mute: false,
     },
     {
@@ -97,7 +96,6 @@ export default function StreamRoom({ context, send, parents }) {
       track: "aaa",
       vol: [0, 0.5, 1],
       solo: false,
-      soloLock: false,
       mute: false,
     },
     {
@@ -106,7 +104,6 @@ export default function StreamRoom({ context, send, parents }) {
       track: "aaa",
       vol: [0, 0.5, 1],
       solo: false,
-      soloLock: false,
       mute: false,
     },
     {
@@ -115,7 +112,6 @@ export default function StreamRoom({ context, send, parents }) {
       track: "aaa",
       vol: [0, 0.5, 1],
       solo: false,
-      soloLock: false,
       mute: false,
     },
     {
@@ -124,7 +120,6 @@ export default function StreamRoom({ context, send, parents }) {
       track: "aaa",
       vol: [0, 0.5, 1],
       solo: false,
-      soloLock: false,
       mute: false,
     },
   ];
