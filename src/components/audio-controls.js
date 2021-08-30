@@ -129,7 +129,6 @@ export default function AudioControls({
                 })
                 .forEach((a, i) => {
                   a.solo === true ? (a.solo = true) : (a.solo = "locked");
-                  console.log(soloValue);
                 });
               if (soloValue === "locked") {
                 return;
