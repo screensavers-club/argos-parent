@@ -35,7 +35,8 @@ const Mixer = styled.div`
   button.soloOn {
     background: #faff00;
   }
-  button.soloOff {
+
+  button.locked {
     background: #aaaaaa;
   }
 
@@ -87,14 +88,26 @@ export default function MixerPage({ control, setControl }) {
             />
             <div className="solo-mute">
               <Button
-                className={`solo ${control[i].solo === true ? "soloOn" : ""}`}
+                className={`solo ${
+                  control[i].solo === true
+                    ? "soloOn"
+                    : `${control[i].solo === "locked" ? "locked" : ""}`
+                }`}
                 variant="tiny"
                 onClick={() => {
                   let _control = control.slice(0);
-                  _control.map((a, i) => {
-                    a.solo = false;
-                  });
-                  _control[i].solo = !_control[i].solo;
+
+                  if (_control[i].solo === false) {
+                    _control.map((a) => {
+                      return (a.solo = "locked");
+                    });
+                    _control[i].solo = true;
+                  } else if (control[i].solo === true) {
+                    _control.map((a) => {
+                      return (a.solo = false);
+                    });
+                    _control[i].solo = false;
+                  }
 
                   setControl(_control);
                 }}
