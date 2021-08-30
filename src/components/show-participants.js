@@ -65,16 +65,13 @@ export function ShowParticipants({ participants }) {
   return (
     <ParticipantsDiv number={number} setNumber={setNumber}>
       <div className="streamWrapper">
-        {participants.map(function ({ username, track }, i, arr) {
+        {participants.map(function ({ name, track }, i, arr) {
           arr.length = number;
 
           return (
             <div className="userVideo">
               <Participant ratio={480 / 800}>
                 <img src="/images/user.png" />
-                {/* <span>
-                {username} {track} {number}
-              </span> */}
               </Participant>
             </div>
           );
@@ -85,7 +82,6 @@ export function ShowParticipants({ participants }) {
       <div style={{ position: "absolute", bottom: "0", left: "50%" }}>
         <button
           onClick={() => {
-            console.log(number);
             if (number >= 1 && number <= 10) {
               return setNumber(number + 1);
             }
@@ -101,7 +97,6 @@ export function ShowParticipants({ participants }) {
         </button>
         <button
           onClick={() => {
-            console.log(number);
             if (number >= 1 && number <= 10) {
               return setNumber(number - 1);
             }

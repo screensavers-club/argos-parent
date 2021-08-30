@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import Button from "../components/button";
 import { useRoom } from "livekit-react";
-import { ShowParticipants } from "../components/show-participants";
-import AudioControls from "../components/audio-controls";
-import VideoControls from "../components/video-controls";
+import StreamTabs from "../components/stream-tabs";
+import StreamPage from "../components/stream-page";
+import MixerPage from "../components/mixer-page";
+import TogglePerformers from "../components/toggle-performers";
 
 const StyledPage = styled.div`
   position: relative;
@@ -14,31 +15,6 @@ const StyledPage = styled.div`
     text-align: center;
     font-size: 1.5rem;
     margin-top: 10%;
-  }
-
-  div.streamTabs {
-    display: flex;
-    justify-content: center;
-    margin: auto;
-    margin-top: 25px;
-    padding: auto;
-
-    > div {
-      border: 1px solid black;
-      padding: 10px 50px;
-
-      &:nth-child(n + 2) {
-        margin-left: -1px;
-      }
-
-      &:hover {
-        z-index: 1;
-        border-bottom: 5px solid black;
-        margin-bottom: -5px;
-        background: #ddd;
-        cursor: pointer;
-      }
-    }
   }
 
   table.participants {
@@ -104,17 +80,61 @@ const StyledPage = styled.div`
   }
 `;
 
-export default function StreamRoom({
-  state,
-  tabs,
-  context,
-  send,
-  parents,
-  performers,
-}) {
+export default function StreamRoom({ context, send, parents }) {
+  const input = [
+    {
+      name: "performer 1",
+      id: "p1",
+      track: "aaa",
+      vol: [0, 0.5, 1],
+      solo: false,
+      soloLock: false,
+      mute: false,
+    },
+    {
+      name: "performer 2",
+      id: "p2",
+      track: "aaa",
+      vol: [0, 0.5, 1],
+      solo: false,
+      soloLock: false,
+      mute: false,
+    },
+    {
+      name: "performer 3",
+      id: "p3",
+      track: "aaa",
+      vol: [0, 0.5, 1],
+      solo: false,
+      soloLock: false,
+      mute: false,
+    },
+    {
+      name: "performer 4",
+      id: "p4",
+      track: "aaa",
+      vol: [0, 0.5, 1],
+      solo: false,
+      soloLock: false,
+      mute: false,
+    },
+    {
+      name: "performer 5",
+      id: "p5",
+      track: "aaa",
+      vol: [0, 0.5, 1],
+      solo: false,
+      soloLock: false,
+      mute: false,
+    },
+  ];
+
   const { room, connect } = useRoom();
   const [selectTab, setSelectTab] = useState("stream");
-  console.log(room);
+
+  const [control, setControl] = useState(input);
+  let [activeControl, setActiveControl] = useState(0);
+
   useEffect(() => {
     connect(`${process.env.REACT_AP_LIVEKIT_SERVER}`, context.token);
   }, []);
@@ -131,107 +151,33 @@ export default function StreamRoom({
           End Call
         </Button>
       </div>
-      <div className="streamTabs">
-        {(tabs = [
-          { tab: "stream" },
-          { tab: "monitor" },
-          { tab: "out" },
-          { tab: "mixer" },
-        ]).map(function ({ tab }, i) {
-          let key = `key_${i}`;
-          return (
-            <div
-              key={key}
-              onClick={() => {
-                setSelectTab(tab);
-                // console.log(tab);
-              }}
-            >
-              {tab}
-            </div>
-          );
-        })}
-      </div>
+
+      <StreamTabs setSelectTab={setSelectTab} />
 
       {(function () {
-        // console.log(selectTab);
         switch (selectTab) {
           case "stream":
             return (
-              <div className="stream">
-                <table className="participants">
-                  <caption>Peers</caption>
-
-                  <thead>
-                    <div>
-                      {parents.map(({ id, status }) => {
-                        return (
-                          <tr className="id">
-                            {status === "host" ? (
-                              <th>
-                                <div
-                                  style={{
-                                    background: "lime",
-                                    width: "1em",
-                                    height: "1em",
-                                    borderRadius: "50%",
-                                    marginRight: "10px",
-                                  }}
-                                ></div>
-                              </th>
-                            ) : (
-                              <th></th>
-                            )}
-                            <td>{id}</td>
-                          </tr>
-                        );
-                      })}
-                    </div>
-                  </thead>
-                  <tbody>
-                    <div>
-                      {performers.map(({ id }) => {
-                        return (
-                          <tr className="id">
-                            <th></th>
-                            <td>{id}</td>
-                          </tr>
-                        );
-                      })}
-                    </div>
-                  </tbody>
-                </table>
-
-                <div className="userVideos">
-                  <ShowParticipants
-                    participants={[
-                      { username: "john", track: "aaa" },
-                      { username: "john", track: "aaa" },
-                      { username: "john", track: "aaa" },
-                      { username: "john", track: "aaa" },
-                      { username: "john", track: "aaa" },
-                      { username: "john", track: "aaa" },
-                      { username: "john", track: "aaa" },
-                      { username: "john", track: "aaa" },
-                      { username: "john", track: "aaa" },
-                      { username: "john", track: "aaa" },
-                    ]}
-                  />
-                </div>
-                <div className="controlPanel">
-                  <VideoControls />
-                  <AudioControls
-                    selectTab={selectTab}
-                    setSelectTab={setSelectTab}
-                  />
-                </div>
-              </div>
+              <StreamPage
+                parents={parents}
+                performers={input}
+                setSelectTab={setSelectTab}
+                activeControl={activeControl}
+                setActiveControl={setActiveControl}
+                control={control}
+                setControl={setControl}
+              />
             );
 
           case "mixer":
-            return <div>this is mixer</div>;
+            return <MixerPage control={control} setControl={setControl} />;
         }
       })()}
+      <TogglePerformers
+        control={control}
+        activeControl={activeControl}
+        setActiveControl={setActiveControl}
+      />
     </StyledPage>
   );
 }
