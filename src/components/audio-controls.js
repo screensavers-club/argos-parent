@@ -19,7 +19,7 @@ const parentStyle = { overflow: "hidden" };
 
 const ControlPanel = styled.div`
   position: relative;
-  display: flex;
+  display: block;
   width: 250px;
   height: 250px;
   border: 1px solid black;
@@ -28,10 +28,47 @@ const ControlPanel = styled.div`
   align-items: center;
 
   > label {
-    position: absolute;
-    width: 100%;
-    left: 10px;
-    top: 10px;
+    display: block;
+    margin: auto;
+    padding: auto;
+  }
+
+  > div.panel {
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+  }
+
+  div.buttons {
+    margin: 10px 25px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+
+    > button.solo {
+      grid-column: 2 / span 1;
+      height: 3em;
+    }
+
+    > button.soloed {
+      background: #faff00;
+    }
+
+    > button.mute {
+      grid-column: 3 / span 1;
+      height: 3em;
+    }
+
+    > button.muted {
+      background: #00d1ff;
+    }
+
+    > button.mixer {
+      grid-column: 2 / span 2;
+      height: 3em;
+      width: 5em;
+    }
   }
 
   div.ids {
@@ -42,15 +79,11 @@ const ControlPanel = styled.div`
     top: 0;
     transform: translate(100%, 0);
 
-    > div {
-      position: relative;
+    button {
+      background: none;
       border: 1px solid black;
-      height: 20px;
-      width: 20px;
-
-      :hover {
-        cursor: pointer;
-      }
+      outline: none;
+      text-align: center;
     }
   }
 `;
@@ -109,8 +142,6 @@ const input = [
     vol: 0.5,
     solo: false,
     mute: false,
-    toggleMixer: false,
-    visible: true,
   },
   {
     name: "performer 2",
@@ -118,8 +149,6 @@ const input = [
     vol: 0.5,
     solo: false,
     mute: false,
-    toggleMixer: false,
-    visible: false,
   },
   {
     name: "performer 3",
@@ -127,8 +156,6 @@ const input = [
     vol: 0.5,
     solo: false,
     mute: false,
-    toggleMixer: false,
-    visible: false,
   },
   {
     name: "performer 4",
@@ -136,8 +163,6 @@ const input = [
     vol: 0.5,
     solo: false,
     mute: false,
-    toggleMixer: false,
-    visible: false,
   },
   {
     name: "performer 5",
@@ -145,8 +170,6 @@ const input = [
     vol: 0.5,
     solo: false,
     mute: false,
-    toggleMixer: false,
-    visible: false,
   },
 ];
 
@@ -159,21 +182,17 @@ export default function AudioControls({ selectTab, setSelectTab }) {
   return (
     <ControlPanel>
       <label>audio controls</label>
-      <div>
-        <div>
-          <div>
-            <label>{control[activeControl].name}</label>
-
-            <Slider
-              value={control[activeControl].vol}
-              onChange={(value) => {
-                let _control = control.slice(0);
-                _control[activeControl].vol = value;
-                setControl(_control);
-              }}
-            />
-          </div>
-        </div>
+      <label>{control[activeControl].name}</label>
+      <div className="panel">
+        <ControlButtons
+          activeControl={activeControl}
+          setActiveControl={setActiveControl}
+          soloValue={control[activeControl].solo}
+          muteValue={control[activeControl].mute}
+          setSelectTab={setSelectTab}
+          control={control}
+          setControl={setControl}
+        />
       </div>
 
       <div className="ids">
@@ -181,8 +200,7 @@ export default function AudioControls({ selectTab, setSelectTab }) {
           return (
             <TogglePerformers
               id={data.id}
-              value={control.visible}
-              onChange={(value) => {
+              onChange={() => {
                 setActiveControl(i);
               }}
             />
@@ -193,12 +211,68 @@ export default function AudioControls({ selectTab, setSelectTab }) {
   );
 }
 
-function TogglePerformers({ value, id, onChange }) {
+function ControlButtons({
+  activeControl,
+  control,
+  setControl,
+  soloValue,
+  muteValue,
+  setSelectTab,
+}) {
+  return (
+    <div className="buttons">
+      <Slider
+        style={{ gridColumn: "1 / span 1", gridRow: "1 / span 2" }}
+        vertical
+        value={control[activeControl].vol}
+        onChange={(value) => {
+          let _control = control.slice(0);
+          _control[activeControl].vol = value;
+          setControl(_control);
+        }}
+      />
+
+      <Button
+        className={`solo ${soloValue === true ? "soloed" : ""}`}
+        variant="tiny"
+        onClick={() => {
+          let _control = control.slice(0);
+          _control[activeControl].solo = !soloValue;
+          setControl(_control);
+        }}
+      >
+        S
+      </Button>
+      <Button
+        className={`mute ${muteValue === true ? "muted" : ""}`}
+        variant="tiny"
+        onClick={() => {
+          let _control = control.slice(0);
+          _control[activeControl].mute = !muteValue;
+          setControl(_control);
+        }}
+      >
+        M
+      </Button>
+      <Button
+        className="mixer"
+        variant="small"
+        onClick={() => {
+          setSelectTab("mixer");
+        }}
+      >
+        <Controls />
+      </Button>
+    </div>
+  );
+}
+
+function TogglePerformers({ id, onChange }) {
   return (
     <div>
       <button
         onClick={() => {
-          onChange(!value);
+          onChange();
         }}
       >
         {id}
@@ -206,26 +280,3 @@ function TogglePerformers({ value, id, onChange }) {
     </div>
   );
 }
-
-/* <label>audio controls</label>
-      <div className="volumeSlider">
-        <ControlledRangeDisableAcross vertical />
-      </div>
-      <div className="buttons">
-        <div className="solo-mute">
-          <Button variant="tiny">S</Button>
-          <Button variant="tiny">M</Button>
-        </div>
-
-        <div className="mixer">
-          <Button
-            variant="small"
-            onClick={() => {
-              if (selectTab === "stream") {
-                setSelectTab("mixer");
-              }
-            }}
-            icon={<Controls />}
-          ></Button>
-        </div>
-      </div> */

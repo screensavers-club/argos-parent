@@ -115,45 +115,7 @@ class ControlledRangeDisableAcross extends React.Component {
   }
 }
 
-const input = [
-  {
-    performer: "performer 1",
-    vol: 0.5,
-    solo: false,
-    mute: false,
-    toggleMixer: false,
-  },
-  {
-    performer: "performer 2",
-    vol: 0.5,
-    solo: false,
-    mute: false,
-    toggleMixer: false,
-  },
-  {
-    performer: "performer 3",
-    vol: 0.5,
-    solo: false,
-    mute: false,
-    toggleMixer: false,
-  },
-  {
-    performer: "performer 4",
-    vol: 0.5,
-    solo: false,
-    mute: false,
-    toggleMixer: false,
-  },
-  {
-    performer: "performer 5",
-    vol: 0.5,
-    solo: false,
-    mute: false,
-    toggleMixer: false,
-  },
-];
-
-export default function AudioControls({ selectTab, setSelectTab }) {
+export default function AudioControls({ selectTab, setSelectTab, input }) {
   let [solo, setSolo] = useState(false);
   let [mute, setMute] = useState(false);
   let [volumeInput, setVolumeInput] = useState(0);

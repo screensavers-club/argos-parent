@@ -1,15 +1,29 @@
 import styled from "styled-components";
 
-export default function Button({ style, children, onClick, variant, icon }) {
+export default function Button({
+  style,
+  children,
+  onClick,
+  variant,
+  icon,
+  className,
+}) {
   return (
-    <StyledButton {...style} onClick={onClick} variant={variant}>
+    <StyledButton
+      {...style}
+      onClick={onClick}
+      variant={variant}
+      className={className}
+    >
       {icon}
       {children}
     </StyledButton>
   );
 }
 
-const StyledButton = styled.button`
+const StyledButton = styled.button.attrs((props) => ({
+  className: props.className,
+}))`
   appearance: none;
   border: 1px solid #000;
   background: #fff;
