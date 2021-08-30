@@ -40,16 +40,12 @@ const ControlPanel = styled.div`
       height: 3em;
     }
 
-    > button.soloed {
+    > button.soloOn {
       background: #faff00;
     }
 
-    > button.deactivated {
+    > button.locked {
       background: #aaaaaa;
-    }
-
-    > button.activated {
-      background: #dd00dd;
     }
 
     > button.mute {
@@ -76,12 +72,7 @@ export default function AudioControls({
   activeControl,
   soloValue,
   muteValue,
-  soloLockValue,
 }) {
-  if (soloLockValue === true) {
-    soloValue = false;
-  }
-
   return (
     <ControlPanel>
       <label>audio controls</label>
@@ -124,17 +115,36 @@ export default function AudioControls({
           />
 
           <Button
-            className={`solo ${soloValue === true ? "soloed" : ""}`}
+            className={`solo ${
+              soloValue === true
+                ? "soloOn"
+                : `${soloValue === "locked" ? "locked" : ""}`
+            }`}
             variant="tiny"
             onClick={() => {
               let _control = control.slice(0);
-              _control.map((a, i) => {
-                a.soloLock = true;
-                a.solo = false;
-              });
-              _control[activeControl].solo = !soloValue;
+              _control
+                .filter((a, i) => {
+                  return i != activeControl;
+                })
+                .forEach((a, i) => {
+                  a.solo === true ? (a.solo = true) : (a.solo = "locked");
+                  console.log(soloValue);
+                });
+              if (soloValue === "locked") {
+                return;
+              } else {
+                soloValue = !soloValue;
+              }
+
+              if (soloValue === false) {
+                _control.forEach((a, i) => {
+                  a.solo = false;
+                });
+              }
+
+              _control[activeControl].solo = soloValue;
               setControl(_control);
-              console.log(_control[activeControl].solo);
             }}
           >
             S
