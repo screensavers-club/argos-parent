@@ -82,6 +82,7 @@ const StyledPage = styled.div`
 
 export default function StreamRoom({ context, send, parents }) {
   const input = [
+    { name: "master", vol: [0, 0.5, 1] },
     {
       name: "performer 1",
       id: "p1",

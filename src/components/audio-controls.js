@@ -106,6 +106,7 @@ export default function AudioControls({
             onChange={(value) => {
               let _control = control.slice(0);
               _control[activeControl].vol = value;
+              console.log(_control[activeControl].vol);
               setControl(_control);
 
               if (_control[activeControl].vol[0] > 0) {

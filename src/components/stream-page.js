@@ -6,6 +6,7 @@ import styled from "styled-components";
 import React, { useState } from "react";
 
 const Stream = styled.div`
+  z-index: 0;
   border: 1px solid black;
   padding: 25px;
 

@@ -7,6 +7,7 @@ const IdColumn = styled.div`
   right: 0;
   top: 0;
   transform: translate(-200%, 100%);
+  z-index: 0;
 
   button {
     background: none;
@@ -27,20 +28,24 @@ export default function TogglePerformers({
 }) {
   return (
     <IdColumn control={control} activeControl={activeControl}>
-      {control.map((data, i) => {
-        return (
-          <div>
-            <button
-              className={`ids ${i === activeControl ? "isPressed" : ""}`}
-              onClick={() => {
-                setActiveControl(i);
-              }}
-            >
-              {data.id}
-            </button>
-          </div>
-        );
-      })}
+      {control
+        .filter((a, i) => {
+          return i != 0;
+        })
+        .map((data, i) => {
+          return (
+            <div>
+              <button
+                className={`ids ${i === activeControl ? "isPressed" : ""}`}
+                onClick={() => {
+                  setActiveControl(i);
+                }}
+              >
+                {data.id}
+              </button>
+            </div>
+          );
+        })}
     </IdColumn>
   );
 }
