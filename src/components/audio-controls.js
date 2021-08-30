@@ -78,8 +78,6 @@ export default function AudioControls({
   muteValue,
   soloLockValue,
 }) {
-  let deactivateState = "activated";
-
   if (soloLockValue === true) {
     soloValue = false;
   }
@@ -126,16 +124,17 @@ export default function AudioControls({
           />
 
           <Button
-            className={`solo ${soloValue[0] === true ? "soloed" : ""}`}
+            className={`solo ${soloValue === true ? "soloed" : ""}`}
             variant="tiny"
             onClick={() => {
               let _control = control.slice(0);
               _control.map((a, i) => {
                 a.soloLock = true;
+                a.solo = false;
               });
               _control[activeControl].solo = !soloValue;
-
               setControl(_control);
+              console.log(_control[activeControl].solo);
             }}
           >
             S
