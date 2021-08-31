@@ -6,6 +6,9 @@ import StreamTabs from "../components/stream-tabs";
 import StreamPage from "../components/stream-page";
 import MixerPage from "../components/mixer-page";
 import TogglePerformers from "../components/toggle-performers";
+import streamRoomMachine from "../stream-room-machine";
+import { inspect } from "@xstate/inspect";
+import { useMachine } from "@xstate/react";
 
 const StyledPage = styled.div`
   position: relative;
@@ -81,54 +84,12 @@ const StyledPage = styled.div`
 `;
 
 export default function StreamRoom({ context, send, parents }) {
-  const input = [
-    { name: "master", vol: [0, 0.5, 1] },
-    {
-      name: "performer 1",
-      id: "p1",
-      track: "aaa",
-      vol: [0, 0.5, 1],
-      solo: false,
-      mute: false,
-    },
-    {
-      name: "performer 2",
-      id: "p2",
-      track: "aaa",
-      vol: [0, 0.5, 1],
-      solo: false,
-      mute: false,
-    },
-    {
-      name: "performer 3",
-      id: "p3",
-      track: "aaa",
-      vol: [0, 0.5, 1],
-      solo: false,
-      mute: false,
-    },
-    {
-      name: "performer 4",
-      id: "p4",
-      track: "aaa",
-      vol: [0, 0.5, 1],
-      solo: false,
-      mute: false,
-    },
-    {
-      name: "performer 5",
-      id: "p5",
-      track: "aaa",
-      vol: [0, 0.5, 1],
-      solo: false,
-      mute: false,
-    },
-  ];
+  let [state, _send] = useMachine(streamRoomMachine, {});
 
   const { room, connect } = useRoom();
   const [selectTab, setSelectTab] = useState("stream");
 
-  const [control, setControl] = useState(input);
+  const [control, setControl] = useState(context.input);
   let [activeControl, setActiveControl] = useState(0);
 
   useEffect(() => {
@@ -156,7 +117,7 @@ export default function StreamRoom({ context, send, parents }) {
             return (
               <StreamPage
                 parents={parents}
-                performers={input}
+                performers={context.input}
                 setSelectTab={setSelectTab}
                 activeControl={activeControl}
                 setActiveControl={setActiveControl}
@@ -166,7 +127,18 @@ export default function StreamRoom({ context, send, parents }) {
             );
 
           case "mixer":
-            return <MixerPage control={control} setControl={setControl} />;
+            return (
+              <MixerPage
+                control={control}
+                setControl={setControl}
+                master={context.master}
+              />
+            );
+          case "monitor":
+            return <>This is the monitor page</>;
+
+          case "out":
+            return <>This is the out page</>;
         }
       })()}
       <TogglePerformers

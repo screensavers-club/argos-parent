@@ -64,18 +64,6 @@ function Screen({ context, state, send }) {
             { id: "Parent 1", status: "host" },
             { id: "Parent 2", status: "backup" },
           ]}
-          performers={[
-            { id: "Performer 1" },
-            { id: "Performer 2" },
-            { id: "Performer 3" },
-            { id: "Performer 4" },
-            { id: "Performer 5" },
-            { id: "Performer 6" },
-            { id: "Performer 7" },
-            { id: "Performer 8" },
-            { id: "Performer 9" },
-            { id: "Performer 10" },
-          ]}
         />
       );
 
