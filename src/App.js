@@ -60,6 +60,10 @@ function Screen({ context, state, send }) {
           send={send}
           context={context}
           error={_.get(state, "context.error.message")}
+          parents={[
+            { id: "Parent 1", status: "host" },
+            { id: "Parent 2", status: "backup" },
+          ]}
         />
       );
 
