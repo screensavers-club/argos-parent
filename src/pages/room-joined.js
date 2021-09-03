@@ -1,9 +1,8 @@
 import styled from "styled-components";
 import Button from "../components/button";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { useRoom } from "livekit-react";
-import { RoomEvent } from "livekit-client";
 
 const StyledPage = styled.div`
   display: block;
@@ -139,4 +138,8 @@ export default function RoomJoined({ context, send, state }) {
       </div>
     </StyledPage>
   );
+}
+
+function MixerChannel() {
+  const [vol, setVol] = useState(0);
 }

@@ -6,9 +6,6 @@ import StreamTabs from "../components/stream-tabs";
 import StreamPage from "../components/stream-page";
 import MixerPage from "../components/mixer-page";
 import TogglePerformers from "../components/toggle-performers";
-import streamRoomMachine from "../stream-room-machine";
-import { inspect } from "@xstate/inspect";
-import { useMachine } from "@xstate/react";
 
 const StyledPage = styled.div`
   position: relative;
@@ -84,8 +81,6 @@ const StyledPage = styled.div`
 `;
 
 export default function StreamRoom({ context, send, parents }) {
-  let [state, _send] = useMachine(streamRoomMachine, {});
-
   const { room, connect } = useRoom();
   const [selectTab, setSelectTab] = useState("stream");
 
@@ -93,8 +88,15 @@ export default function StreamRoom({ context, send, parents }) {
   let [activeControl, setActiveControl] = useState(0);
 
   useEffect(() => {
-    connect(`${process.env.REACT_AP_LIVEKIT_SERVER}`, context.token);
+    connect(`${process.env.REACT_APP_LIVEKIT_SERVER}`, context.token)
+      .then((room) => {
+        console.log(room);
+      })
+      .catch((err) => console.log({ err }));
   }, []);
+  {
+    console.log(room);
+  }
 
   return (
     <StyledPage>

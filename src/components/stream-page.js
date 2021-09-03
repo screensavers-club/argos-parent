@@ -4,6 +4,7 @@ import VideoControls from "../components/video-controls";
 import TogglePerformers from "../components/toggle-performers";
 import styled from "styled-components";
 import React, { useState } from "react";
+import { useRoom } from "livekit-react";
 
 const Stream = styled.div`
   z-index: 0;
@@ -46,7 +47,11 @@ export default function StreamPage({
   setControl,
   activeControl,
   setActiveControl,
+  context,
+  send,
 }) {
+  console.log(context);
+  // useRoom();
   return (
     <div className="stream">
       <table className="participants">
