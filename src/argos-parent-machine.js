@@ -8,7 +8,7 @@ let argosParentMachine = createMachine(
     context: {
       identity: null,
       room: {},
-      children: [],
+      : [],
       error: {},
       rooms_available: [],
       token: "",
