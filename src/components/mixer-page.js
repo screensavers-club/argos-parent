@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import Button from "./button";
 import Slider, { Range } from "rc-slider";
-import TogglePerformers from "./toggle-performers";
+
+import { useState } from "react";
 
 const Mixer = styled.div`
   margin-top: 25px;
@@ -82,6 +83,7 @@ const Mixer = styled.div`
 `;
 
 export default function MixerPage({ control, setControl, master }) {
+  let [toggleEQ, setToggleEQ] = useState(control);
   return (
     <Mixer>
       {control.map(({ id }, i) => {
