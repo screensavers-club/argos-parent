@@ -1,19 +1,26 @@
 import styled from "styled-components";
 import Button from "./button";
 import Slider, { Range } from "rc-slider";
+import Equalizer from "./equalizer";
 
 import { useState } from "react";
 
 const Mixer = styled.div`
-  margin-top: 25px;
-  background: white;
-  z-index: 1;
-  position: relative;
-  display: flex;
-  width: 100%;
-  height: 75vh;
-  padding: 25px;
-  border: 1px solid black;
+  display: block;
+  margin: auto;
+  padding: auto;
+
+  div.mixer {
+    margin-top: 25px;
+    background: white;
+    z-index: 1;
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 75vh;
+    padding: 25px;
+    border: 1px solid black;
+  }
 
   div.individualMixer {
     width: auto;
@@ -83,182 +90,195 @@ const Mixer = styled.div`
 `;
 
 export default function MixerPage({ control, setControl, master }) {
-  let [toggleEQ, setToggleEQ] = useState(control);
+  let [toggleEQ, setToggleEQ] = useState(0);
+
   return (
     <Mixer>
-      {control.map(({ id }, i) => {
-        return (
-          <div className="individualMixer">
-            <Button className="advancedControls" onClick={() => {}}>
-              eq
-            </Button>
-            <Button className="advancedControls" onClick={() => {}}>
-              comp
-            </Button>
-            <Button className="advancedControls" onClick={() => {}}>
-              reverb
-            </Button>
-            <Slider
-              min={0}
-              max={1}
-              step={0.05}
-              style={{ gridColumn: "1 / span 1" }}
-            />
-            <div className="solo-mute">
+      <Equalizer
+        toggleEQ={toggleEQ}
+        control={control}
+        setControl={setControl}
+      />
+      <div className="mixer">
+        {control.map(({ id }, i) => {
+          return (
+            <div className="individualMixer">
               <Button
-                className={`solo ${
-                  control[i].solo === true
-                    ? "soloOn"
-                    : `${control[i].solo === "locked" ? "locked" : ""}`
-                }`}
-                variant="tiny"
+                className="advancedControls"
                 onClick={() => {
-                  let _control = control.slice(0);
+                  setToggleEQ(i);
+                }}
+              >
+                eq
+              </Button>
+              <Button className="advancedControls" onClick={() => {}}>
+                comp
+              </Button>
+              <Button className="advancedControls" onClick={() => {}}>
+                reverb
+              </Button>
+              <Slider
+                min={0}
+                max={1}
+                step={0.05}
+                style={{ gridColumn: "1 / span 1" }}
+              />
+              <div className="solo-mute">
+                <Button
+                  className={`solo ${
+                    control[i].solo === true
+                      ? "soloOn"
+                      : `${control[i].solo === "locked" ? "locked" : ""}`
+                  }`}
+                  variant="tiny"
+                  onClick={() => {
+                    let _control = control.slice(0);
 
-                  if (_control[i].solo === false) {
-                    _control.map((a) => {
-                      return (a.solo = "locked");
-                    });
-                    _control[i].solo = true;
-                  } else if (control[i].solo === true) {
-                    _control.map((a) => {
-                      return (a.solo = false);
-                    });
-                    _control[i].solo = false;
+                    if (_control[i].solo === false) {
+                      _control.map((a) => {
+                        return (a.solo = "locked");
+                      });
+                      _control[i].solo = true;
+                    } else if (control[i].solo === true) {
+                      _control.map((a) => {
+                        return (a.solo = false);
+                      });
+                      _control[i].solo = false;
+                    }
+
+                    setControl(_control);
+                  }}
+                >
+                  S
+                </Button>
+                <Button
+                  className={`mute ${control[i].mute === true ? "muted" : ""}`}
+                  variant="tiny"
+                  onClick={() => {
+                    let _control = control.slice(0);
+                    _control[i].mute = !_control[i].mute;
+                    setControl(_control);
+                  }}
+                >
+                  M
+                </Button>
+              </div>
+              <Range
+                trackStyle={[
+                  { backgroundColor: "black" },
+                  { backgroundColor: "transparent" },
+                  { backgroundColor: "black" },
+                ]}
+                handleStyle={[
+                  {
+                    backgroundColor: "transparent",
+                    borderColor: "transparent",
+                  },
+                  {
+                    backgroundColor: "transparent",
+                    borderColor: "transparent",
+                  },
+                  {
+                    backgroundColor: "white",
+                    borderRadius: "25px",
+                    width: "1.5em",
+                    left: "0",
+                    border: "1px solid black",
+                  },
+                ]}
+                railStyle={{ border: "1px solid black" }}
+                vertical
+                min={0}
+                max={1}
+                step={0.05}
+                style={{
+                  margin: "10px auto",
+                  padding: "auto",
+                  height: "200px",
+                }}
+                value={control[i].vol}
+                onChange={(value) => {
+                  let _control = control.slice(0);
+                  _control[i].vol = value;
+                  setControl(_control);
+
+                  if (_control[i].vol[0] > 0) {
+                    _control[i].vol[0] = 0;
                   }
-
-                  setControl(_control);
+                  console.log(control);
                 }}
-              >
-                S
-              </Button>
-              <Button
-                className={`mute ${control[i].mute === true ? "muted" : ""}`}
-                variant="tiny"
-                onClick={() => {
-                  let _control = control.slice(0);
-                  _control[i].mute = !_control[i].mute;
-                  setControl(_control);
-                }}
-              >
-                M
-              </Button>
-            </div>
-            <Range
-              trackStyle={[
-                { backgroundColor: "black" },
-                { backgroundColor: "transparent" },
-                { backgroundColor: "black" },
-              ]}
-              handleStyle={[
-                {
-                  backgroundColor: "transparent",
-                  borderColor: "transparent",
-                },
-                {
-                  backgroundColor: "transparent",
-                  borderColor: "transparent",
-                },
-                {
-                  backgroundColor: "white",
-                  borderRadius: "25px",
-                  width: "1.5em",
-                  left: "0",
-                  border: "1px solid black",
-                },
-              ]}
-              railStyle={{ border: "1px solid black" }}
-              vertical
-              min={0}
-              max={1}
-              step={0.05}
-              style={{
-                margin: "10px auto",
-                padding: "auto",
-                height: "200px",
-              }}
-              value={control[i].vol}
-              onChange={(value) => {
-                let _control = control.slice(0);
-                _control[i].vol = value;
-                setControl(_control);
+              />
 
-                if (_control[i].vol[0] > 0) {
-                  _control[i].vol[0] = 0;
-                }
-              }}
-            />
-
-            <div className="id">
-              <label>{id}</label>
+              <div className="id">
+                <label>{id}</label>
+              </div>
             </div>
+          );
+        })}
+
+        <div className="masterMixer">
+          <Button className="advancedControls" onClick={() => {}}>
+            eq
+          </Button>
+          <Button className="advancedControls" onClick={() => {}}>
+            comp
+          </Button>
+          <Button className="advancedControls" onClick={() => {}}>
+            reverb
+          </Button>
+          <Slider
+            min={0}
+            max={1}
+            step={0.05}
+            style={{ gridColumn: "1 / span 1" }}
+          />
+
+          <Range
+            trackStyle={[
+              { backgroundColor: "black" },
+              { backgroundColor: "transparent" },
+              { backgroundColor: "black" },
+            ]}
+            handleStyle={[
+              {
+                backgroundColor: "transparent",
+                borderColor: "transparent",
+              },
+              {
+                backgroundColor: "transparent",
+                borderColor: "transparent",
+              },
+              {
+                backgroundColor: "white",
+                borderRadius: "25px",
+                width: "1.5em",
+                left: "0",
+                border: "1px solid black",
+              },
+            ]}
+            railStyle={{ border: "1px solid black" }}
+            vertical
+            min={0}
+            max={1}
+            step={0.05}
+            style={{
+              margin: "10px auto",
+              padding: "auto",
+              height: "200px",
+            }}
+            value={master.vol}
+            onChange={(value) => {
+              let _control = control.slice(0);
+              _control.map((a) => {
+                return (a.vol = value);
+              });
+              setControl(_control);
+            }}
+          />
+
+          <div className="id">
+            <label>{master.name}</label>
           </div>
-        );
-      })}
-
-      <div className="masterMixer">
-        <Button className="advancedControls" onClick={() => {}}>
-          eq
-        </Button>
-        <Button className="advancedControls" onClick={() => {}}>
-          comp
-        </Button>
-        <Button className="advancedControls" onClick={() => {}}>
-          reverb
-        </Button>
-        <Slider
-          min={0}
-          max={1}
-          step={0.05}
-          style={{ gridColumn: "1 / span 1" }}
-        />
-
-        <Range
-          trackStyle={[
-            { backgroundColor: "black" },
-            { backgroundColor: "transparent" },
-            { backgroundColor: "black" },
-          ]}
-          handleStyle={[
-            {
-              backgroundColor: "transparent",
-              borderColor: "transparent",
-            },
-            {
-              backgroundColor: "transparent",
-              borderColor: "transparent",
-            },
-            {
-              backgroundColor: "white",
-              borderRadius: "25px",
-              width: "1.5em",
-              left: "0",
-              border: "1px solid black",
-            },
-          ]}
-          railStyle={{ border: "1px solid black" }}
-          vertical
-          min={0}
-          max={1}
-          step={0.05}
-          style={{
-            margin: "10px auto",
-            padding: "auto",
-            height: "200px",
-          }}
-          value={master.vol}
-          onChange={(value) => {
-            let _control = control.slice(0);
-            _control.map((a) => {
-              console.log(value);
-              return (a.vol = value);
-            });
-            setControl(_control);
-          }}
-        />
-
-        <div className="id">
-          <label>{master.name}</label>
         </div>
       </div>
     </Mixer>

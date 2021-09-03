@@ -28,24 +28,20 @@ export default function TogglePerformers({
 }) {
   return (
     <IdColumn control={control} activeControl={activeControl}>
-      {control
-        .filter((a, i) => {
-          return i != 0;
-        })
-        .map((data, i) => {
-          return (
-            <div>
-              <button
-                className={`ids ${i === activeControl ? "isPressed" : ""}`}
-                onClick={() => {
-                  setActiveControl(i);
-                }}
-              >
-                {data.id}
-              </button>
-            </div>
-          );
-        })}
+      {control.map((data, i) => {
+        return (
+          <div>
+            <button
+              className={`ids ${i === activeControl ? "isPressed" : ""}`}
+              onClick={() => {
+                setActiveControl(i);
+              }}
+            >
+              {data.id}
+            </button>
+          </div>
+        );
+      })}
     </IdColumn>
   );
 }
