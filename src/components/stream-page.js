@@ -50,7 +50,6 @@ export default function StreamPage({
   context,
   send,
 }) {
-  console.log(context);
   // useRoom();
   return (
     <div className="stream">
