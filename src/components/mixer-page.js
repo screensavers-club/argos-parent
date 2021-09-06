@@ -106,13 +106,39 @@ export default function MixerPage({ control, setControl, master }) {
       />
       <div className="mixer">
         <div className="masterMixer">
-          <Button className={`advancedControls`} onClick={() => {}}>
+          <Button className={`advancedControls `} onClick={() => {}}>
             eq
           </Button>
-          <Button className="advancedControls" onClick={() => {}}>
+          <Button
+            className={`advancedControls ${
+              master.comp === true ? "active" : ""
+            }`}
+            onClick={(e) => {
+              let _control = control.slice(0);
+              let _master = master;
+              _master.comp = !master.comp;
+              _control.map((a) => {
+                return (a.comp = _master.comp);
+              });
+              setControl(_control);
+            }}
+          >
             comp
           </Button>
-          <Button className="advancedControls" onClick={() => {}}>
+          <Button
+            className={`advancedControls ${
+              master.reverb === true ? "active" : ""
+            }`}
+            onClick={(e) => {
+              let _control = control.slice(0);
+              let _master = master;
+              _master.reverb = !master.reverb;
+              _control.map((a) => {
+                return (a.reverb = _master.reverb);
+              });
+              setControl(_control);
+            }}
+          >
             reverb
           </Button>
           <Slider
