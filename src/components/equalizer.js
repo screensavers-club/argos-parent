@@ -6,7 +6,7 @@ export default function Equalizer({ toggleEQ, control, setControl }) {
     return <></>;
   } else {
     return (
-      <Window>
+      <Window toggleEQ={toggleEQ}>
         {control[toggleEQ].eq.map((props, i) => {
           let key = `key${i}`;
 
@@ -136,8 +136,7 @@ export default function Equalizer({ toggleEQ, control, setControl }) {
             </div>
           );
         })}
-
-        <div></div>
+        <div className="triangleTip"></div>
       </Window>
     );
   }
@@ -178,5 +177,25 @@ const Window = styled.div`
         margin-right: 10px;
       }
     }
+  }
+
+  div.triangleTip {
+    position: absolute;
+    top: 280px;
+    left: ${(p) => {
+      if (p.toggleEQ === 0) {
+        return "65px";
+      }
+      if (p.toggleEQ > 0) {
+        return `${65 + p.toggleEQ * 113}px`;
+      }
+    }};
+    background: transparent;
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+
+    border-top: 20px solid black;
   }
 `;
