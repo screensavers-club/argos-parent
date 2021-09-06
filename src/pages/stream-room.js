@@ -84,7 +84,7 @@ export default function StreamRoom({ context, send, parents }) {
 	const { room, connect, participants } = useRoom();
 	const [selectTab, setSelectTab] = useState("stream");
 
-	console.log(participants);
+	// console.log(participants);
 
 	const [control, setControl] = useState(context.input);
 	let [activeControl, setActiveControl] = useState(0);
@@ -92,12 +92,12 @@ export default function StreamRoom({ context, send, parents }) {
 	useEffect(() => {
 		connect(`${process.env.REACT_APP_LIVEKIT_SERVER}`, context.token)
 			.then((room) => {
-				console.log(room);
+				// console.log(room);
 			})
 			.catch((err) => console.log({ err }));
 	}, []);
 	{
-		console.log(room);
+		// console.log(room);
 	}
 
 	return (

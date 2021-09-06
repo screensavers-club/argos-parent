@@ -26,7 +26,7 @@ export default function Equalizer({ toggleEQ, control, setControl }) {
                       let _control = control.slice(0);
                       _control[toggleEQ].eq[i].amp = value.target.value;
                       setControl(_control);
-                      console.log(control);
+                      // console.log(control);
                     }}
                   />
                 </div>
@@ -66,7 +66,7 @@ export default function Equalizer({ toggleEQ, control, setControl }) {
                   onChange={(value) => {
                     let _control = control.slice(0);
                     _control[toggleEQ].eq[i].amp = value[1];
-                    console.log(_control[toggleEQ].eq[i].amp[1]);
+                    // console.log(_control[toggleEQ].eq[i].amp[1]);
                     setControl(_control);
                     if (value[0] > 0) {
                       value[0] = 0;
@@ -85,7 +85,7 @@ export default function Equalizer({ toggleEQ, control, setControl }) {
                       let _control = control.slice(0);
                       _control[toggleEQ].eq[i].freq = value.target.value;
                       setControl(_control);
-                      console.log(control);
+                      // console.log(control);
                     }}
                   />
                 </div>
@@ -129,7 +129,7 @@ export default function Equalizer({ toggleEQ, control, setControl }) {
                     if (value[0] > 0) {
                       value[0] = 0;
                     }
-                    console.log(control);
+                    // console.log(control);
                   }}
                 />
               </div>
@@ -187,7 +187,7 @@ const Window = styled.div`
         return "65px";
       }
       if (p.toggleEQ > 0) {
-        return `${65 + p.toggleEQ * 113}px`;
+        return `${65 + p.toggleEQ * 114}px`;
       }
     }};
     background: transparent;

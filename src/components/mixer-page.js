@@ -96,7 +96,7 @@ const Mixer = styled.div`
 
 export default function MixerPage({ control, setControl, master }) {
   let [toggleEQ, setToggleEQ] = useState("undefined");
-  console.log(toggleEQ);
+  // console.log(toggleEQ);
   return (
     <Mixer>
       <Equalizer
@@ -106,7 +106,7 @@ export default function MixerPage({ control, setControl, master }) {
       />
       <div className="mixer">
         <div className="masterMixer">
-          <Button className="advancedControls" onClick={() => {}}>
+          <Button className={`advancedControls`} onClick={() => {}}>
             eq
           </Button>
           <Button className="advancedControls" onClick={() => {}}>
@@ -159,9 +159,11 @@ export default function MixerPage({ control, setControl, master }) {
             onChange={(value) => {
               let _control = control.slice(0);
               _control.map((a) => {
+                console.log(a);
                 return (a.vol = value);
               });
               setControl(_control);
+              return (master.vol = value);
             }}
           />
 
@@ -191,13 +193,21 @@ export default function MixerPage({ control, setControl, master }) {
                 onClick={(e) => {
                   let _control = control.slice(0);
                   _control[i].comp = !control[i].comp;
-                  console.log(control);
                   setControl(_control);
                 }}
               >
                 comp
               </Button>
-              <Button className="advancedControls" onClick={() => {}}>
+              <Button
+                className={`advancedControls ${
+                  control[i].reverb === true ? "active" : ""
+                }`}
+                onClick={(e) => {
+                  let _control = control.slice(0);
+                  _control[i].reverb = !control[i].reverb;
+                  setControl(_control);
+                }}
+              >
                 reverb
               </Button>
               <Slider
@@ -288,7 +298,7 @@ export default function MixerPage({ control, setControl, master }) {
                   if (_control[i].vol[0] > 0) {
                     _control[i].vol[0] = 0;
                   }
-                  console.log(control);
+                  // console.log(control);
                 }}
               />
 
