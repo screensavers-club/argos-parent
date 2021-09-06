@@ -1,35 +1,41 @@
 import styled from "styled-components";
 
 export default function Equalizer({ toggleEQ, control, setControl }) {
-  return (
-    <Window>
-      {control[toggleEQ].eq.map((props, i) => {
-        let key = `key${i}`;
-        return (
-          <div className="eqControl">
-            <span>{control[toggleEQ].id}</span>
-            <span>{props.type}</span>
-            <div className="visualiser"></div>
-            <div className="amplitudeControl">
-              <span>amplitude</span>
-              <input
-                style={{ width: "100%" }}
-                value={control[toggleEQ].eq[2].amp}
-                onChange={(value) => {
-                  let _control = control.slice(0);
-                  _control[toggleEQ].eq[2].amp = value.target.value;
-                  // console.log(value.nativeEvent.data);
-                  setControl(_control);
-                  console.log(control);
-                }}
-              />
+  if (toggleEQ === "undefined") {
+    return <></>;
+  } else {
+    return (
+      <Window>
+        {control[toggleEQ].eq.map((props, i) => {
+          let key = `key${i}`;
+
+          return (
+            <div className="eqControl">
+              <span>{control[toggleEQ].id}</span>
+              <span>{props.type}</span>
+              <div className="visualiser"></div>
+              <div className="amplitudeControl">
+                <span>amplitude</span>
+                <input
+                  style={{ width: "100%" }}
+                  value={control[toggleEQ].eq[2].amp}
+                  onChange={(value) => {
+                    let _control = control.slice(0);
+                    _control[toggleEQ].eq[2].amp = value.target.value;
+                    // console.log(value.nativeEvent.data);
+                    setControl(_control);
+                    console.log(control);
+                  }}
+                />
+              </div>
             </div>
-          </div>
-        );
-      })}
-      <div></div>
-    </Window>
-  );
+          );
+        })}
+
+        <div></div>
+      </Window>
+    );
+  }
 }
 
 const Window = styled.div`

@@ -74,6 +74,10 @@ const Mixer = styled.div`
     background: #00d1ff;
   }
 
+  button.active {
+    background: grey;
+  }
+
   div.id {
     display: block;
     margin: auto;
@@ -90,8 +94,8 @@ const Mixer = styled.div`
 `;
 
 export default function MixerPage({ control, setControl, master }) {
-  let [toggleEQ, setToggleEQ] = useState(0);
-
+  let [toggleEQ, setToggleEQ] = useState("undefined");
+  console.log(toggleEQ);
   return (
     <Mixer>
       <Equalizer
@@ -104,14 +108,27 @@ export default function MixerPage({ control, setControl, master }) {
           return (
             <div className="individualMixer">
               <Button
-                className="advancedControls"
+                className={`advancedControls ${toggleEQ === i ? "active" : ""}`}
                 onClick={() => {
                   setToggleEQ(i);
+                  if (toggleEQ === i) {
+                    setToggleEQ("undefined");
+                  }
                 }}
               >
                 eq
               </Button>
-              <Button className="advancedControls" onClick={() => {}}>
+              <Button
+                className={`advancedControls ${
+                  control[i].comp === true ? "active" : ""
+                }`}
+                onClick={(e) => {
+                  let _control = control.slice(0);
+                  _control[i].comp = !control[i].comp;
+                  console.log(control);
+                  setControl(_control);
+                }}
+              >
                 comp
               </Button>
               <Button className="advancedControls" onClick={() => {}}>
