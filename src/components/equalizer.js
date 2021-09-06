@@ -1,9 +1,144 @@
 import styled from "styled-components";
 import Slider, { Range } from "rc-slider";
 
-export default function Equalizer({ toggleEQ, control, setControl }) {
+export default function Equalizer({
+  toggleEQ,
+  control,
+  setControl,
+  master,
+  setMaster,
+}) {
   if (toggleEQ === "undefined") {
     return <></>;
+  } else if (toggleEQ === "master") {
+    return (
+      <Window toggleEQ={toggleEQ}>
+        {master.eq.map((props, i) => {
+          let key = `key_${i}`;
+
+          return (
+            <div className="equalizer">
+              <span>{master.name}</span>
+              <div className="visualiser"></div>
+              <div className="eqControl">
+                <div className="inputDiv">
+                  <span>amplitude</span>
+                  <input
+                    defaultValue={0}
+                    style={{ width: "100%" }}
+                    value={props.amp}
+                    onChange={(value) => {
+                      let _master = master;
+                      _master.eq[i].amp = value.target.value;
+                      setMaster(_master);
+                    }}
+                  />
+                </div>
+                <Range
+                  trackStyle={[
+                    { backgroundColor: "black" },
+                    { backgroundColor: "transparent" },
+                    { backgroundColor: "black" },
+                  ]}
+                  handleStyle={[
+                    {
+                      backgroundColor: "transparent",
+                      borderColor: "transparent",
+                    },
+                    {
+                      backgroundColor: "transparent",
+                      borderColor: "transparent",
+                    },
+                    {
+                      backgroundColor: "white",
+                      borderRadius: "25px",
+                      width: "1.5em",
+                      left: "0",
+                      border: "1px solid black",
+                    },
+                  ]}
+                  railStyle={{ border: "1px solid black" }}
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  style={{
+                    margin: "10px auto",
+                    padding: "auto",
+                    width: "100px",
+                  }}
+                  value={[0, master.eq[i].amp]}
+                  onChange={(value) => {
+                    master.eq[i].amp = value[1];
+                    if (value[0] > 0) {
+                      value[0] = 0;
+                    }
+                    console.log(master.eq[i].amp);
+                    setMaster(master);
+                  }}
+                />
+              </div>
+              <div className="eqControl">
+                <div className="inputDiv">
+                  <span>frequency</span>
+                  <input
+                    defaultValue={0}
+                    style={{ width: "100%" }}
+                    value={master.eq[i].freq}
+                    onChange={(value) => {
+                      let _master = master;
+                      master.eq[i].freq = value.target.value;
+                      setMaster(_master);
+                    }}
+                  />
+                </div>
+                <Range
+                  trackStyle={[
+                    { backgroundColor: "black" },
+                    { backgroundColor: "transparent" },
+                    { backgroundColor: "black" },
+                  ]}
+                  handleStyle={[
+                    {
+                      backgroundColor: "transparent",
+                      borderColor: "transparent",
+                    },
+                    {
+                      backgroundColor: "transparent",
+                      borderColor: "transparent",
+                    },
+                    {
+                      backgroundColor: "white",
+                      borderRadius: "25px",
+                      width: "1.5em",
+                      left: "0",
+                      border: "1px solid black",
+                    },
+                  ]}
+                  railStyle={{ border: "1px solid black" }}
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  style={{
+                    margin: "10px auto",
+                    padding: "auto",
+                    width: "100px",
+                  }}
+                  value={[0, master.eq[i].freq]}
+                  onChange={(value) => {
+                    let _master = master;
+                    master.eq[i].freq = value[1];
+                    if (value[0] > 0) {
+                      value[0] = 0;
+                    }
+                    setMaster(_master);
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </Window>
+    );
   } else {
     return (
       <Window toggleEQ={toggleEQ}>

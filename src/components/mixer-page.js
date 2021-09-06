@@ -94,7 +94,7 @@ const Mixer = styled.div`
   }
 `;
 
-export default function MixerPage({ control, setControl, master }) {
+export default function MixerPage({ control, setControl, master, setMaster }) {
   let [toggleEQ, setToggleEQ] = useState("undefined");
   // console.log(toggleEQ);
   return (
@@ -103,10 +103,23 @@ export default function MixerPage({ control, setControl, master }) {
         toggleEQ={toggleEQ}
         control={control}
         setControl={setControl}
+        master={master}
+        setMaster={setMaster}
       />
       <div className="mixer">
         <div className="masterMixer">
-          <Button className={`advancedControls `} onClick={() => {}}>
+          <Button
+            className={`advancedControls ${
+              toggleEQ === "master" ? "active" : ""
+            }`}
+            onClick={(e) => {
+              if (toggleEQ != "master") {
+                setToggleEQ("master");
+              } else {
+                setToggleEQ("undefined");
+              }
+            }}
+          >
             eq
           </Button>
           <Button
@@ -121,6 +134,7 @@ export default function MixerPage({ control, setControl, master }) {
                 return (a.comp = _master.comp);
               });
               setControl(_control);
+              setMaster(_master);
             }}
           >
             comp
@@ -137,6 +151,7 @@ export default function MixerPage({ control, setControl, master }) {
                 return (a.reverb = _master.reverb);
               });
               setControl(_control);
+              setMaster(_master);
             }}
           >
             reverb
@@ -184,12 +199,14 @@ export default function MixerPage({ control, setControl, master }) {
             value={master.vol}
             onChange={(value) => {
               let _control = control.slice(0);
+              let _master = master;
               _control.map((a) => {
                 console.log(a);
                 return (a.vol = value);
               });
+              _master.vol = value;
               setControl(_control);
-              return (master.vol = value);
+              setMaster(_master);
             }}
           />
 
