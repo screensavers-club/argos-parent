@@ -22,22 +22,23 @@ const Mixer = styled.div`
     border: 1px solid black;
   }
 
+  div.masterMixer {
+    position: absolute;
+    right: 0;
+    width: auto;
+    height: 100%;
+    display: block;
+    border: 1px solid black;
+    padding: 10px;
+    transform: translate(-100%, 0);
+  }
+
   div.individualMixer {
     width: auto;
     height: 100%;
     display: block;
     border: 1px solid black;
     padding: 10px;
-  }
-
-  div.masterMixer {
-    position: absolute;
-    right: 0;
-    width: auto;
-    display: block;
-    border: 1px solid black;
-    padding: 10px;
-    transform: translate(-100%, 0);
   }
 
   button.advancedControls {
@@ -104,6 +105,71 @@ export default function MixerPage({ control, setControl, master }) {
         setControl={setControl}
       />
       <div className="mixer">
+        <div className="masterMixer">
+          <Button className="advancedControls" onClick={() => {}}>
+            eq
+          </Button>
+          <Button className="advancedControls" onClick={() => {}}>
+            comp
+          </Button>
+          <Button className="advancedControls" onClick={() => {}}>
+            reverb
+          </Button>
+          <Slider
+            min={0}
+            max={1}
+            step={0.05}
+            style={{ gridColumn: "1 / span 1" }}
+          />
+
+          <Range
+            trackStyle={[
+              { backgroundColor: "black" },
+              { backgroundColor: "transparent" },
+              { backgroundColor: "black" },
+            ]}
+            handleStyle={[
+              {
+                backgroundColor: "transparent",
+                borderColor: "transparent",
+              },
+              {
+                backgroundColor: "transparent",
+                borderColor: "transparent",
+              },
+              {
+                backgroundColor: "white",
+                borderRadius: "25px",
+                width: "1.5em",
+                left: "0",
+                border: "1px solid black",
+              },
+            ]}
+            railStyle={{ border: "1px solid black" }}
+            vertical
+            min={0}
+            max={1}
+            step={0.05}
+            style={{
+              margin: "10px auto",
+              padding: "auto",
+              height: "100px",
+            }}
+            value={master.vol}
+            onChange={(value) => {
+              let _control = control.slice(0);
+              _control.map((a) => {
+                return (a.vol = value);
+              });
+              setControl(_control);
+            }}
+          />
+
+          <div className="id">
+            <label>{master.name}</label>
+          </div>
+        </div>
+
         {control.map(({ id }, i) => {
           return (
             <div className="individualMixer">
@@ -211,7 +277,7 @@ export default function MixerPage({ control, setControl, master }) {
                 style={{
                   margin: "10px auto",
                   padding: "auto",
-                  height: "200px",
+                  height: "100px",
                 }}
                 value={control[i].vol}
                 onChange={(value) => {
@@ -232,71 +298,6 @@ export default function MixerPage({ control, setControl, master }) {
             </div>
           );
         })}
-
-        <div className="masterMixer">
-          <Button className="advancedControls" onClick={() => {}}>
-            eq
-          </Button>
-          <Button className="advancedControls" onClick={() => {}}>
-            comp
-          </Button>
-          <Button className="advancedControls" onClick={() => {}}>
-            reverb
-          </Button>
-          <Slider
-            min={0}
-            max={1}
-            step={0.05}
-            style={{ gridColumn: "1 / span 1" }}
-          />
-
-          <Range
-            trackStyle={[
-              { backgroundColor: "black" },
-              { backgroundColor: "transparent" },
-              { backgroundColor: "black" },
-            ]}
-            handleStyle={[
-              {
-                backgroundColor: "transparent",
-                borderColor: "transparent",
-              },
-              {
-                backgroundColor: "transparent",
-                borderColor: "transparent",
-              },
-              {
-                backgroundColor: "white",
-                borderRadius: "25px",
-                width: "1.5em",
-                left: "0",
-                border: "1px solid black",
-              },
-            ]}
-            railStyle={{ border: "1px solid black" }}
-            vertical
-            min={0}
-            max={1}
-            step={0.05}
-            style={{
-              margin: "10px auto",
-              padding: "auto",
-              height: "200px",
-            }}
-            value={master.vol}
-            onChange={(value) => {
-              let _control = control.slice(0);
-              _control.map((a) => {
-                return (a.vol = value);
-              });
-              setControl(_control);
-            }}
-          />
-
-          <div className="id">
-            <label>{master.name}</label>
-          </div>
-        </div>
       </div>
     </Mixer>
   );

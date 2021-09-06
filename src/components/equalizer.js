@@ -145,22 +145,27 @@ export default function Equalizer({ toggleEQ, control, setControl }) {
 
 const Window = styled.div`
   z-index: 5;
-  background: white;
+  background: black;
   position: relative;
   display: flex;
   justify-content: center;
-  width: 100%;
-  height: 200px;
+  width: auto;
+  height: 270px;
+  padding: 5px;
+  margin: 5px 0 0 0;
 
+  > div {
+    background: white;
+  }
   div.visualiser {
     width: 100%;
-    height: 50%;
+    height: 100px;
     border: 1px solid black;
   }
 
   div.equalizer {
     border: 1px solid black;
-    width: 10%;
+
     text-align: center;
     padding: 10px;
   }
