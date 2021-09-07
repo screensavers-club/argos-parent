@@ -285,6 +285,7 @@ function VideoFrame({ track }) {
 
   useEffect(() => {
     const el = ref.current;
+    el.muted = true;
     if (!el) {
       return;
     }
@@ -305,4 +306,18 @@ const MainControlView = styled.div`
   height: 100vh;
   display: grid;
   grid-template-columns: 15% 70% 15%;
+
+  .videos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+
+    > div {
+      video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
 `;
