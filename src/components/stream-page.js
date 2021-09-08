@@ -1,10 +1,7 @@
-import { ShowParticipants } from "../components/show-participants";
 import AudioControls from "../components/audio-controls";
 import VideoControls from "../components/video-controls";
-import TogglePerformers from "../components/toggle-performers";
 import styled from "styled-components";
 import React, { useState } from "react";
-import { useRoom } from "livekit-react";
 
 const Stream = styled.div`
   z-index: 0;
@@ -85,12 +82,14 @@ export default function StreamPage({
         </thead>
         <tbody>
           <div>
-            {performers.map(({ name }, i) => {
+            {performers.map(({ name, audioTracks, videoTracks }, i) => {
               let _key = `_key_${i}`;
               return (
                 <tr className="id">
                   <th></th>
-                  <td key={_key}>{name}</td>
+                  <td key={_key}>
+                    {console.log(audioTracks)}[{audioTracks?.size}] {name}
+                  </td>
                 </tr>
               );
             })}

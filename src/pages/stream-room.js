@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Button from "../components/button";
 import { useRoom } from "livekit-react";
 import StreamTabs from "../components/stream-tabs";
-import StreamPage from "../components/stream-page";
 import MixerPage from "../components/mixer-page";
 import TogglePerformers from "../components/toggle-performers";
 
@@ -81,25 +80,99 @@ const StyledPage = styled.div`
 `;
 
 export default function StreamRoom({ context, send, parents }) {
-  const { room, connect, participants } = useRoom();
-  const [selectTab, setSelectTab] = useState("stream");
 
-  // console.log(participants);
+  const { room, connect, participants, audioTracks } = useRoom();
+  const [selectTab, setSelectTab] = useState("stream");
+  const [renderState, setRenderState] = useState(0);
+
+  const audioCtx = useRef(new AudioContext());
+  const audioTrackRefs = useRef({});
+  const [audioTrackRefsState, setAudioTrackRefsState] = useState(
+    audioTrackRefs.current
+  );
+
+  const videoTrackRefs = useRef({});
+  const [videoTrackRefsState, setVideoTrackRefsState] = useState(
+    videoTrackRefs.current
+  );
+
+  useEffect(() => {
+    let __tracks = [];
+    audioTracks.forEach((audioTrack) => {
+      if (__tracks.indexOf(audioTrack.sid) < 0 && audioTrack.mediaStreamTrack) {
+        __tracks.push(audioTrack.sid);
+        let mst = audioCtx.current.createMediaStreamTrackSource(
+          audioTrack.mediaStreamTrack
+        );
+        let gainNode = new GainNode(audioCtx.current, { gain: 1 });
+        audioTrackRefs.current[audioTrack.sid] = {
+          mediaStreamTrackSource: mst,
+          gainNode: gainNode,
+        };
+        mst.connect(gainNode).connect(audioCtx.current.destination);
+      }
+    });
+
+    Object.keys(audioTrackRefs.current).forEach((key) => {
+      if (__tracks.indexOf(key) < 0) {
+        audioTrackRefs.current[key].mediaStreamTrackSource.disconnect();
+        audioTrackRefs.current[key].gainNode.disconnect();
+        delete audioTrackRefs.current[key];
+      }
+    });
+    setAudioTrackRefsState(audioTrackRefs.current);
+    setRenderState(renderState + 1);
+  }, [audioTracks]);
+
+  useEffect(() => {
+    let __tracks = [];
+    participants.forEach((participant) => {
+      if (participant.videoTracks.size < 1) {
+        return;
+      }
+
+      let firstVideo = null;
+
+      participant.videoTracks.forEach((track, key) => {
+        if (!firstVideo) {
+          firstVideo = { track, key };
+        } else {
+          return;
+        }
+      });
+
+      if (__tracks.indexOf(firstVideo.key) < 0) {
+        __tracks.push(firstVideo.key);
+        videoTrackRefs.current[firstVideo.key] = {
+          videoTrack: firstVideo.track,
+        };
+      }
+    });
+
+    Object.keys(videoTrackRefs.current).forEach((key) => {
+      if (__tracks.indexOf(key) < 0) {
+        delete videoTrackRefs.current[key];
+      }
+    });
+    setVideoTrackRefsState(videoTrackRefs.current);
+    setRenderState(renderState + 1);
+  }, [participants]);
 
   const [control, setControl] = useState(context.input);
-  const [master, setMaster] = useState(context.master);
   let [activeControl, setActiveControl] = useState(0);
 
   useEffect(() => {
     connect(`${process.env.REACT_APP_LIVEKIT_SERVER}`, context.token)
       .then((room) => {
-        // console.log(room);
+
+        console.log("room connected");
       })
       .catch((err) => console.log({ err }));
+    return () => {
+      room?.disconnect();
+    };
   }, []);
-  {
-    // console.log(room);
-  }
+
 
   return (
     <StyledPage>
@@ -120,17 +193,69 @@ export default function StreamRoom({ context, send, parents }) {
         switch (selectTab) {
           case "stream":
             return (
-              <StreamPage
-                parents={parents}
-                performers={participants.map((p) => ({
-                  name: p.identity,
-                }))}
-                setSelectTab={setSelectTab}
-                activeControl={activeControl}
-                setActiveControl={setActiveControl}
-                control={control}
-                setControl={setControl}
-              />
+
+              <>
+                <MainControlView>
+                  <div className="participants">
+                    {participants
+                      .filter((p) => p.metadata === "CHILD")
+                      .map((participant) => {
+                        let firstAudioTrack = null;
+                        participant.audioTracks.forEach((value, key) => {
+                          if (!firstAudioTrack) {
+                            firstAudioTrack = value;
+                          }
+                        });
+                        let trackRef =
+                          audioTrackRefsState[firstAudioTrack?.trackSid];
+
+                        return (
+                          <div style={{ border: "1px solid #fcf" }}>
+                            {participant.identity}
+                            <br />
+                            {firstAudioTrack?.trackSid}
+                            {trackRef && (
+                              <button
+                                onClick={() => {
+                                  if (trackRef && trackRef?.gainNode) {
+                                    let targetGain =
+                                      trackRef.gainNode.gain.value === 0
+                                        ? 1
+                                        : 0;
+                                    trackRef.gainNode.gain.setValueAtTime(
+                                      targetGain,
+                                      audioCtx.current.currentTime
+                                    );
+                                  }
+
+                                  setRenderState(renderState + 1);
+                                }}
+                              >
+                                {trackRef?.gainNode?.gain?.value
+                                  ? "Mute"
+                                  : "Unmute"}
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                  </div>
+                  <div className="videos">
+                    {Object.keys(videoTrackRefsState).map((key) => {
+                      if (!videoTrackRefsState[key]?.videoTrack?.track) {
+                        return false;
+                      }
+                      return (
+                        <VideoFrame
+                          track={videoTrackRefsState[key]}
+                          key={key}
+                        />
+                      );
+                    })}
+                  </div>
+                </MainControlView>
+              </>
+
             );
 
           case "mixer":
@@ -138,8 +263,9 @@ export default function StreamRoom({ context, send, parents }) {
               <MixerPage
                 control={control}
                 setControl={setControl}
-                master={master}
-                setMaster={setMaster}
+
+                master={context.master}
+
               />
             );
           case "monitor":
@@ -147,6 +273,11 @@ export default function StreamRoom({ context, send, parents }) {
 
           case "out":
             return <>This is the out page</>;
+
+
+          default:
+            <></>;
+
         }
       })()}
       <TogglePerformers
@@ -156,4 +287,47 @@ export default function StreamRoom({ context, send, parents }) {
       />
     </StyledPage>
   );
+
 }
+
+function VideoFrame({ track }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    el.muted = true;
+    if (!el) {
+      return;
+    }
+    track.videoTrack?.track?.attach(el);
+    return () => {
+      track.videoTrack?.track?.detach(el);
+    };
+  });
+  return (
+    <div>
+      <video ref={ref} muted autoPlay />
+    </div>
+  );
+}
+
+const MainControlView = styled.div`
+  width: 100%;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 15% 70% 15%;
+
+  .videos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+
+    > div {
+      video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+`;
