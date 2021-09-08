@@ -80,6 +80,7 @@ const StyledPage = styled.div`
 `;
 
 export default function StreamRoom({ context, send, parents }) {
+
   const { room, connect, participants, audioTracks } = useRoom();
   const [selectTab, setSelectTab] = useState("stream");
   const [renderState, setRenderState] = useState(0);
@@ -163,6 +164,7 @@ export default function StreamRoom({ context, send, parents }) {
   useEffect(() => {
     connect(`${process.env.REACT_APP_LIVEKIT_SERVER}`, context.token)
       .then((room) => {
+
         console.log("room connected");
       })
       .catch((err) => console.log({ err }));
@@ -170,6 +172,7 @@ export default function StreamRoom({ context, send, parents }) {
       room?.disconnect();
     };
   }, []);
+
 
   return (
     <StyledPage>
@@ -190,6 +193,7 @@ export default function StreamRoom({ context, send, parents }) {
         switch (selectTab) {
           case "stream":
             return (
+
               <>
                 <MainControlView>
                   <div className="participants">
@@ -251,6 +255,7 @@ export default function StreamRoom({ context, send, parents }) {
                   </div>
                 </MainControlView>
               </>
+
             );
 
           case "mixer":
@@ -258,7 +263,9 @@ export default function StreamRoom({ context, send, parents }) {
               <MixerPage
                 control={control}
                 setControl={setControl}
+
                 master={context.master}
+
               />
             );
           case "monitor":
@@ -267,8 +274,10 @@ export default function StreamRoom({ context, send, parents }) {
           case "out":
             return <>This is the out page</>;
 
+
           default:
             <></>;
+
         }
       })()}
       <TogglePerformers
@@ -278,6 +287,7 @@ export default function StreamRoom({ context, send, parents }) {
       />
     </StyledPage>
   );
+
 }
 
 function VideoFrame({ track }) {

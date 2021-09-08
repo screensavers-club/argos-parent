@@ -88,7 +88,7 @@ export default function FetchedRoom({ context, send }) {
                 .get(`${process.env.REACT_APP_PEER_SERVER}/generate-room-name`)
                 .then((result) => {
                   if (result.data?.name) {
-                    console.log(result);
+                    // console.log(result);
                     send("SET_NEW_ROOM_NAME", { name: result.data.name });
                   }
                 });

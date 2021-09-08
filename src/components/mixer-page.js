@@ -22,22 +22,23 @@ const Mixer = styled.div`
     border: 1px solid black;
   }
 
+  div.masterMixer {
+    position: absolute;
+    right: 0;
+    width: auto;
+    height: 100%;
+    display: block;
+    border: 1px solid black;
+    padding: 10px;
+    transform: translate(-100%, 0);
+  }
+
   div.individualMixer {
     width: auto;
     height: 100%;
     display: block;
     border: 1px solid black;
     padding: 10px;
-  }
-
-  div.masterMixer {
-    position: absolute;
-    right: 0;
-    width: auto;
-    display: block;
-    border: 1px solid black;
-    padding: 10px;
-    transform: translate(-100%, 0);
   }
 
   button.advancedControls {
@@ -74,6 +75,10 @@ const Mixer = styled.div`
     background: #00d1ff;
   }
 
+  button.active {
+    background: grey;
+  }
+
   div.id {
     display: block;
     margin: auto;
@@ -89,32 +94,163 @@ const Mixer = styled.div`
   }
 `;
 
-export default function MixerPage({ control, setControl, master }) {
-  let [toggleEQ, setToggleEQ] = useState(0);
-
+export default function MixerPage({ control, setControl, master, setMaster }) {
+  let [toggleEQ, setToggleEQ] = useState("undefined");
+  // console.log(toggleEQ);
   return (
     <Mixer>
       <Equalizer
         toggleEQ={toggleEQ}
         control={control}
         setControl={setControl}
+        master={master}
+        setMaster={setMaster}
       />
       <div className="mixer">
+        <div className="masterMixer">
+          <Button
+            className={`advancedControls ${
+              toggleEQ === "master" ? "active" : ""
+            }`}
+            onClick={(e) => {
+              if (toggleEQ != "master") {
+                setToggleEQ("master");
+              } else {
+                setToggleEQ("undefined");
+              }
+            }}
+          >
+            eq
+          </Button>
+          <Button
+            className={`advancedControls ${
+              master.comp === true ? "active" : ""
+            }`}
+            onClick={(e) => {
+              let _control = control.slice(0);
+              let _master = master;
+              _master.comp = !master.comp;
+              _control.map((a) => {
+                return (a.comp = _master.comp);
+              });
+              setControl(_control);
+              setMaster(_master);
+            }}
+          >
+            comp
+          </Button>
+          <Button
+            className={`advancedControls ${
+              master.reverb === true ? "active" : ""
+            }`}
+            onClick={(e) => {
+              let _control = control.slice(0);
+              let _master = master;
+              _master.reverb = !master.reverb;
+              _control.map((a) => {
+                return (a.reverb = _master.reverb);
+              });
+              setControl(_control);
+              setMaster(_master);
+            }}
+          >
+            reverb
+          </Button>
+          <Slider
+            min={0}
+            max={1}
+            step={0.05}
+            style={{ gridColumn: "1 / span 1" }}
+          />
+
+          <Range
+            trackStyle={[
+              { backgroundColor: "black" },
+              { backgroundColor: "transparent" },
+              { backgroundColor: "black" },
+            ]}
+            handleStyle={[
+              {
+                backgroundColor: "transparent",
+                borderColor: "transparent",
+              },
+              {
+                backgroundColor: "transparent",
+                borderColor: "transparent",
+              },
+              {
+                backgroundColor: "white",
+                borderRadius: "25px",
+                width: "1.5em",
+                left: "0",
+                border: "1px solid black",
+              },
+            ]}
+            railStyle={{ border: "1px solid black" }}
+            vertical
+            min={0}
+            max={1}
+            step={0.05}
+            style={{
+              margin: "10px auto",
+              padding: "auto",
+              height: "100px",
+            }}
+            value={master.vol}
+            onChange={(value) => {
+              let _control = control.slice(0);
+              let _master = master;
+              _control.map((a) => {
+                console.log(a);
+                return (a.vol = value);
+              });
+              _master.vol = value;
+              setControl(_control);
+              setMaster(_master);
+            }}
+          />
+
+          <div className="id">
+            <label>{master.name}</label>
+          </div>
+        </div>
+
         {control.map(({ id }, i) => {
           return (
             <div className="individualMixer">
               <Button
-                className="advancedControls"
+                className={`advancedControls ${toggleEQ === i ? "active" : ""}`}
                 onClick={() => {
                   setToggleEQ(i);
+                  if (toggleEQ === i) {
+                    setToggleEQ("undefined");
+                  }
                 }}
               >
                 eq
               </Button>
-              <Button className="advancedControls" onClick={() => {}}>
+              <Button
+                className={`advancedControls ${
+                  control[i].comp === true ? "active" : ""
+                }`}
+                onClick={(e) => {
+                  let _control = control.slice(0);
+                  _control[i].comp = !control[i].comp;
+                  setControl(_control);
+                }}
+              >
                 comp
               </Button>
-              <Button className="advancedControls" onClick={() => {}}>
+              <Button
+                className={`advancedControls ${
+                  control[i].reverb === true ? "active" : ""
+                }`}
+                onClick={(e) => {
+                  let _control = control.slice(0);
+                  _control[i].reverb = !control[i].reverb;
+                  setControl(_control);
+                }}
+              >
                 reverb
               </Button>
               <Slider
@@ -194,7 +330,7 @@ export default function MixerPage({ control, setControl, master }) {
                 style={{
                   margin: "10px auto",
                   padding: "auto",
-                  height: "200px",
+                  height: "100px",
                 }}
                 value={control[i].vol}
                 onChange={(value) => {
@@ -205,7 +341,7 @@ export default function MixerPage({ control, setControl, master }) {
                   if (_control[i].vol[0] > 0) {
                     _control[i].vol[0] = 0;
                   }
-                  console.log(control);
+                  // console.log(control);
                 }}
               />
 
@@ -215,71 +351,6 @@ export default function MixerPage({ control, setControl, master }) {
             </div>
           );
         })}
-
-        <div className="masterMixer">
-          <Button className="advancedControls" onClick={() => {}}>
-            eq
-          </Button>
-          <Button className="advancedControls" onClick={() => {}}>
-            comp
-          </Button>
-          <Button className="advancedControls" onClick={() => {}}>
-            reverb
-          </Button>
-          <Slider
-            min={0}
-            max={1}
-            step={0.05}
-            style={{ gridColumn: "1 / span 1" }}
-          />
-
-          <Range
-            trackStyle={[
-              { backgroundColor: "black" },
-              { backgroundColor: "transparent" },
-              { backgroundColor: "black" },
-            ]}
-            handleStyle={[
-              {
-                backgroundColor: "transparent",
-                borderColor: "transparent",
-              },
-              {
-                backgroundColor: "transparent",
-                borderColor: "transparent",
-              },
-              {
-                backgroundColor: "white",
-                borderRadius: "25px",
-                width: "1.5em",
-                left: "0",
-                border: "1px solid black",
-              },
-            ]}
-            railStyle={{ border: "1px solid black" }}
-            vertical
-            min={0}
-            max={1}
-            step={0.05}
-            style={{
-              margin: "10px auto",
-              padding: "auto",
-              height: "200px",
-            }}
-            value={master.vol}
-            onChange={(value) => {
-              let _control = control.slice(0);
-              _control.map((a) => {
-                return (a.vol = value);
-              });
-              setControl(_control);
-            }}
-          />
-
-          <div className="id">
-            <label>{master.name}</label>
-          </div>
-        </div>
       </div>
     </Mixer>
   );
