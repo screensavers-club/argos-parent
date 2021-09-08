@@ -32,8 +32,9 @@ export default function StreamTabs({ setSelectTab }) {
     <Tabs>
       {(tabs = [
         { tab: "stream" },
-        { tab: "monitor" },
-        { tab: "out" },
+        { tab: "layout" },
+        // { tab: "monitor" },
+        // { tab: "out" },
         { tab: "mixer" },
       ]).map(function ({ tab }, i) {
         let key = `key_${i}`;

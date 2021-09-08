@@ -80,7 +80,6 @@ const StyledPage = styled.div`
 `;
 
 export default function StreamRoom({ context, send, parents }) {
-
   const { room, connect, participants, audioTracks } = useRoom();
   const [selectTab, setSelectTab] = useState("stream");
   const [renderState, setRenderState] = useState(0);
@@ -164,7 +163,6 @@ export default function StreamRoom({ context, send, parents }) {
   useEffect(() => {
     connect(`${process.env.REACT_APP_LIVEKIT_SERVER}`, context.token)
       .then((room) => {
-
         console.log("room connected");
       })
       .catch((err) => console.log({ err }));
@@ -173,17 +171,17 @@ export default function StreamRoom({ context, send, parents }) {
     };
   }, []);
 
-
   return (
     <StyledPage>
       <div className="button">
         <Button
           onClick={() => {
+            room?.disconnect();
             send("RESET");
           }}
           variant="small"
         >
-          End Call
+          Disconnect
         </Button>
       </div>
 
@@ -193,7 +191,6 @@ export default function StreamRoom({ context, send, parents }) {
         switch (selectTab) {
           case "stream":
             return (
-
               <>
                 <MainControlView>
                   <div className="participants">
@@ -210,10 +207,11 @@ export default function StreamRoom({ context, send, parents }) {
                           audioTrackRefsState[firstAudioTrack?.trackSid];
 
                         return (
-                          <div style={{ border: "1px solid #fcf" }}>
-                            {participant.identity}
-                            <br />
-                            {firstAudioTrack?.trackSid}
+                          <div
+                            style={{ borderBottom: "1px solid #aaa" }}
+                            key={participant.identity}
+                          >
+                            <span className="user">{participant.identity}</span>
                             {trackRef && (
                               <button
                                 onClick={() => {
@@ -241,9 +239,9 @@ export default function StreamRoom({ context, send, parents }) {
                       })}
                   </div>
                   <div className="videos">
-                    {Object.keys(videoTrackRefsState).map((key) => {
+                    {Object.keys(videoTrackRefsState).map((key, i) => {
                       if (!videoTrackRefsState[key]?.videoTrack?.track) {
-                        return false;
+                        return <></>;
                       }
                       return (
                         <VideoFrame
@@ -253,9 +251,18 @@ export default function StreamRoom({ context, send, parents }) {
                       );
                     })}
                   </div>
+                  <div>Controls</div>
                 </MainControlView>
               </>
+            );
 
+          case "layout":
+            return (
+              <VideoLayoutEditor
+                participants={participants}
+                videoTrackRefsState={videoTrackRefsState}
+                onChange={() => {}}
+              />
             );
 
           case "mixer":
@@ -263,9 +270,7 @@ export default function StreamRoom({ context, send, parents }) {
               <MixerPage
                 control={control}
                 setControl={setControl}
-
                 master={context.master}
-
               />
             );
           case "monitor":
@@ -274,20 +279,12 @@ export default function StreamRoom({ context, send, parents }) {
           case "out":
             return <>This is the out page</>;
 
-
           default:
             <></>;
-
         }
       })()}
-      <TogglePerformers
-        control={control}
-        activeControl={activeControl}
-        setActiveControl={setActiveControl}
-      />
     </StyledPage>
   );
-
 }
 
 function VideoFrame({ track }) {
@@ -295,15 +292,17 @@ function VideoFrame({ track }) {
 
   useEffect(() => {
     const el = ref.current;
-    el.muted = true;
     if (!el) {
       return;
     }
-    track.videoTrack?.track?.attach(el);
+    el.muted = true;
+    track?.videoTrack?.track?.attach(el);
+    el.play();
+
     return () => {
-      track.videoTrack?.track?.detach(el);
+      track?.videoTrack?.track?.detach(el);
     };
-  });
+  }, []);
   return (
     <div>
       <video ref={ref} muted autoPlay />
@@ -317,16 +316,169 @@ const MainControlView = styled.div`
   display: grid;
   grid-template-columns: 15% 70% 15%;
 
+  .participants {
+    padding: 10px;
+    > div {
+      display: flex;
+      align-items: center;
+
+      span.user {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        font-size: 12px;
+        width: 80%;
+        margin: 3px 0;
+      }
+    }
+  }
+
   .videos {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(4, 1fr);
+    width: 100%;
+    height: 100%;
+    min-height: 80vh;
 
     > div {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      overflow: hidden;
+
       video {
         width: 100%;
         height: 100%;
         object-fit: cover;
+      }
+    }
+  }
+`;
+
+function VideoLayoutEditor({ onChange, participants, videoTrackRefsState }) {
+  return (
+    <VideoLayoutEditorDiv>
+      <div className="videoPalette">
+        {Object.keys(videoTrackRefsState).map((key, i) => {
+          if (!videoTrackRefsState[key]?.videoTrack?.track) {
+            return <></>;
+          }
+          return (
+            <div className="video">
+              <div className="thumbnail">
+                <VideoFrame track={videoTrackRefsState[key]} key={key} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="canvas">
+        <b className="h" />
+        <b className="h" />
+        <b className="h" />
+        <b className="h" />
+        <b className="v" />
+        <b className="v" />
+        <b className="v" />
+        <b className="v" />
+        <div className="video_container"></div>
+      </div>
+
+      <div className="layout">Modes</div>
+    </VideoLayoutEditorDiv>
+  );
+}
+
+const VideoLayoutEditorDiv = styled.div`
+  display: grid;
+  width: 100%;
+  grid-template-columns: 15% 70% 15%;
+
+  div.videoPalette {
+    .video {
+      display: flex;
+      border-bottom: 1px solid #aaa;
+      cursor: pointer;
+      padding: 5px;
+
+      .thumbnail {
+        width: 150px;
+
+        > div {
+          width: 100%;
+          height: 0;
+          box-sizing: border-box;
+          padding-top: 100%;
+          position: relative;
+
+          video {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            object-fit: contain;
+            top: 0;
+          }
+        }
+      }
+    }
+  }
+
+  div.canvas {
+    position: relative;
+    border: 1px solid #ddd;
+    height: 0;
+    box-sizing: border-box;
+    padding-top: 56%;
+
+    b.h {
+      position: absolute;
+      display: block;
+      height: 0;
+      width: 100%;
+      left: 0;
+      border-bottom: 1px solid #ddd;
+
+      &:nth-of-type(1) {
+        top: 20%;
+      }
+
+      &:nth-of-type(2) {
+        top: 40%;
+      }
+
+      &:nth-of-type(3) {
+        top: 60%;
+      }
+
+      &:nth-of-type(4) {
+        top: 80%;
+      }
+    }
+
+    b.v {
+      position: absolute;
+      display: block;
+      height: 100%;
+      width: 0;
+      border-left: 1px solid #ddd;
+      top: 0;
+
+      &:nth-of-type(5) {
+        left: 20%;
+      }
+
+      &:nth-of-type(6) {
+        left: 40%;
+      }
+
+      &:nth-of-type(7) {
+        left: 60%;
+      }
+
+      &:nth-of-type(8) {
+        left: 80%;
       }
     }
   }
