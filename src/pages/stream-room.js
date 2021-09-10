@@ -394,14 +394,11 @@ function VideoLayoutEditor({ onChange, participants, videoTrackRefsState }) {
 			</div>
 
 			<div className="canvas">
-				<b className="h" />
-				<b className="h" />
-				<b className="h" />
-				<b className="h" />
-				<b className="v" />
-				<b className="v" />
-				<b className="v" />
-				<b className="v" />
+				<div className="grid">
+					{new Array(10 * 10).fill(0).map((_, i) => {
+						return <div key={`grid_line_${i}`}></div>;
+					})}
+				</div>
 				<div className="video_container"></div>
 			</div>
 
@@ -474,56 +471,26 @@ const VideoLayoutEditorDiv = styled.div`
 		position: relative;
 		border: 1px solid #ddd;
 		height: 0;
+		border-bottom: 0;
+		border-right: 0;
 		box-sizing: border-box;
 		padding-top: 56%;
 
-		b.h {
+		.grid {
+			display: flex;
 			position: absolute;
-			display: block;
-			height: 0;
 			width: 100%;
-			left: 0;
-			border-bottom: 1px solid #ddd;
-
-			&:nth-of-type(1) {
-				top: 20%;
-			}
-
-			&:nth-of-type(2) {
-				top: 40%;
-			}
-
-			&:nth-of-type(3) {
-				top: 60%;
-			}
-
-			&:nth-of-type(4) {
-				top: 80%;
-			}
-		}
-
-		b.v {
-			position: absolute;
-			display: block;
 			height: 100%;
-			width: 0;
-			border-left: 1px solid #ddd;
 			top: 0;
+			flex-wrap: wrap;
 
-			&:nth-of-type(5) {
-				left: 20%;
-			}
-
-			&:nth-of-type(6) {
-				left: 40%;
-			}
-
-			&:nth-of-type(7) {
-				left: 60%;
-			}
-
-			&:nth-of-type(8) {
-				left: 80%;
+			> div {
+				box-sizing: border-box;
+				width: 10%;
+				height: 10%;
+				border: 1px solid #ddd;
+				border-top: 0;
+				border-left: 0;
 			}
 		}
 	}
