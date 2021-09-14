@@ -376,6 +376,7 @@ function VideoLayoutEditor({
 				if (editing === participant.identity) {
 					const str = decoder.decode(payload);
 					const obj = JSON.parse(str);
+					console.log(obj);
 					const targetLayout = {
 						...VideoLayouts[
 							Object.keys(VideoLayouts).find(
@@ -384,9 +385,11 @@ function VideoLayoutEditor({
 						],
 					};
 					var layout = targetLayout;
+					console.log(targetLayout);
+					layout.type = obj.current_layout.type;
 					layout.slots = targetLayout.slots.map((slot, i) => {
 						let _slot = { ...slot };
-						_slot.track = obj.current_layout.slots[i] || "";
+						_slot.track = obj.current_layout.slots[i].track || "";
 						return _slot;
 					});
 					setPreviewLayout(layout);
@@ -414,6 +417,7 @@ function VideoLayoutEditor({
 			]);
 		}
 	}
+
 	return (
 		<VideoLayoutEditorDiv>
 			<div className="participantList">
@@ -508,7 +512,8 @@ function VideoLayoutEditor({
 										_s.track = _tracks[i];
 										return _s;
 									});
-									setPreviewLayout(VideoLayouts[key]);
+
+									setPreviewLayout(_layout);
 								}}
 							>
 								<img src={VideoLayouts[key].icon} alt={key} />
