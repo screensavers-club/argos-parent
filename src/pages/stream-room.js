@@ -4,7 +4,9 @@ import Button from "../components/button";
 import { useRoom } from "livekit-react";
 import StreamTabs from "../components/stream-tabs";
 import MixerPage from "../components/mixer-page";
-import TogglePerformers from "../components/toggle-performers";
+
+import VideoLayouts from "../util/video-layouts";
+import { DataPacket_Kind, RoomEvent } from "livekit-client";
 
 const StyledPage = styled.div`
 	position: relative;
@@ -158,7 +160,6 @@ export default function StreamRoom({ context, send, parents }) {
 	}, [participants]);
 
 	const [control, setControl] = useState(context.input);
-	let [activeControl, setActiveControl] = useState(0);
 
 	useEffect(() => {
 		connect(`${process.env.REACT_APP_LIVEKIT_SERVER}`, context.token)
@@ -259,6 +260,7 @@ export default function StreamRoom({ context, send, parents }) {
 					case "layout":
 						return (
 							<VideoLayoutEditor
+								room={room}
 								participants={participants}
 								videoTrackRefsState={videoTrackRefsState}
 								onChange={() => {}}
@@ -304,8 +306,8 @@ function VideoFrame({ track }) {
 		};
 	}, []);
 	return (
-		<div>
-			<video ref={ref} muted autoPlay />
+		<div data-key={track?.videoTrack?.track?.sid}>
+			<video ref={ref} muted autoPlay key={track?.videoTrack?.track?.sid} />
 		</div>
 	);
 }
@@ -356,8 +358,63 @@ const MainControlView = styled.div`
 	}
 `;
 
-function VideoLayoutEditor({ onChange, participants, videoTrackRefsState }) {
+function VideoLayoutEditor({
+	onChange,
+	room,
+	participants,
+	videoTrackRefsState,
+}) {
 	const [editing, setEditing] = useState(null);
+	const [previewLayout, setPreviewLayout] = useState(null);
+	const encoder = new TextEncoder();
+
+	useEffect(() => {
+		if (room) {
+			room.removeAllListeners(RoomEvent.DataReceived);
+			room.on(RoomEvent.DataReceived, (payload, participant) => {
+				const decoder = new TextDecoder();
+				if (editing === participant.identity) {
+					const str = decoder.decode(payload);
+					const obj = JSON.parse(str);
+					console.log(obj);
+					const targetLayout = {
+						...VideoLayouts[
+							Object.keys(VideoLayouts).find(
+								(key) => key === obj.current_layout.type
+							)
+						],
+					};
+					var layout = targetLayout;
+					layout.slots = targetLayout.slots.map((slot, i) => {
+						let _slot = { ...slot };
+						_slot.track = obj.current_layout.slots[i] || "";
+						return _slot;
+					});
+					setPreviewLayout(layout);
+				}
+			});
+		}
+	}, [room, editing]);
+
+	function UpdateRemoteLayout(layout, targetIdentity) {
+		const data = encoder.encode(
+			JSON.stringify({
+				action: "UPDATE_LAYOUT",
+				layout,
+			})
+		);
+		if (room) {
+			const targetSid = participants.find(
+				(p) => p.identity === targetIdentity
+			)?.sid;
+			if (!targetSid) {
+				return;
+			}
+			room.localParticipant.publishData(data, DataPacket_Kind.RELIABLE, [
+				targetSid,
+			]);
+		}
+	}
 	return (
 		<VideoLayoutEditorDiv>
 			<div className="participantList">
@@ -375,6 +432,17 @@ function VideoLayoutEditor({ onChange, participants, videoTrackRefsState }) {
 							<div
 								onClick={() => {
 									setEditing(participant.identity);
+									const data = encoder.encode(
+										JSON.stringify({
+											action: "REQUEST_CURRENT_LAYOUT",
+										})
+									);
+
+									room.localParticipant.publishData(
+										data,
+										DataPacket_Kind.RELIABLE,
+										[participant.sid]
+									);
 								}}
 								className={`participant${
 									editing === participant.identity ? " active" : ""
@@ -383,7 +451,10 @@ function VideoLayoutEditor({ onChange, participants, videoTrackRefsState }) {
 							>
 								<div className="thumbnail">
 									{videoTrack ? (
-										<VideoFrame track={videoTrackRefsState[videoTrack]} />
+										<VideoFrame
+											track={videoTrackRefsState[videoTrack]}
+											key={videoTrack}
+										/>
 									) : (
 										<></>
 									)}
@@ -399,32 +470,92 @@ function VideoLayoutEditor({ onChange, participants, videoTrackRefsState }) {
 						return <div key={`grid_line_${i}`}></div>;
 					})}
 				</div>
-				<div className="video_container"></div>
+				<div className="video_container">
+					{previewLayout ? (
+						previewLayout.slots.map((slot, index) => {
+							return (
+								<VideoSlot
+									slot={slot}
+									availableVideos={videoTrackRefsState}
+									onUpdate={(trackSid) => {
+										let _layout = { ...previewLayout };
+										_layout.slots[index].track = trackSid;
+										UpdateRemoteLayout(_layout, editing);
+									}}
+									key={`slot_${index}_${slot.track}`}
+									track={slot.track}
+								/>
+							);
+						})
+					) : (
+						<></>
+					)}
+				</div>
 			</div>
 
 			<div className={`layout ${!editing ? " locked" : ""}`}>
 				<label>Modes</label>
 				<br />
-				<button>
-					<img src="/images/layout-icons/a.svg" alt="Layout A" />
-				</button>
-				<button>
-					<img src="/images/layout-icons/b.svg" alt="Layout B" />
-				</button>
-				<button>
-					<img src="/images/layout-icons/c.svg" alt="Layout C" />
-				</button>
-				<button>
-					<img src="/images/layout-icons/d.svg" alt="Layout D" />
-				</button>
-				<button>
-					<img src="/images/layout-icons/e.svg" alt="Layout E" />
-				</button>
-				<button>
-					<img src="/images/layout-icons/f.svg" alt="Layout F" />
-				</button>
+				<div>
+					{Object.keys(VideoLayouts).map((key) => {
+						return (
+							<button
+								key={key}
+								onClick={() => {
+									setPreviewLayout(VideoLayouts[key]);
+								}}
+							>
+								<img src={VideoLayouts[key].icon} alt={key} />
+							</button>
+						);
+					})}
+				</div>
 			</div>
 		</VideoLayoutEditorDiv>
+	);
+}
+
+function VideoSlot({ slot, onUpdate, availableVideos, track }) {
+	const [selectedVideo, setSelectedVideo] = useState(track);
+
+	useEffect(() => {
+		onUpdate(selectedVideo);
+	}, [selectedVideo, onUpdate]);
+	return (
+		<div
+			className="slot"
+			style={{
+				width: `${slot.size[0]}%`,
+				height: `${slot.size[1]}%`,
+				top: `${slot.position[1]}%`,
+				left: `${slot.position[0]}%`,
+			}}
+		>
+			{selectedVideo && availableVideos[selectedVideo] ? (
+				<VideoFrame
+					key={selectedVideo}
+					track={availableVideos[selectedVideo]}
+				/>
+			) : (
+				false
+			)}
+			<select
+				value={selectedVideo}
+				onChange={(e) => {
+					setSelectedVideo(e.target.value);
+					console.log(e.target.value);
+				}}
+			>
+				<option value="">--</option>
+				{Object.keys(availableVideos).map((key) => {
+					return (
+						<option key={key} value={key}>
+							{key}
+						</option>
+					);
+				})}
+			</select>
+		</div>
 	);
 }
 
@@ -475,6 +606,7 @@ const VideoLayoutEditorDiv = styled.div`
 		border-right: 0;
 		box-sizing: border-box;
 		padding-top: 56%;
+		margin: 10px;
 
 		.grid {
 			display: flex;
@@ -491,6 +623,30 @@ const VideoLayoutEditorDiv = styled.div`
 				border: 1px solid #ddd;
 				border-top: 0;
 				border-left: 0;
+			}
+		}
+
+		.slot {
+			background: rgba(255, 255, 255, 0.5);
+			position: absolute;
+			border: 1px solid #000;
+			box-sizing: border-box;
+
+			> div {
+				width: 100%;
+				height: 100%;
+
+				> video {
+					width: 100%;
+					height: 100%;
+					object-fit: cover;
+				}
+			}
+
+			select {
+				position: absolute;
+				bottom: 10px;
+				right: 10px;
 			}
 		}
 	}
