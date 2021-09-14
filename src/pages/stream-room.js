@@ -376,7 +376,6 @@ function VideoLayoutEditor({
 				if (editing === participant.identity) {
 					const str = decoder.decode(payload);
 					const obj = JSON.parse(str);
-					console.log(obj);
 					const targetLayout = {
 						...VideoLayouts[
 							Object.keys(VideoLayouts).find(
@@ -502,6 +501,13 @@ function VideoLayoutEditor({
 							<button
 								key={key}
 								onClick={() => {
+									let _tracks = previewLayout.slots.map((s) => s.track);
+									let _layout = { ...VideoLayouts[key] };
+									_layout.slots = VideoLayouts[key].slots.map((slot, i) => {
+										let _s = slot;
+										_s.track = _tracks[i];
+										return _s;
+									});
 									setPreviewLayout(VideoLayouts[key]);
 								}}
 							>
