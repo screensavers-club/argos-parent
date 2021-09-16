@@ -379,7 +379,6 @@ let argosParentMachine = createMachine(
           RETRIEVE_ROOMS: {
             actions: assign({
               rooms_available: (context, event) => {
-                // console.log(event.rooms_available);
                 return event.rooms_available;
               },
             }),
@@ -394,6 +393,9 @@ let argosParentMachine = createMachine(
             actions: assign({
               token: (context, event) => {
                 return event.token;
+              },
+              passcode: (_, event) => {
+                return event.passcode;
               },
               room: (context, event) => {
                 return { name: context.joining_room };
