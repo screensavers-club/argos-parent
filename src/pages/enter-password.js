@@ -164,7 +164,7 @@ export default function EnterPassword({ send, context }) {
         </Button>
         <Button
           onClick={() => {
-            send("RESET");
+            send("DISCONNECT");
           }}
         >
           Back

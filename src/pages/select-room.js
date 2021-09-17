@@ -88,7 +88,7 @@ export default function SelectRoom({ send, context }) {
         </Button>
         <Button
           onClick={() => {
-            send("RESET");
+            send("DISCONNECT");
           }}
         >
           Back
