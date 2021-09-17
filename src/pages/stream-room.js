@@ -80,11 +80,11 @@ const StyledPage = styled.div`
     padding: auto;
   }
 
-  > div.exitBG {
+  > div.exitingBG {
     display: none;
   }
 
-  div.exitModal {
+  div.exitingModal {
     display: none;
   }
 
@@ -140,7 +140,7 @@ export default function StreamRoom({ context, send, parents }) {
   const [selectTab, setSelectTab] = useState("stream");
   const [renderState, setRenderState] = useState(0);
 
-  let [exit, setExit] = useState(false);
+  let [exiting, setExiting] = useState(false);
 
   const audioCtx = useRef(new AudioContext());
   const audioTrackRefs = useRef({});
@@ -234,7 +234,7 @@ export default function StreamRoom({ context, send, parents }) {
       <div className="button">
         <Button
           onClick={() => {
-            setExit(true);
+            setExiting(true);
           }}
           variant="small"
         >
@@ -242,13 +242,13 @@ export default function StreamRoom({ context, send, parents }) {
         </Button>
       </div>
       <div
-        className={`exitBG ${exit === true ? "activeBG" : ""}`}
+        className={`exitingBG ${exiting === true ? "activeBG" : ""}`}
         onClick={() => {
-          setExit(false);
+          setExiting(false);
         }}
       ></div>
-      <div className={`exitModal ${exit === true ? "active" : ""}`}>
-        Are you sure you want to exit?
+      <div className={`exitingModal ${exiting === true ? "active" : ""}`}>
+        Are you sure you want to exiting?
         <div>
           <Button
             variant="small"
@@ -256,7 +256,7 @@ export default function StreamRoom({ context, send, parents }) {
             onClick={() => {
               room?.disconnect();
               send("DISCONNECT");
-              setExit(false);
+              setExiting(false);
             }}
           >
             yes
@@ -265,7 +265,7 @@ export default function StreamRoom({ context, send, parents }) {
             variant="small"
             className="no"
             onClick={() => {
-              setExit(false);
+              setExiting(false);
             }}
           >
             no
