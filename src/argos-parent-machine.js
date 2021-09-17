@@ -419,7 +419,7 @@ let argosParentMachine = createMachine(
           return { ...context.room, name: event.data.room };
         },
       }),
-      RESET: { target: "server_connected", room: "Not Connected" },
+      DISCONNECT: { target: "server_connected", room: "Not Connected" },
     },
   },
   {

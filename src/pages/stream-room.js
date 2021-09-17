@@ -79,12 +79,29 @@ const StyledPage = styled.div`
     margin: auto;
     padding: auto;
   }
+
+  div.exitModal {
+    display: none;
+    background: blue;
+    position: fixed;
+    width: 50%;
+    height: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  > div.active {
+    display: block;
+  }
 `;
 
 export default function StreamRoom({ context, send, parents }) {
   const { room, connect, participants, audioTracks } = useRoom();
   const [selectTab, setSelectTab] = useState("stream");
   const [renderState, setRenderState] = useState(0);
+
+  let [exit, setExit] = useState(false);
 
   const audioCtx = useRef(new AudioContext());
   const audioTrackRefs = useRef({});
@@ -178,13 +195,36 @@ export default function StreamRoom({ context, send, parents }) {
       <div className="button">
         <Button
           onClick={() => {
-            room?.disconnect();
-            send("RESET");
+            setExit(true);
           }}
           variant="small"
         >
           Disconnect
         </Button>
+      </div>
+
+      <div
+        className={`exitModal ${exit === true ? "active" : ""}`}
+        // onEsc={() => setExit(false)}
+        // onClickOutside={() => setExit(false)}
+      >
+        Are you sure you want to exit?
+        <button
+          onClick={() => {
+            room?.disconnect();
+            send("DISCONNECT");
+            setExit(false);
+          }}
+        >
+          yes
+        </button>
+        <button
+          onClick={() => {
+            setExit(false);
+          }}
+        >
+          no
+        </button>
       </div>
 
       <StreamTabs setSelectTab={setSelectTab} />
