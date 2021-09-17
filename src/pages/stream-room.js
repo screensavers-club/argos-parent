@@ -119,6 +119,10 @@ const StyledPage = styled.div`
         ~ .no {
           background: #f25555;
           color: white;
+          :hover {
+            cursor: pointer;
+            background: #f22222;
+          }
         }
       }
     }
