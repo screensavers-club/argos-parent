@@ -80,10 +80,6 @@ const StyledPage = styled.div`
     padding: auto;
   }
 
-  > div.exitingBG {
-    display: none;
-  }
-
   div.exitingModal {
     display: none;
   }
@@ -127,16 +123,6 @@ const StyledPage = styled.div`
       }
     }
   }
-
-  > div.activeBG {
-    position: fixed;
-    display: block;
-    background: rgba(0, 0, 0, 0.3);
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
 `;
 
 export default function StreamRoom({ context, send, parents }) {
@@ -145,6 +131,7 @@ export default function StreamRoom({ context, send, parents }) {
   const [renderState, setRenderState] = useState(0);
 
   let [exiting, setExiting] = useState(false);
+  const exitingModalRef = useRef();
 
   const audioCtx = useRef(new AudioContext());
   const audioTrackRefs = useRef({});
@@ -156,6 +143,28 @@ export default function StreamRoom({ context, send, parents }) {
   const [videoTrackRefsState, setVideoTrackRefsState] = useState(
     videoTrackRefs.current
   );
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keyup", handleEsc);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keyup", handleEsc);
+    };
+  }, []);
+
+  const handleClick = (e) => {
+    if (exitingModalRef.current.contains(e.target)) {
+      return;
+    }
+    setExiting(false);
+  };
+
+  const handleEsc = (e) => {
+    if (e.key === "Escape") {
+      setExiting(false);
+    } else return;
+  };
 
   useEffect(() => {
     let __tracks = [];
@@ -246,12 +255,9 @@ export default function StreamRoom({ context, send, parents }) {
         </Button>
       </div>
       <div
-        className={`exitingBG ${exiting === true ? "activeBG" : ""}`}
-        onClick={() => {
-          setExiting(false);
-        }}
-      ></div>
-      <div className={`exitingModal ${exiting === true ? "active" : ""}`}>
+        className={`exitingModal ${exiting === true ? "active" : ""}`}
+        ref={exitingModalRef}
+      >
         Are you sure you want to exiting?
         <div>
           <Button
