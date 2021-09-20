@@ -71,38 +71,40 @@ const StyledPage = styled.div`
 	}
 	div.exitingModal {
 		display: none;
-	}
-	div.active {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		border: 1px solid black;
-		background: white;
-		position: fixed;
-		width: 30%;
-		height: 30%;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-		div {
-			width: 100%;
-			margin-top: 25px;
-			display: inline-flex;
+
+		&.active {
+			display: flex;
+			flex-direction: column;
 			justify-content: center;
-			> button {
-				padding: 5px;
-				display: flex;
+			align-items: center;
+			border: 1px solid black;
+			background: white;
+			position: fixed;
+			width: 30%;
+			height: 30%;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			z-index: 4;
+			div {
+				width: 100%;
+				margin-top: 25px;
+				display: inline-flex;
 				justify-content: center;
-				align-content: center;
-				margin: 5px;
-				min-width: 50px;
-				~ .no {
-					background: #f25555;
-					color: white;
-					:hover {
-						cursor: pointer;
-						background: #f22222;
+				> button {
+					padding: 5px;
+					display: flex;
+					justify-content: center;
+					align-content: center;
+					margin: 5px;
+					min-width: 50px;
+					~ .no {
+						background: #f25555;
+						color: white;
+						:hover {
+							cursor: pointer;
+							background: #f22222;
+						}
 					}
 				}
 			}
