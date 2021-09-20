@@ -87,6 +87,7 @@ export default function StreamRoom({ context, send, parents }) {
   const [renderState, setRenderState] = useState(0);
 
   const audioCtx = useRef(new AudioContext());
+  const msDestination = useRef(null);
   const audioTrackRefs = useRef({});
   const [audioTrackRefsState, setAudioTrackRefsState] = useState(
     audioTrackRefs.current
@@ -98,6 +99,11 @@ export default function StreamRoom({ context, send, parents }) {
   );
 
   useEffect(() => {
+    //create mediaStreamDestination
+    msDestination.current = audioCtx.current.createMediaStreamDestination();
+  });
+
+  useEffect(() => {
     let __tracks = [];
     audioTracks.forEach((audioTrack) => {
       if (__tracks.indexOf(audioTrack.sid) < 0 && audioTrack.mediaStreamTrack) {
@@ -106,11 +112,16 @@ export default function StreamRoom({ context, send, parents }) {
           audioTrack.mediaStreamTrack
         );
         let gainNode = new GainNode(audioCtx.current, { gain: 1 });
+        let channelSplitterNode = new ChannelSplitterNode(audioCtx.current, {
+          numberOfOutputs: 2,
+        });
         audioTrackRefs.current[audioTrack.sid] = {
           mediaStreamTrackSource: mst,
           gainNode: gainNode,
+          splitter: channelSplitterNode,
         };
-        mst.connect(gainNode).connect(audioCtx.current.destination);
+        mst.connect(channelSplitterNode).connect(audioCtx.current.destination);
+        channelSplitterNode.connect(gainNode).connect(msDestination.current);
       }
     });
 
@@ -118,6 +129,7 @@ export default function StreamRoom({ context, send, parents }) {
       if (__tracks.indexOf(key) < 0) {
         audioTrackRefs.current[key].mediaStreamTrackSource.disconnect();
         audioTrackRefs.current[key].gainNode.disconnect();
+        audioTrackRefs.current[key].splitter.disconnect();
         delete audioTrackRefs.current[key];
       }
     });
@@ -291,11 +303,44 @@ export default function StreamRoom({ context, send, parents }) {
 
           case "mixer":
             return (
-              <MixerPage
-                control={control}
-                setControl={setControl}
-                master={context.master}
-              />
+              <div>
+                <div style={{ display: "flex" }}>
+                  <input
+                    type="text"
+                    id={`stream_url_${context.identity}`}
+                    value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${context.identity}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // let input = document.querySelector(
+                      //   `#${`stream_url_${key}`}`
+                      // );
+                      // input.select();
+                      // document.execCommand("copy");
+                    }}
+                  >
+                    Copy
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      let track = msDestination.current?.stream?.getTracks();
+                      if (track[0]) {
+                        console.log("publish track");
+                        room.localParticipant.publishTrack(track[0]);
+                      }
+                    }}
+                  >
+                    Test
+                  </button>
+                </div>
+                <MixerPage
+                  control={control}
+                  setControl={setControl}
+                  master={context.master}
+                />
+              </div>
             );
           case "monitor":
             return <>This is the monitor page</>;
@@ -398,7 +443,6 @@ function VideoLayoutEditor({
         if (editing === participant.identity) {
           const str = decoder.decode(payload);
           const obj = JSON.parse(str);
-          console.log(obj);
           const targetLayout = {
             ...VideoLayouts[
               Object.keys(VideoLayouts).find(
@@ -409,6 +453,7 @@ function VideoLayoutEditor({
           var layout = targetLayout;
           console.log(targetLayout);
           layout.type = obj.current_layout.type;
+
           layout.slots = targetLayout.slots.map((slot, i) => {
             let _slot = { ...slot };
             _slot.track = obj.current_layout.slots[i].track || "";
