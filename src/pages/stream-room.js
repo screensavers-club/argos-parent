@@ -7,6 +7,7 @@ import MixerPage from "../components/mixer-page";
 
 import VideoLayouts from "../util/video-layouts";
 import { DataPacket_Kind, RoomEvent } from "livekit-client";
+import { User as UserIcon } from "react-ikonate";
 
 const StyledPage = styled.div`
   position: relative;
@@ -50,6 +51,7 @@ const StyledPage = styled.div`
     border: 1px solid black;
     padding: 10px;
     margin: 25px;
+
     div.userVideos {
       position: relative;
       border: 1px solid red;
@@ -69,6 +71,7 @@ const StyledPage = styled.div`
     margin: auto;
     padding: auto;
   }
+
   div.exitingModal {
     display: none;
 
@@ -205,6 +208,7 @@ export default function StreamRoom({ context, send, parents }) {
         videoTrackRefs.current[firstVideo.key] = {
           videoTrack: firstVideo.track,
           identity: participant.identity,
+          nickname: JSON.parse(participant.metadata).nickname,
         };
       }
     });
@@ -586,15 +590,8 @@ function VideoLayoutEditor({
                 key={videoTrack || "participant" + i}
               >
                 <div className="thumbnail">
-                  {videoTrack ? (
-                    <VideoFrame
-                      track={videoTrackRefsState[videoTrack]}
-                      key={videoTrack}
-                    />
-                  ) : (
-                    <>--</>
-                  )}
-                  {participant.metadata}
+                  <UserIcon />
+                  {JSON.parse(participant.metadata).nickname}
                 </div>
               </div>
             );
@@ -696,14 +693,14 @@ function VideoSlot({ slot, onUpdate, availableVideos, track }) {
         value={selectedVideo}
         onChange={(e) => {
           setSelectedVideo(e.target.value);
-          console.log(e.target.value);
         }}
       >
         <option value="">--</option>
         {Object.keys(availableVideos).map((key) => {
+          console.log(availableVideos);
           return (
             <option key={key} value={key}>
-              {key}
+              {availableVideos[key].nickname}
             </option>
           );
         })}
@@ -729,24 +726,8 @@ const VideoLayoutEditorDiv = styled.div`
       }
 
       .thumbnail {
-        width: 150px;
-
-        > div {
-          width: 100%;
-          height: 0;
-          box-sizing: border-box;
-          padding-top: 55%;
-          position: relative;
-
-          video {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            object-fit: contain;
-            top: 0;
-            background: #000;
-          }
-        }
+        display: flex;
+        align-items: center;
       }
     }
   }
