@@ -511,8 +511,11 @@ function VideoLayoutEditor({
 							)
 						],
 					};
+					if (targetLayout === {}) {
+						return;
+					}
 					var layout = targetLayout;
-					console.log(targetLayout);
+					console.log(targetLayout, obj);
 					layout.type = obj.current_layout.type;
 
 					layout.slots = targetLayout.slots.map((slot, i) => {
@@ -627,7 +630,13 @@ function VideoLayoutEditor({
 			<div className={`layout ${!editing ? " locked" : ""}`}>
 				<label>Modes</label>
 				<br />
-				<div>
+				<div
+					style={{
+						display: "grid",
+						gridTemplateColumns: "1fr 1fr",
+						gap: "10px",
+					}}
+				>
 					{Object.keys(VideoLayouts).map((key) => {
 						return (
 							<button
