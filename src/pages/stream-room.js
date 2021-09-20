@@ -78,14 +78,19 @@ const StyledPage = styled.div`
 			justify-content: center;
 			align-items: center;
 			border: 1px solid black;
-			background: white;
+			color: white;
+			background: #333;
 			position: fixed;
 			width: 30%;
 			height: 30%;
 			left: 50%;
 			top: 50%;
 			transform: translate(-50%, -50%);
-			z-index: 4;
+			/* box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+      rgba(0, 0, 0, 0.3) 0px 8px 16px -8px; */
+			border-radius: 25px;
+			z-index: 6;
+
 			div {
 				width: 100%;
 				margin-top: 25px;
@@ -98,7 +103,7 @@ const StyledPage = styled.div`
 					align-content: center;
 					margin: 5px;
 					min-width: 50px;
-					~ .no {
+					~ .yes {
 						background: #f25555;
 						color: white;
 						:hover {
@@ -238,8 +243,17 @@ export default function StreamRoom({ context, send, parents }) {
 				className={`exitingModal ${exiting === true ? "active" : ""}`}
 				ref={exitingModalRef}
 			>
-				Are you sure you want to exiting?
+				Are you sure you want to exit?
 				<div>
+					<Button
+						variant="small"
+						className="no"
+						onClick={() => {
+							setExiting(false);
+						}}
+					>
+						no
+					</Button>
 					<Button
 						variant="small"
 						className="yes"
@@ -250,15 +264,6 @@ export default function StreamRoom({ context, send, parents }) {
 						}}
 					>
 						yes
-					</Button>
-					<Button
-						variant="small"
-						className="no"
-						onClick={() => {
-							setExiting(false);
-						}}
-					>
-						no
 					</Button>
 				</div>
 			</div>
