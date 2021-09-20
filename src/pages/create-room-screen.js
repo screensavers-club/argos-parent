@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import Button from "../components/button";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Repeat } from "react-ikonate";
+import "../animate.min.css";
 
 import axios from "axios";
 
@@ -75,6 +76,7 @@ const StyledPage = styled.div`
 
 export default function FetchedRoom({ context, send }) {
   let [passcode, setPasscode] = useState();
+  let ref = useRef();
 
   return (
     <StyledPage>
@@ -99,8 +101,9 @@ export default function FetchedRoom({ context, send }) {
         </div>
       </div>
       <div className="section">
-        <label>Passcode</label>
+        <label>Passcode (5 digits)</label>
         <input
+          ref={ref}
           className="passInput"
           type="password"
           placeholder="set passcode (digits only)"
@@ -128,23 +131,38 @@ export default function FetchedRoom({ context, send }) {
               passcode: passcode,
               identity: context.identity,
             };
-
-            axios
-              .post(
-                `${process.env.REACT_APP_PEER_SERVER}/parent/room/new`,
-                payload
-              )
-              .then((result) => {
-                console.log(result);
-                return send("RECEIVE_TOKEN", { token: result.data.token });
-              });
+            console.log(payload.passcode);
+            if (payload.passcode.length > 0 && payload.passcode.length < 5) {
+              {
+                ref.current?.classList?.add(
+                  "animate__animated",
+                  "animate__shakeX"
+                );
+                window.setTimeout(() => {
+                  ref.current?.classList?.remove(
+                    "animate__animated",
+                    "animate__shakeX"
+                  );
+                }, 2000);
+              }
+            } else {
+              axios
+                .post(
+                  `${process.env.REACT_APP_PEER_SERVER}/parent/room/new`,
+                  payload
+                )
+                .then((result) => {
+                  // console.log(result);
+                  return send("RECEIVE_TOKEN", { token: result.data.token });
+                });
+            }
           }}
         >
           Go
         </Button>
         <Button
           onClick={() => {
-            send("RESET");
+            send("DISCONNECT");
           }}
         >
           Back
