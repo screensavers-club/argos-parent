@@ -521,6 +521,9 @@ function VideoLayoutEditor({
         if (editing === participant.identity) {
           const str = decoder.decode(payload);
           const obj = JSON.parse(str);
+          if (!obj?.current_layout) {
+            return;
+          }
           const targetLayout = {
             ...VideoLayouts[
               Object.keys(VideoLayouts).find(
