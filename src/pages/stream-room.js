@@ -175,8 +175,11 @@ export default function StreamRoom({ context, send, parents }) {
           gainNode: gainNode,
           splitter: channelSplitterNode,
         };
-        mst.connect(channelSplitterNode).connect(audioCtx.current.destination);
-        channelSplitterNode.connect(gainNode).connect(msDestination.current);
+        mst
+          .connect(gainNode)
+          .connect(channelSplitterNode)
+          .connect(audioCtx.current.destination);
+        channelSplitterNode.connect(msDestination.current);
       }
     });
     Object.keys(audioTrackRefs.current).forEach((key) => {
@@ -190,6 +193,7 @@ export default function StreamRoom({ context, send, parents }) {
     setAudioTrackRefsState(audioTrackRefs.current);
     setRenderState(renderState + 1);
   }, [audioTracks]);
+
   useEffect(() => {
     let __tracks = [];
     participants.forEach((participant) => {
@@ -226,6 +230,12 @@ export default function StreamRoom({ context, send, parents }) {
     connect(`${process.env.REACT_APP_LIVEKIT_SERVER}`, context.token)
       .then((room) => {
         console.log("room connected");
+
+        let track = msDestination.current?.stream?.getTracks();
+        if (track[0]) {
+          console.log("publish track");
+          room.localParticipant.publishTrack(track[0]);
+        }
       })
       .catch((err) => console.log({ err }));
     return () => {
@@ -393,16 +403,7 @@ export default function StreamRoom({ context, send, parents }) {
                   >
                     Copy
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      let track = msDestination.current?.stream?.getTracks();
-                      if (track[0]) {
-                        console.log("publish track");
-                        room.localParticipant.publishTrack(track[0]);
-                      }
-                    }}
-                  >
+                  <button type="button" onClick={() => {}}>
                     Test
                   </button>
                 </div>
