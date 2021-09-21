@@ -4,6 +4,7 @@ import Button from "../components/button";
 import { useRoom } from "livekit-react";
 import StreamTabs from "../components/stream-tabs";
 import MixerPage from "../components/mixer-page";
+import CueMix from "../components/cue-mix-panel";
 
 import VideoLayouts from "../util/video-layouts";
 import { DataPacket_Kind, RoomEvent } from "livekit-client";
@@ -271,7 +272,7 @@ export default function StreamRoom({ context, send, parents }) {
           </Button>
         </div>
       </div>
-      <StreamTabs setSelectTab={setSelectTab} />
+      <StreamTabs setSelectTab={setSelectTab} selectedTab={selectTab} />
       {(function () {
         switch (selectTab) {
           case "stream":
@@ -297,7 +298,9 @@ export default function StreamRoom({ context, send, parents }) {
                             style={{ borderBottom: "1px solid #aaa" }}
                             key={participant.identity}
                           >
-                            <span className="user">{participant.identity}</span>
+                            <span className="user">
+                              {JSON.parse(participant?.metadata)?.nickname}
+                            </span>
                             {trackRef && (
                               <button
                                 onClick={() => {
@@ -367,7 +370,6 @@ export default function StreamRoom({ context, send, parents }) {
                 room={room}
                 participants={participants}
                 videoTrackRefsState={videoTrackRefsState}
-                onChange={() => {}}
               />
             );
           case "mixer":
@@ -410,6 +412,15 @@ export default function StreamRoom({ context, send, parents }) {
                   master={context.master}
                 />
               </div>
+            );
+
+          case "cue mix":
+            return (
+              <CueMix
+                room={room}
+                audioTracks={audioTracks}
+                participants={participants}
+              />
             );
           case "monitor":
             return <>This is the monitor page</>;
@@ -521,7 +532,6 @@ function VideoLayoutEditor({
             return;
           }
           var layout = targetLayout;
-          console.log(targetLayout, obj);
           layout.type = obj.current_layout.type;
 
           layout.slots = targetLayout.slots.map((slot, i) => {

@@ -17,7 +17,8 @@ const Tabs = styled.div`
       margin-left: -1px;
     }
 
-    &:hover {
+    &:hover,
+    &.selected {
       z-index: 1;
       border-bottom: 5px solid black;
       margin-bottom: -5px;
@@ -27,7 +28,7 @@ const Tabs = styled.div`
   }
 `;
 
-export default function StreamTabs({ setSelectTab }) {
+export default function StreamTabs({ setSelectTab, selectedTab }) {
   return (
     <Tabs>
       {(tabs = [
@@ -35,6 +36,7 @@ export default function StreamTabs({ setSelectTab }) {
         { tab: "layout" },
         // { tab: "monitor" },
         // { tab: "out" },
+        { tab: "cue mix" },
         { tab: "mixer" },
       ]).map(function ({ tab }, i) {
         let key = `key_${i}`;
@@ -44,6 +46,7 @@ export default function StreamTabs({ setSelectTab }) {
             onClick={() => {
               setSelectTab(tab);
             }}
+            className={selectedTab === tab ? "selected" : ""}
           >
             {tab}
           </div>
