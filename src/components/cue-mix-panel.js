@@ -28,6 +28,21 @@ function sendToggleMuteTrack(room, participant, owner) {
   ]);
 }
 
+function sendToggleParentTrack(room, participant, owner) {
+  const payload = JSON.stringify({
+    action: "TOGGLE_CUE_MIX_TRACK",
+    target: owner.identity,
+    mode: "parent",
+  });
+  const encoder = new TextEncoder();
+  const data = encoder.encode(payload);
+  const targetSid = participant.sid;
+
+  room.localParticipant.publishData(data, DataPacket_Kind.RELIABLE, [
+    targetSid,
+  ]);
+}
+
 export default function CueMix({ room, audioTracks, participants }) {
   let [cueMixState, setCueMixState] = useState({});
 
@@ -43,7 +58,6 @@ export default function CueMix({ room, audioTracks, participants }) {
       if (participant.identity) {
         let _cueMixState = { ...cueMixState };
         _cueMixState[participant.identity] = obj.cue_mix_state;
-        console.log(_cueMixState);
         setCueMixState(_cueMixState);
       }
     });
@@ -108,6 +122,26 @@ export default function CueMix({ room, audioTracks, participants }) {
                       </div>
                     );
                   })}
+
+                {(() => {
+                  let isMuted = true;
+                  if (cueMixState[p?.identity]) {
+                    isMuted = cueMixState[p.identity].source !== "parent";
+                  }
+
+                  return (
+                    <div
+                      className="slot"
+                      key={room?.localParticipant?.identity}
+                      onClick={() => {
+                        sendToggleParentTrack(room, p, room?.localParticipant);
+                      }}
+                    >
+                      <b className={`status ${isMuted ? " muted" : ""}`} />{" "}
+                      [PARENT]
+                    </div>
+                  );
+                })()}
               </div>
             </MixTrack>
           );
