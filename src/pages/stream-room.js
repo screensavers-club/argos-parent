@@ -233,7 +233,6 @@ export default function StreamRoom({ context, send, parents }) {
 
         let track = msDestination.current?.stream?.getTracks();
         if (track[0]) {
-          console.log("publish track");
           room.localParticipant.publishTrack(track[0]);
         }
       })

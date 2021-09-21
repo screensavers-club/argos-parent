@@ -103,7 +103,6 @@ export default function CueMix({ room, audioTracks, participants }) {
                     if (_state?.source === "parent") {
                       isMuted = true;
                     } else if (_state?.mute) {
-                      console.log(_state.mute);
                       if (_state.mute.indexOf(owner.identity) > -1) {
                         isMuted = true;
                       }
@@ -138,7 +137,7 @@ export default function CueMix({ room, audioTracks, participants }) {
                       }}
                     >
                       <b className={`status ${isMuted ? " muted" : ""}`} />{" "}
-                      [PARENT]
+                      [PMIX]
                     </div>
                   );
                 })()}
