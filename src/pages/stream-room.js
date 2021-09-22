@@ -335,39 +335,67 @@ export default function StreamRoom({ context, send, parents }) {
                         );
                       })}
                   </div>
-                  <div className="videos">
-                    {Object.keys(videoTrackRefsState).map((key, i) => {
-                      if (!videoTrackRefsState[key]?.videoTrack?.track) {
-                        return <></>;
-                      }
-                      return (
-                        <div key={key}>
-                          <VideoFrame
-                            track={videoTrackRefsState[key]}
-                            key={key}
-                          />
-                          <div style={{ display: "flex" }}>
-                            <input
-                              type="text"
-                              id={`stream_url_${key}`}
-                              value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${videoTrackRefsState[key].identity}`}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                let input = document.querySelector(
-                                  `#${`stream_url_${key}`}`
-                                );
-                                input.select();
-                                document.execCommand("copy");
-                              }}
-                            >
-                              Copy
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
+                  <div>
+                    <div className="children">
+                      {participants
+                        .filter(
+                          (p) =>
+                            JSON.parse(p?.metadata || "{}")?.type === "CHILD"
+                        )
+                        .map((p, i) => {
+                          const key = p.identity;
+                          const nickname = JSON.parse(
+                            p?.metadata || "{}"
+                          )?.nickname;
+                          return (
+                            <div key={key} className="child">
+                              <span className="name">
+                                <UserIcon /> {nickname}
+                              </span>
+                              <div className="stream_code">
+                                <label>Video only</label>
+                                <input
+                                  type="text"
+                                  id={`stream_url_${key}`}
+                                  value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}`}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    let input = document.querySelector(
+                                      `#${`stream_url_${key}`}`
+                                    );
+                                    input.select();
+                                    document.execCommand("copy");
+                                  }}
+                                >
+                                  Copy
+                                </button>
+                              </div>
+                              <div className="stream_code">
+                                <label>Video + Audio</label>
+                                <input
+                                  type="text"
+                                  id={`stream_url_a_${key}`}
+                                  value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}&audio=1`}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    let input = document.querySelector(
+                                      `#${`stream_url_a_${key}`}`
+                                    );
+                                    input.select();
+                                    document.execCommand("copy");
+                                  }}
+                                >
+                                  Copy
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
                   </div>
                   <div>Controls</div>
                 </MainControlView>
@@ -480,25 +508,29 @@ const MainControlView = styled.div`
     }
   }
 
-  .videos {
+  .children {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    width: 100%;
-    height: 100%;
-    min-height: 80vh;
+    gap: 8px;
+    padding: 8px;
 
-    > div {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      overflow: hidden;
+    .child {
+      padding: 8px;
+      box-sizing: border-box;
+      border: 1px solid #000;
 
-      video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+      span.name {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        margin-bottom: 1em;
+
+        svg {
+          margin-right: 0.8em;
+        }
       }
+
+      width: 100%;
     }
   }
 `;
