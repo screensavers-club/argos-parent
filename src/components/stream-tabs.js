@@ -37,7 +37,7 @@ export default function StreamTabs({ setSelectTab, selectedTab }) {
         // { tab: "monitor" },
         // { tab: "out" },
         { tab: "cue mix" },
-        { tab: "mixer" },
+        // { tab: "mixer" },
       ]).map(function ({ tab }, i) {
         let key = `key_${i}`;
         return (

@@ -289,6 +289,8 @@ export default function StreamRoom({ context, send, parents }) {
               <>
                 <MainControlView>
                   <div className="participants">
+                    <strong>Parent Mix</strong>
+                    <br />
                     {participants
                       .filter((p) => {
                         return JSON.parse(p.metadata).type === "CHILD";
@@ -308,6 +310,7 @@ export default function StreamRoom({ context, send, parents }) {
                             key={participant.identity}
                           >
                             <span className="user">
+                              <UserIcon />{" "}
                               {JSON.parse(participant?.metadata)?.nickname}
                             </span>
                             {trackRef && (
@@ -397,7 +400,6 @@ export default function StreamRoom({ context, send, parents }) {
                         })}
                     </div>
                   </div>
-                  <div>Controls</div>
                 </MainControlView>
               </>
             );
@@ -489,7 +491,7 @@ const MainControlView = styled.div`
   width: 100%;
   height: 100vh;
   display: grid;
-  grid-template-columns: 15% 70% 15%;
+  grid-template-columns: 25% 75%;
 
   .participants {
     padding: 10px;
