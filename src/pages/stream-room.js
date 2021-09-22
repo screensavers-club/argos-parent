@@ -398,6 +398,31 @@ export default function StreamRoom({ context, send, parents }) {
                             </div>
                           );
                         })}
+                      <div className="parent">
+                        <span className="name">
+                          <UserIcon /> PARENT
+                        </span>
+                        <div className="stream_code">
+                          <label>Parent Audio Mix</label>
+                          <input
+                            type="text"
+                            id={`stream_url_${context.identity}`}
+                            value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${context.identity}&audio=1`}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              let input = document.querySelector(
+                                `#${`stream_url_${context.identity}`}`
+                              );
+                              input.select();
+                              document.execCommand("copy");
+                            }}
+                          >
+                            Copy
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </MainControlView>
@@ -516,7 +541,8 @@ const MainControlView = styled.div`
     gap: 8px;
     padding: 8px;
 
-    .child {
+    .child,
+    .parent {
       padding: 8px;
       box-sizing: border-box;
       border: 1px solid #000;
@@ -532,7 +558,17 @@ const MainControlView = styled.div`
         }
       }
 
-      width: 100%;
+      .stream_code {
+        display: flex;
+        label {
+          width: 20%;
+          font-size: 12px;
+        }
+      }
+    }
+
+    .parent {
+      background: #eee;
     }
   }
 `;
