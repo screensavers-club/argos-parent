@@ -60,6 +60,7 @@ export default function SelectRoom({ send, context }) {
           let key = `key_${i}`;
           return (
             <Button
+              key={name}
               onClick={() => {
                 send("ROOM_SELECTED", { room: name });
               }}

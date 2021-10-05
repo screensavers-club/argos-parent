@@ -361,6 +361,7 @@ export default function StreamRoom({ context, send, parents }) {
                                   type="text"
                                   id={`stream_url_${key}`}
                                   value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}`}
+                                  readOnly
                                 />
                                 <button
                                   type="button"
@@ -381,6 +382,7 @@ export default function StreamRoom({ context, send, parents }) {
                                   type="text"
                                   id={`stream_url_a_${key}`}
                                   value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}&audio=1`}
+                                  readOnly
                                 />
                                 <button
                                   type="button"
@@ -472,6 +474,8 @@ export default function StreamRoom({ context, send, parents }) {
           case "cue mix":
             return (
               <CueMix
+                context={context}
+                send={send}
                 room={room}
                 audioTracks={audioTracks}
                 participants={participants}

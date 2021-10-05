@@ -43,9 +43,16 @@ function sendToggleParentTrack(room, participant, owner) {
   ]);
 }
 
-export default function CueMix({ room, audioTracks, participants }) {
+export default function CueMix({
+  room,
+  audioTracks,
+  participants,
+  send,
+  context,
+}) {
   let [cueMixState, setCueMixState] = useState({});
 
+  console.log(context);
   useEffect(() => {
     participants.forEach((p) => triggerGetCueMixState(room, p));
   }, [participants]);
@@ -55,6 +62,7 @@ export default function CueMix({ room, audioTracks, participants }) {
       const decoder = new TextDecoder();
       const str = decoder.decode(payload);
       const obj = JSON.parse(str);
+      console.log({ obj, participant, cueMixState });
       if (participant.identity) {
         let _cueMixState = { ...cueMixState };
         _cueMixState[participant.identity] = obj.cue_mix_state;
