@@ -62,14 +62,16 @@ export default function CueMix({
       const str = decoder.decode(payload);
       const obj = JSON.parse(str);
 
-      if (participant.identity) {
-        let _cueMixState = { ...cueMixState };
-        _cueMixState[participant.identity] = obj.cue_mix_state;
-        setCueMixState(_cueMixState);
-        send("UPDATE_CUE_MIX_STATE", {
-          target: participant.identity,
-          data: obj.cue_mix_state,
-        });
+      if (obj.cue_mix_state) {
+        if (participant.identity) {
+          let _cueMixState = { ...cueMixState };
+          _cueMixState[participant.identity] = obj.cue_mix_state;
+          setCueMixState(_cueMixState);
+          send("UPDATE_CUE_MIX_STATE", {
+            target: participant.identity,
+            data: obj.cue_mix_state,
+          });
+        }
       }
     });
 
