@@ -371,7 +371,6 @@ let argosParentMachine = createMachine(
           UPDATE_CUE_MIX_STATE: {
             actions: assign({
               cue_mix_state: (context, event) => {
-                console.log("x");
                 let _cueMixState = { ...context.cue_mix_state };
                 _cueMixState[event.target] = event.data;
                 return _cueMixState;
