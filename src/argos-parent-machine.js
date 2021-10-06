@@ -13,6 +13,9 @@ let argosParentMachine = createMachine(
       rooms_available: [],
       token: "",
       joining_room: "",
+
+      cue_mix_state: {},
+
       master: {
         name: "master",
         vol: [0, 0.5, 1],
@@ -54,6 +57,7 @@ let argosParentMachine = createMachine(
           },
         ],
       },
+
       input: [
         {
           name: "performer 1",
@@ -362,7 +366,20 @@ let argosParentMachine = createMachine(
         },
       },
 
-      stream_room: {},
+      stream_room: {
+        on: {
+          UPDATE_CUE_MIX_STATE: {
+            actions: assign({
+              cue_mix_state: (context, event) => {
+                console.log("x");
+                let _cueMixState = { ...context.cue_mix_state };
+                _cueMixState[event.target] = event.data;
+                return _cueMixState;
+              },
+            }),
+          },
+        },
+      },
 
       select_room: {
         on: {

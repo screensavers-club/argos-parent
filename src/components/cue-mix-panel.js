@@ -52,7 +52,6 @@ export default function CueMix({
 }) {
   let [cueMixState, setCueMixState] = useState({});
 
-  console.log(context);
   useEffect(() => {
     participants.forEach((p) => triggerGetCueMixState(room, p));
   }, [participants]);
@@ -62,11 +61,15 @@ export default function CueMix({
       const decoder = new TextDecoder();
       const str = decoder.decode(payload);
       const obj = JSON.parse(str);
-      console.log({ obj, participant, cueMixState });
+
       if (participant.identity) {
         let _cueMixState = { ...cueMixState };
         _cueMixState[participant.identity] = obj.cue_mix_state;
         setCueMixState(_cueMixState);
+        send("UPDATE_CUE_MIX_STATE", {
+          target: participant.identity,
+          data: obj.cue_mix_state,
+        });
       }
     });
 
@@ -106,7 +109,7 @@ export default function CueMix({
                       return <></>;
                     }
                     let isMuted = false;
-                    const _state = cueMixState[p?.identity];
+                    const _state = context.cue_mix_state?.[p?.identity];
 
                     if (_state?.source === "parent") {
                       isMuted = true;
@@ -130,7 +133,7 @@ export default function CueMix({
                     );
                   })}
 
-                {(() => {
+                {/* {(() => {
                   let isMuted = true;
                   if (cueMixState[p?.identity]) {
                     isMuted = cueMixState[p.identity].source !== "parent";
@@ -148,7 +151,7 @@ export default function CueMix({
                       [PMIX]
                     </div>
                   );
-                })()}
+                })()} */}
               </div>
             </MixTrack>
           );
