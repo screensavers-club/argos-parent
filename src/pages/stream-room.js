@@ -5,10 +5,10 @@ import { useRoom } from "livekit-react";
 import StreamTabs from "../components/stream-tabs";
 import MixerPage from "../components/mixer-page";
 import CueMix from "../components/cue-mix-panel";
-
 import VideoLayouts from "../util/video-layouts";
 import { DataPacket_Kind, RoomEvent } from "livekit-client";
 import { User as UserIcon } from "react-ikonate";
+import axios from "axios";
 
 const StyledPage = styled.div`
   position: relative;
@@ -274,6 +274,15 @@ export default function StreamRoom({ context, send, parents }) {
     }
   }
 
+  function setDelay({ id, delay, room }) {
+    axios
+      .post(
+        `${process.env.REACT_APP_PEER_SERVER}/parent/participant/set-delay`,
+        { id, delay, room }
+      )
+      .catch((err) => console.log(err));
+  }
+
   return (
     <StyledPage>
       <div className="button">
@@ -445,6 +454,30 @@ export default function StreamRoom({ context, send, parents }) {
                                   Copy
                                 </button>
                               </div>
+                              <div>
+                                <label>
+                                  Ref Track Audio Delay:{" "}
+                                  {JSON.parse(p.metadata)?.audio_delay || 0}
+                                </label>
+                                <input type="text" id={`audio_delay_${key}`} />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    let _delay = parseInt(
+                                      document.getElementById(
+                                        `audio_delay_${key}`
+                                      ).value
+                                    );
+                                    setDelay({
+                                      id: p.identity,
+                                      delay: _delay,
+                                      room: room.name,
+                                    });
+                                  }}
+                                >
+                                  Set
+                                </button>
+                              </div>
                             </div>
                           );
                         })}
@@ -460,8 +493,13 @@ export default function StreamRoom({ context, send, parents }) {
                           <label>Parent Audio Mix</label>
                           <input
                             type="text"
+                            style={{
+                              position: "absolute",
+                              top: "-100000px",
+                            }}
                             id={`stream_url_${context.identity}`}
                             value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${context.identity}&audio=1`}
+                            readOnly
                           />
                           <button
                             type="button"
