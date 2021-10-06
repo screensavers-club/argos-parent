@@ -226,6 +226,7 @@ export default function StreamRoom({ context, send, parents }) {
     setRenderState(renderState + 1);
   }, [participants]);
   const [control, setControl] = useState(context.input);
+
   useEffect(() => {
     connect(`${process.env.REACT_APP_LIVEKIT_SERVER}`, context.token)
       .then((room) => {
@@ -241,6 +242,38 @@ export default function StreamRoom({ context, send, parents }) {
       room?.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (room) {
+      room.on(RoomEvent.DataReceived, (payload, participant) => {
+        const decoder = new TextDecoder();
+        const str = decoder.decode(payload);
+        const obj = JSON.parse(str);
+
+        if (obj.type === "PONG") {
+          let d = new Date();
+          send("PONG", { id: participant.sid, timestamp: d });
+        }
+      });
+    }
+  }, [room]);
+  function sendPing(id) {
+    if (room) {
+      const payload = JSON.stringify({
+        action: "PING",
+      });
+      const encoder = new TextEncoder();
+      const data = encoder.encode(payload);
+      const targetSid = id;
+
+      let d = new Date();
+      send("PING", { id, timestamp: d });
+      room.localParticipant.publishData(data, DataPacket_Kind.RELIABLE, [
+        targetSid,
+      ]);
+    }
+  }
+
   return (
     <StyledPage>
       <div className="button">
@@ -353,12 +386,23 @@ export default function StreamRoom({ context, send, parents }) {
                           return (
                             <div key={key} className="child">
                               <span className="name">
-                                <UserIcon /> {nickname}
+                                <UserIcon /> {nickname} (
+                                <UserPing
+                                  ping={context?.ping?.[p.sid]}
+                                  sendPing={() => {
+                                    sendPing(p.sid);
+                                  }}
+                                />
+                                )
                               </span>
                               <div className="stream_code">
                                 <label>Video only</label>
                                 <input
                                   type="text"
+                                  style={{
+                                    position: "absolute",
+                                    top: "-100000px",
+                                  }}
                                   id={`stream_url_${key}`}
                                   value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}`}
                                   readOnly
@@ -380,6 +424,10 @@ export default function StreamRoom({ context, send, parents }) {
                                 <label>Video + Audio</label>
                                 <input
                                   type="text"
+                                  style={{
+                                    position: "absolute",
+                                    top: "-100000px",
+                                  }}
                                   id={`stream_url_a_${key}`}
                                   value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}&audio=1`}
                                   readOnly
@@ -402,7 +450,11 @@ export default function StreamRoom({ context, send, parents }) {
                         })}
                       <div className="parent">
                         <span className="name">
-                          <UserIcon /> PARENT
+                          <UserIcon /> PARENT{" "}
+                          <AveragePing
+                            pings={context.ping}
+                            participants={participants}
+                          />
                         </span>
                         <div className="stream_code">
                           <label>Parent Audio Mix</label>
@@ -564,8 +616,9 @@ const MainControlView = styled.div`
 
       .stream_code {
         display: flex;
+
         label {
-          width: 20%;
+          width: 50%;
           font-size: 12px;
         }
       }
@@ -894,3 +947,33 @@ const VideoLayoutEditorDiv = styled.div`
     }
   }
 `;
+
+function UserPing({ sendPing, ping }) {
+  useEffect(() => {
+    const intervalId = window.setInterval(sendPing, 2000);
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
+  if (ping?.length === 2 && ping[1] - ping[0] > 0) {
+    return <span style={{ fontSize: ".6em" }}>{(ping[1] - ping[0]) / 2}</span>;
+  }
+  return <>...</>;
+}
+
+function AveragePing({ pings, participants }) {
+  return (
+    <span style={{ fontSize: ".6em" }}>
+      (AVE{" "}
+      {Math.floor(
+        participants
+          .filter((p) => JSON.parse(p.metadata || "{}").type === "CHILD")
+          .map((p) => pings?.[p.sid])
+          .reduce((p, c, i, a) => {
+            return p + ((c?.[1] || 0) - (c?.[0] || 0)) / a.length / 2;
+          }, 0)
+      )}
+      )
+    </span>
+  );
+}

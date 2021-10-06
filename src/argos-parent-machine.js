@@ -377,6 +377,28 @@ let argosParentMachine = createMachine(
               },
             }),
           },
+
+          PING: {
+            actions: assign({
+              ping: (context, event) => {
+                let _ping = { ...context.ping };
+                _ping[event.id] = [event.timestamp, _ping[event.id]?.[1]];
+
+                return _ping;
+              },
+            }),
+          },
+
+          PONG: {
+            actions: assign({
+              ping: (context, event) => {
+                let _ping = { ...context.ping };
+                _ping[event.id] = [_ping[event.id]?.[0], event.timestamp];
+
+                return _ping;
+              },
+            }),
+          },
         },
       },
 
