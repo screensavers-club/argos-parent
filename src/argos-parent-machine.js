@@ -8,6 +8,7 @@ let argosParentMachine = createMachine(
     context: {
       identity: null,
       room: {},
+      color: [],
       children: [],
       error: {},
       rooms_available: [],
@@ -314,14 +315,23 @@ let argosParentMachine = createMachine(
 
       server_connected: {
         on: {
-          CREATE_ROOM: { target: "create_room" },
+          CREATE_ROOM: {
+            target: "create_room",
+            // actions: assign({
+            //   color: (context, event) => {
+            //     return event.colorPair;
+            //   },
+            // }),
+          },
 
           ROOM_SELECTED: {
             target: "enter_password",
             actions: assign({
               joining_room: (context, event) => {
-                // console.log(event.room);
                 return event.room;
+              },
+              color: (context, event) => {
+                return event.colorPair;
               },
             }),
           },
@@ -451,7 +461,11 @@ let argosParentMachine = createMachine(
           return { ...context.room, name: event.data.room };
         },
       }),
-      DISCONNECT: { target: "server_connected", room: "Not Connected" },
+      DISCONNECT: {
+        target: "server_connected",
+        room: "Not Connected",
+        color: [],
+      },
     },
   },
   {

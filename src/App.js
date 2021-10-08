@@ -36,7 +36,11 @@ function App() {
   return (
     <div className="App">
       <AppFrame>
-        <StatusBar room={_.get(state, "context.room.name")} version="0.2.0" />
+        <StatusBar
+          context={state.context}
+          room={_.get(state, "context.room.name")}
+          version="0.2.0"
+        />
 
         {supported ? (
           <Screen state={state.value} context={state.context} send={send} />

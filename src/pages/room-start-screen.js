@@ -16,7 +16,7 @@ const StyledPage = styled.div`
   div.header {
     display: flex;
     color: white;
-
+    margin-top: 50px;
     h3 {
       font-weight: 200;
       font-size: 36px;
@@ -176,7 +176,7 @@ export default function RoomStartScreen({ send, context }) {
               icon={<User />}
               gradient={`linear-gradient(135deg, ${colorPair[0]}, ${colorPair[1]})`}
               onClick={() => {
-                send("ROOM_SELECTED", { room: name });
+                send("ROOM_SELECTED", { name, colorPair });
               }}
             >
               {name}
