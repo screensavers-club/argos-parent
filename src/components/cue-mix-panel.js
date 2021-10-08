@@ -43,7 +43,13 @@ function sendToggleParentTrack(room, participant, owner) {
   ]);
 }
 
-export default function CueMix({ room, audioTracks, participants }) {
+export default function CueMix({
+  room,
+  audioTracks,
+  participants,
+  send,
+  context,
+}) {
   let [cueMixState, setCueMixState] = useState({});
 
   useEffect(() => {
@@ -55,10 +61,17 @@ export default function CueMix({ room, audioTracks, participants }) {
       const decoder = new TextDecoder();
       const str = decoder.decode(payload);
       const obj = JSON.parse(str);
-      if (participant.identity) {
-        let _cueMixState = { ...cueMixState };
-        _cueMixState[participant.identity] = obj.cue_mix_state;
-        setCueMixState(_cueMixState);
+
+      if (obj.cue_mix_state) {
+        if (participant.identity) {
+          let _cueMixState = { ...cueMixState };
+          _cueMixState[participant.identity] = obj.cue_mix_state;
+          setCueMixState(_cueMixState);
+          send("UPDATE_CUE_MIX_STATE", {
+            target: participant.identity,
+            data: obj.cue_mix_state,
+          });
+        }
       }
     });
 
@@ -98,7 +111,7 @@ export default function CueMix({ room, audioTracks, participants }) {
                       return <></>;
                     }
                     let isMuted = false;
-                    const _state = cueMixState[p?.identity];
+                    const _state = context.cue_mix_state?.[p?.identity];
 
                     if (_state?.source === "parent") {
                       isMuted = true;
@@ -122,7 +135,7 @@ export default function CueMix({ room, audioTracks, participants }) {
                     );
                   })}
 
-                {(() => {
+                {/* {(() => {
                   let isMuted = true;
                   if (cueMixState[p?.identity]) {
                     isMuted = cueMixState[p.identity].source !== "parent";
@@ -140,7 +153,7 @@ export default function CueMix({ room, audioTracks, participants }) {
                       [PMIX]
                     </div>
                   );
-                })()}
+                })()} */}
               </div>
             </MixTrack>
           );

@@ -88,7 +88,7 @@ export default function StreamPage({
                 <tr className="id">
                   <th></th>
                   <td key={_key}>
-                    {console.log(audioTracks)}[{audioTracks?.size}] {name}
+                    [{audioTracks?.size}] {name}
                   </td>
                 </tr>
               );

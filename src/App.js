@@ -25,11 +25,31 @@ function App() {
       process.env.NODE_ENV === "development" && typeof window !== "undefined",
   });
 
+  let [supported, setSupported] = useState(
+    (() => {
+      let _ac = new AudioContext();
+      let msts = _ac.createMediaStreamTrackSource;
+      _ac = null;
+      return typeof msts === "function";
+    })()
+  );
+
   return (
     <div className="App">
       <AppFrame>
         <StatusBar room={_.get(state, "context.room.name")} version="0.2.0" />
-        <Screen state={state.value} context={state.context} send={send} />
+
+        {supported ? (
+          <Screen state={state.value} context={state.context} send={send} />
+        ) : (
+          <div style={{ textAlign: "center", padding: "2em" }}>
+            <h1>Browser not supported.</h1>
+            <p>
+              Please access this application using the latest version of
+              Firefox.
+            </p>
+          </div>
+        )}
       </AppFrame>
     </div>
   );
@@ -43,7 +63,7 @@ function Screen({ context, state, send }) {
       return <StartScreen send={send} />;
 
     case "server_connected":
-      return <RoomStartScreen send={send} context={context} />;
+      return <RoomStartScreen send={send} />;
 
     case "error":
       return <ErrorScreen send={send} context={context} />;
