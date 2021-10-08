@@ -1,16 +1,54 @@
 import styled from "styled-components";
 import axios from "axios";
-import { User, Plus } from "react-ikonate";
+import { User, Plus, Rotate } from "react-ikonate";
 import Card from "../components/cards";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const StyledPage = styled.div`
   background: #252529;
   display: flex;
+  flex-direction: column;
   height: 100%;
   align-items: center;
   justify-content: center;
   font-family: "Noto Sans", sans-serif;
+
+  div.header {
+    display: flex;
+    color: white;
+
+    svg.refreshButton {
+      margin: auto 0;
+      stroke-width: 1.5px;
+      font-size: 36px;
+
+      :hover {
+        cursor: pointer;
+      }
+    }
+    .animate_rotate {
+      -webkit-animation: rotate 0.5s linear infinite;
+      -moz-animation: rotate 0.5s linear infinite;
+      animation: rotate 0.5s linear infinite;
+
+      @-moz-keyframes rotate {
+        100% {
+          -moz-transform: rotate(360deg);
+        }
+      }
+      @-webkit-keyframes rotate {
+        100% {
+          -webkit-transform: rotate(360deg);
+        }
+      }
+      @keyframes rotate {
+        100% {
+          -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);
+        }
+      }
+    }
+  }
 
   div.rooms {
     display: flex;
@@ -18,14 +56,23 @@ const StyledPage = styled.div`
     justify-content: center;
     height: 100%;
     width: 100%;
-  }
 
-  button {
-    margin: 0 1em;
+    button {
+      margin: 10px;
+    }
   }
 `;
 
 export default function RoomStartScreen({ send, context }) {
+  const animateRef = useRef();
+
+  function rotateIcon() {
+    animateRef.current.classList.add("animate_rotate");
+    window.setTimeout(() => {
+      animateRef.current?.classList?.remove("animate_rotate");
+    }, 500);
+  }
+
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_PEER_SERVER}/rooms/`)
@@ -74,6 +121,24 @@ export default function RoomStartScreen({ send, context }) {
 
   return (
     <StyledPage>
+      <div className="header">
+        <h3>Available rooms </h3>
+        <Rotate
+          className="refreshButton"
+          ref={animateRef}
+          onClick={() => {
+            rotateIcon();
+            axios
+              .get(`${process.env.REACT_APP_PEER_SERVER}/rooms/`)
+              .then((result) => {
+                return send("RETRIEVE_ROOMS", { rooms_available: result.data });
+              })
+              .catch((err) => {
+                console.log(err.response);
+              });
+          }}
+        />
+      </div>
       <div className="rooms">
         <Card
           variant="create"

@@ -418,8 +418,6 @@ let argosParentMachine = createMachine(
         },
       },
 
-      select_room: {},
-
       enter_password: {
         on: {
           CHECK_INPUT: {

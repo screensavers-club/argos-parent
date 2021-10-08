@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import AppFrame from "./components/app-frame";
 import StatusBar from "./components/status-bar";
 
@@ -7,7 +7,6 @@ import RoomStartScreen from "./pages/room-start-screen";
 import ErrorScreen from "./pages/error-screen";
 import FetchedRoom from "./pages/create-room-screen";
 import StreamRoom from "./pages/stream-room";
-import SelectRoom from "./pages/select-room";
 import EnterPassword from "./pages/enter-password";
 import RoomJoined from "./pages/room-joined";
 
