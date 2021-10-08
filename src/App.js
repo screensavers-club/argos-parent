@@ -63,7 +63,7 @@ function Screen({ context, state, send }) {
       return <StartScreen send={send} />;
 
     case "server_connected":
-      return <RoomStartScreen send={send} />;
+      return <RoomStartScreen send={send} context={context} />;
 
     case "error":
       return <ErrorScreen send={send} context={context} />;
@@ -83,9 +83,6 @@ function Screen({ context, state, send }) {
           ]}
         />
       );
-
-    case "select_room":
-      return <SelectRoom send={send} context={context} />;
 
     case "enter_password":
       return <EnterPassword send={send} context={context} />;
