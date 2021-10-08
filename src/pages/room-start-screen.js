@@ -17,10 +17,15 @@ const StyledPage = styled.div`
     display: flex;
     color: white;
 
-    svg.refreshButton {
-      margin: auto 0;
-      stroke-width: 1.5px;
+    h3 {
+      font-weight: 200;
       font-size: 36px;
+    }
+
+    svg.refreshButton {
+      margin: auto 0 auto 50px;
+      stroke-width: 1px;
+      font-size: 42px;
 
       :hover {
         cursor: pointer;
@@ -54,8 +59,10 @@ const StyledPage = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
     height: 100%;
     width: 100%;
+    overflow-y: scroll;
 
     button {
       margin: 10px;
@@ -122,7 +129,7 @@ export default function RoomStartScreen({ send, context }) {
   return (
     <StyledPage>
       <div className="header">
-        <h3>Available rooms </h3>
+        <h3>Available rooms</h3>
         <Rotate
           className="refreshButton"
           ref={animateRef}
