@@ -71,7 +71,6 @@ const StyledButton = styled.button.attrs((props) => ({
 
   border-radius: 4px;
   box-shadow: 0 3px black;
-  font-family: "Work Sans";
   display: flex;
   align-items: center;
   justify-content: center;
