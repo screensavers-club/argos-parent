@@ -7,9 +7,16 @@ export default function Card({
   icon,
   gradient,
   participants,
+  variant,
 }) {
   return (
-    <StyledButton {...style} onClick={onClick} icon={icon} gradient={gradient}>
+    <StyledButton
+      {...style}
+      onClick={onClick}
+      icon={icon}
+      gradient={gradient}
+      variant={variant}
+    >
       <div>
         <span>
           {icon}
@@ -26,14 +33,14 @@ const StyledButton = styled.button`
   display: inline-flex;
   cursor: pointer;
   align-items: flex-end;
-  justify-content: flex-start;
+  justify-content: ${(p) => (p.variant === "create" ? "center" : "flex-start")};
   appearance: none;
   background: ${(p) => p.gradient};
   border: none;
   color: #fff;
-  min-width: 190px;
+  min-width: 380px;
   width: 25%;
-  height: 140px;
+  height: 260px;
   border-radius: 15px;
   text-align: left;
   font-style: normal;
@@ -44,10 +51,11 @@ const StyledButton = styled.button`
 
   > div {
     display: flex;
-    justify-content: flex-start;
+    justify-content: ${(p) =>
+      p.variant === "create" ? "center" : "flex-start"};
     align-items: center;
-    width: 50%;
-    margin: 0 0 10px 10px;
+    width: ${(p) => (p.variant === "create" ? "100%" : "50%")};
+    margin: ${(p) => (p.variant === "create" ? "10px 0" : "0 0 10px 10px;")};
 
     span {
       position: absolute;
@@ -55,14 +63,15 @@ const StyledButton = styled.button`
       justify-content: flex-start;
       align-items: center;
       font-size: 10px;
-      top: 10px;
-      right: 10px;
-
-      svg {
-        stroke-width: 1.5;
-        font-size: 14px;
-        margin-right: 5px;
-      }
+      top: ${(p) => (p.variant === "create" ? "50%" : "10px")};
+      right: ${(p) => (p.variant === "create" ? "50%" : "10px")};
+      transform: ${(p) =>
+        p.variant === "create" ? "translate(50%, -60%)" : "none"};
+    }
+    svg {
+      stroke-width: 1.5;
+      font-size: ${(p) => (p.variant === "create" ? "56px" : "14px")};
+      margin-right: ${(p) => (p.variant === "create" ? "0" : "5px")};
     }
   }
 `;

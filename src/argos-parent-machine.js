@@ -311,7 +311,23 @@ let argosParentMachine = createMachine(
       server_connected: {
         on: {
           CREATE_ROOM: { target: "create_room" },
-          JOIN_ROOM: { target: "select_room" },
+
+          ROOM_SELECTED: {
+            target: "enter_password",
+            actions: assign({
+              joining_room: (context, event) => {
+                // console.log(event.room);
+                return event.room;
+              },
+            }),
+          },
+          RETRIEVE_ROOMS: {
+            actions: assign({
+              rooms_available: (context, event) => {
+                return event.rooms_available;
+              },
+            }),
+          },
         },
       },
 
@@ -364,27 +380,7 @@ let argosParentMachine = createMachine(
 
       stream_room: {},
 
-      select_room: {
-        on: {
-          ROOM_SELECTED: {
-            target: "enter_password",
-            actions: assign({
-              joining_room: (context, event) => {
-                // console.log(event.room);
-                return event.room;
-              },
-            }),
-          },
-
-          RETRIEVE_ROOMS: {
-            actions: assign({
-              rooms_available: (context, event) => {
-                return event.rooms_available;
-              },
-            }),
-          },
-        },
-      },
+      select_room: {},
 
       enter_password: {
         on: {
