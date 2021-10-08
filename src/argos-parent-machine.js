@@ -13,6 +13,9 @@ let argosParentMachine = createMachine(
       rooms_available: [],
       token: "",
       joining_room: "",
+
+      cue_mix_state: {},
+
       master: {
         name: "master",
         vol: [0, 0.5, 1],
@@ -54,6 +57,7 @@ let argosParentMachine = createMachine(
           },
         ],
       },
+
       input: [
         {
           name: "performer 1",
@@ -362,7 +366,41 @@ let argosParentMachine = createMachine(
         },
       },
 
-      stream_room: {},
+      stream_room: {
+        on: {
+          UPDATE_CUE_MIX_STATE: {
+            actions: assign({
+              cue_mix_state: (context, event) => {
+                let _cueMixState = { ...context.cue_mix_state };
+                _cueMixState[event.target] = event.data;
+                return _cueMixState;
+              },
+            }),
+          },
+
+          PING: {
+            actions: assign({
+              ping: (context, event) => {
+                let _ping = { ...context.ping };
+                _ping[event.id] = [event.timestamp, _ping[event.id]?.[1]];
+
+                return _ping;
+              },
+            }),
+          },
+
+          PONG: {
+            actions: assign({
+              ping: (context, event) => {
+                let _ping = { ...context.ping };
+                _ping[event.id] = [_ping[event.id]?.[0], event.timestamp];
+
+                return _ping;
+              },
+            }),
+          },
+        },
+      },
 
       select_room: {
         on: {
