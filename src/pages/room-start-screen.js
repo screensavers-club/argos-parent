@@ -1,7 +1,6 @@
 import styled from "styled-components";
-import Button from "../components/button";
 import axios from "axios";
-import { New, Entrance, User, Plus } from "react-ikonate";
+import { User, Plus } from "react-ikonate";
 import Card from "../components/cards";
 import { useEffect } from "react";
 
