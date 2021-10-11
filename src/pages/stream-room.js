@@ -45,8 +45,9 @@ const StyledPage = styled.div`
 
   div.streamLinks {
     position: absolute;
-    width: 100%;
+    width: 75%;
     bottom: 15px;
+    right: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -63,11 +64,11 @@ const StyledPage = styled.div`
     }
 
     label {
-      font-size: 18px;
+      font-size: 16px;
       display: flex;
       align-items: center;
       svg {
-        font-size: 24px;
+        font-size: 18px;
         stroke-width: 1.5px;
         color: white;
         padding-right: 10px;
@@ -152,7 +153,7 @@ const StyledPage = styled.div`
 `;
 export default function StreamRoom({ context, send, parents }) {
   const { room, connect, participants, audioTracks } = useRoom();
-  const [selectTab, setSelectTab] = useState("stream");
+  const [selectTab, setSelectTab] = useState("Stream controls");
   const [renderState, setRenderState] = useState(0);
   let [exiting, setExiting] = useState(false);
   const exitingModalRef = useRef();
@@ -397,10 +398,15 @@ export default function StreamRoom({ context, send, parents }) {
                                 }}
                               >
                                 <span>
-                                  <Stopwatch /> Ref audio delay:
-                                  {JSON.parse(p.metadata)?.audio_delay || 0}
+                                  <Stopwatch /> Ref audio delay
                                 </span>
-                                <input type="text" id={`audio_delay_${key}`} />
+                                <input
+                                  type="text"
+                                  value={`${
+                                    JSON.parse(p.metadata)?.audio_delay || 0
+                                  }ms`}
+                                  id={`audio_delay_${key}`}
+                                />
                                 <Button
                                   variant="delay"
                                   type="tertiary"
@@ -613,9 +619,9 @@ const MainControlView = styled.div`
   .children {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    grid-gap: 25px;
+    grid-gap: 20px;
     padding: 8px;
-    margin: 0 5%;
+    margin: 20px;
 
     .child,
     .parent {
@@ -665,6 +671,8 @@ const MainControlView = styled.div`
           border: 1px solid white;
           outline: none;
           margin-bottom: 5px;
+          color: white;
+          align-items: center;
         }
 
         button {
@@ -680,7 +688,9 @@ const MainControlView = styled.div`
 
         input,
         button {
-          display: block;
+          align-items: center;
+          display: flex;
+          text-align: center;
         }
       }
 
