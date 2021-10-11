@@ -7,17 +7,14 @@ import MixerPage from "../components/mixer-page";
 import CueMix from "../components/cue-mix-panel";
 import VideoLayouts from "../util/video-layouts";
 import { DataPacket_Kind, RoomEvent } from "livekit-client";
-import { User as UserIcon } from "react-ikonate";
+import { User as UserIcon, Exit, Link, Copy, Stopwatch } from "react-ikonate";
 import axios from "axios";
 
 const StyledPage = styled.div`
+  background: #252529;
   position: relative;
   display: block;
-  div.roomCreated {
-    text-align: center;
-    font-size: 1.5rem;
-    margin-top: 10%;
-  }
+
   table.participants {
     border: 1px solid black;
     padding: 25px;
@@ -45,6 +42,39 @@ const StyledPage = styled.div`
       }
     }
   }
+
+  div.streamLinks {
+    position: absolute;
+    width: 100%;
+    bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    box-sizing: border-box;
+
+    > div.buttons {
+      display: flex;
+      align-items: center;
+
+      button {
+        margin: 0 5px;
+      }
+    }
+
+    label {
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      svg {
+        font-size: 24px;
+        stroke-width: 1.5px;
+        color: white;
+        padding-right: 10px;
+      }
+    }
+  }
+
   div.stream {
     position: relative;
     display: flex;
@@ -282,7 +312,7 @@ export default function StreamRoom({ context, send, parents }) {
       )
       .catch((err) => console.log(err));
   }
-
+  let [expanded, setExpanded] = useState(false);
   return (
     <StyledPage>
       <div className="button">
@@ -290,7 +320,8 @@ export default function StreamRoom({ context, send, parents }) {
           onClick={() => {
             setExiting(true);
           }}
-          variant="small"
+          type="secondary"
+          icon={<Exit />}
         >
           Disconnect
         </Button>
@@ -302,7 +333,7 @@ export default function StreamRoom({ context, send, parents }) {
         Are you sure you want to exit?
         <div>
           <Button
-            variant="small"
+            variant="navigation"
             className="no"
             onClick={() => {
               setExiting(false);
@@ -311,7 +342,7 @@ export default function StreamRoom({ context, send, parents }) {
             no
           </Button>
           <Button
-            variant="small"
+            variant="navigation"
             className="yes"
             onClick={() => {
               room?.disconnect();
@@ -326,142 +357,53 @@ export default function StreamRoom({ context, send, parents }) {
       <StreamTabs setSelectTab={setSelectTab} selectedTab={selectTab} />
       {(function () {
         switch (selectTab) {
-          case "stream":
+          case "Stream controls":
             return (
-              <>
-                <MainControlView>
-                  <div className="participants">
-                    <strong>Parent Mix</strong>
-                    <br />
+              <MainControlView>
+                <div>
+                  <div className="children">
                     {participants
-                      .filter((p) => {
-                        return JSON.parse(p.metadata).type === "CHILD";
-                      })
-                      .map((participant) => {
-                        let firstAudioTrack = null;
-                        participant.audioTracks.forEach((value, key) => {
-                          if (!firstAudioTrack) {
-                            firstAudioTrack = value;
-                          }
-                        });
-                        let trackRef =
-                          audioTrackRefsState[firstAudioTrack?.trackSid];
+                      .filter(
+                        (p) => JSON.parse(p?.metadata || "{}")?.type === "CHILD"
+                      )
+                      .map((p, i) => {
+                        const key = p.identity;
+                        const nickname = JSON.parse(
+                          p?.metadata || "{}"
+                        )?.nickname;
                         return (
-                          <div
-                            style={{ borderBottom: "1px solid #aaa" }}
-                            key={participant.identity}
-                          >
-                            <span className="user">
-                              <UserIcon />{" "}
-                              {JSON.parse(participant?.metadata)?.nickname}
+                          <div key={key} className="child">
+                            <span className="name">
+                              <UserIcon /> {nickname} (
+                              <UserPing
+                                ping={context?.ping?.[p.sid]}
+                                sendPing={() => {
+                                  sendPing(p.sid);
+                                }}
+                              />
+                              )
                             </span>
-                            {trackRef && (
-                              <button
+
+                            <div>
+                              <div
+                                className={`delayDiv ${
+                                  expanded === true ? "expanded" : ""
+                                }`}
                                 onClick={() => {
-                                  if (trackRef && trackRef?.gainNode) {
-                                    let targetGain =
-                                      trackRef.gainNode.gain.value === 0
-                                        ? 1
-                                        : 0;
-                                    trackRef.gainNode.gain.setValueAtTime(
-                                      targetGain,
-                                      audioCtx.current.currentTime
-                                    );
-                                  }
-                                  setRenderState(renderState + 1);
+                                  console.log(expanded);
+                                  expanded === true
+                                    ? setExpanded(false)
+                                    : setExpanded(true);
                                 }}
                               >
-                                {trackRef?.gainNode?.gain?.value
-                                  ? "Mute"
-                                  : "Unmute"}
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })}
-                  </div>
-                  <div>
-                    <div className="children">
-                      {participants
-                        .filter(
-                          (p) =>
-                            JSON.parse(p?.metadata || "{}")?.type === "CHILD"
-                        )
-                        .map((p, i) => {
-                          const key = p.identity;
-                          const nickname = JSON.parse(
-                            p?.metadata || "{}"
-                          )?.nickname;
-                          return (
-                            <div key={key} className="child">
-                              <span className="name">
-                                <UserIcon /> {nickname} (
-                                <UserPing
-                                  ping={context?.ping?.[p.sid]}
-                                  sendPing={() => {
-                                    sendPing(p.sid);
-                                  }}
-                                />
-                                )
-                              </span>
-                              <div className="stream_code">
-                                <label>Video only</label>
-                                <input
-                                  type="text"
-                                  style={{
-                                    position: "absolute",
-                                    top: "-100000px",
-                                  }}
-                                  id={`stream_url_${key}`}
-                                  value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}`}
-                                  readOnly
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    let input = document.querySelector(
-                                      `#${`stream_url_${key}`}`
-                                    );
-                                    input.select();
-                                    document.execCommand("copy");
-                                  }}
-                                >
-                                  Copy
-                                </button>
-                              </div>
-                              <div className="stream_code">
-                                <label>Video + Audio</label>
-                                <input
-                                  type="text"
-                                  style={{
-                                    position: "absolute",
-                                    top: "-100000px",
-                                  }}
-                                  id={`stream_url_a_${key}`}
-                                  value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}&audio=1`}
-                                  readOnly
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    let input = document.querySelector(
-                                      `#${`stream_url_a_${key}`}`
-                                    );
-                                    input.select();
-                                    document.execCommand("copy");
-                                  }}
-                                >
-                                  Copy
-                                </button>
-                              </div>
-                              <div>
-                                <label>
-                                  Ref Track Audio Delay:{" "}
+                                <span>
+                                  <Stopwatch /> Ref audio delay:
                                   {JSON.parse(p.metadata)?.audio_delay || 0}
-                                </label>
+                                </span>
                                 <input type="text" id={`audio_delay_${key}`} />
-                                <button
-                                  type="button"
+                                <Button
+                                  variant="delay"
+                                  type="tertiary"
                                   onClick={() => {
                                     let _delay = parseInt(
                                       document.getElementById(
@@ -475,52 +417,110 @@ export default function StreamRoom({ context, send, parents }) {
                                     });
                                   }}
                                 >
-                                  Set
-                                </button>
+                                  Update
+                                </Button>
                               </div>
                             </div>
-                          );
-                        })}
-                      <div className="parent">
-                        <span className="name">
-                          <UserIcon /> PARENT{" "}
-                          <AveragePing
-                            pings={context.ping}
-                            participants={participants}
-                          />
-                        </span>
-                        <div className="stream_code">
-                          <label>Parent Audio Mix</label>
-                          <input
-                            type="text"
-                            style={{
-                              position: "absolute",
-                              top: "-100000px",
-                            }}
-                            id={`stream_url_${context.identity}`}
-                            value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${context.identity}&audio=1`}
-                            readOnly
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              let input = document.querySelector(
-                                `#${`stream_url_${context.identity}`}`
-                              );
-                              input.select();
-                              document.execCommand("copy");
-                            }}
-                          >
-                            Copy
-                          </button>
-                        </div>
+                            <div className="streamLinks">
+                              <label>
+                                <Link />
+                                Copy stream links
+                              </label>
+                              <div className="buttons">
+                                <div className="stream_code">
+                                  <Button
+                                    variant="small"
+                                    icon={<Copy />}
+                                    onClick={() => {
+                                      let input = document.querySelector(
+                                        `#${`stream_url_${key}`}`
+                                      );
+                                      input.select();
+                                      document.execCommand("copy");
+                                    }}
+                                  >
+                                    Video only
+                                  </Button>
+                                  <input
+                                    type="text"
+                                    style={{
+                                      position: "absolute",
+                                      top: "-100000px",
+                                    }}
+                                    id={`stream_url_${key}`}
+                                    value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}`}
+                                    readOnly
+                                  />
+                                </div>
+                                <div className="stream_code">
+                                  <Button
+                                    variant="small"
+                                    icon={<Copy />}
+                                    onClick={() => {
+                                      let input = document.querySelector(
+                                        `#${`stream_url_a_${key}`}`
+                                      );
+                                      input.select();
+                                      document.execCommand("copy");
+                                    }}
+                                  >
+                                    Video + audio
+                                  </Button>
+                                  <input
+                                    type="text"
+                                    style={{
+                                      position: "absolute",
+                                      top: "-100000px",
+                                    }}
+                                    id={`stream_url_a_${key}`}
+                                    value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}&audio=1`}
+                                    readOnly
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    <div className="parent">
+                      <span className="name">
+                        <UserIcon /> PARENT
+                        <AveragePing
+                          pings={context.ping}
+                          participants={participants}
+                        />
+                      </span>
+                      <div className="stream_code">
+                        <label>Parent Audio Mix</label>
+                        <input
+                          type="text"
+                          style={{
+                            position: "absolute",
+                            top: "-100000px",
+                          }}
+                          id={`stream_url_${context.identity}`}
+                          value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${context.identity}&audio=1`}
+                          readOnly
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            let input = document.querySelector(
+                              `#${`stream_url_${context.identity}`}`
+                            );
+                            input.select();
+                            document.execCommand("copy");
+                          }}
+                        >
+                          Copy
+                        </button>
                       </div>
                     </div>
                   </div>
-                </MainControlView>
-              </>
+                </div>
+              </MainControlView>
             );
-          case "layout":
+          case "Monitor layout":
             return (
               <VideoLayoutEditor
                 room={room}
@@ -528,7 +528,7 @@ export default function StreamRoom({ context, send, parents }) {
                 videoTrackRefsState={videoTrackRefsState}
               />
             );
-          case "mixer":
+          case "Audio mixer":
             return (
               <div>
                 <div style={{ display: "flex" }}>
@@ -609,37 +609,80 @@ function VideoFrame({ track }) {
 const MainControlView = styled.div`
   width: 100%;
   height: 100vh;
-  display: grid;
-  grid-template-columns: 25% 75%;
-
-  .participants {
-    padding: 10px;
-    > div {
-      display: flex;
-      align-items: center;
-
-      span.user {
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        font-size: 12px;
-        width: 80%;
-        margin: 3px 0;
-      }
-    }
-  }
 
   .children {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 25px;
     padding: 8px;
+    margin: 0 5%;
 
     .child,
     .parent {
+      position: relative;
+      color: white;
       padding: 8px;
       box-sizing: border-box;
-      border: 1px solid #000;
+      border-radius: 15px;
+      width: 100%;
+      height: 260px;
+      background: #343439;
+
+      div.delayDiv {
+        display: flex;
+        flex-direction: column;
+        background: #5736fd;
+        width: 140px;
+        height: 20px;
+        border-radius: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        font-size: 12px;
+        padding: 15px 5px;
+
+        :hover {
+          cursor: pointer;
+        }
+
+        span {
+          display: flex;
+          align-items: center;
+          svg {
+            font-size: 12px;
+            stroke-width: 1.5px;
+            padding-right: 5px;
+          }
+        }
+
+        input {
+          display: none;
+          height: 35px;
+          border-radius: 50px;
+          width: 88px;
+          background: none;
+          border: 1px solid white;
+          outline: none;
+          margin-bottom: 5px;
+        }
+
+        button {
+          display: none;
+        }
+      }
+      div.expanded {
+        height: 100px;
+
+        span {
+          margin-bottom: 10px;
+        }
+
+        input,
+        button {
+          display: block;
+        }
+      }
 
       span.name {
         display: flex;
@@ -648,7 +691,8 @@ const MainControlView = styled.div`
         margin-bottom: 1em;
 
         svg {
-          margin-right: 0.8em;
+          font-size: 24px;
+          margin-right: 10px;
         }
       }
 
@@ -660,10 +704,6 @@ const MainControlView = styled.div`
           font-size: 12px;
         }
       }
-    }
-
-    .parent {
-      background: #eee;
     }
   }
 `;

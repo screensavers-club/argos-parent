@@ -237,7 +237,7 @@ export default function FetchedRoom({ context, send, colors }) {
             }
           }}
         >
-          Go
+          Enter
         </Button>
         <Button
           variant="navigation"

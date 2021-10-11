@@ -30,12 +30,13 @@ const StyledButton = styled.button.attrs((props) => ({
   className: props.className,
 }))`
   display: block;
+
   appearance: none;
-  font-family: Noto Sans;
+  font-family: "Noto Sans", sans-serif;
   text-align: left;
   font-style: normal;
   border: none;
-  color: #fff;
+  color: ${(p) => (p.type === "tertiary" ? "#5736FD" : "#fff")};
   cursor: pointer;
   justify-content: flex-start;
   align-items: flex-end;
@@ -47,6 +48,10 @@ const StyledButton = styled.button.attrs((props) => ({
 
       case "secondary":
         return "#AC4545";
+
+      case "tertiary":
+        return "#fff";
+
       default:
         return "#434349";
     }
@@ -56,13 +61,26 @@ const StyledButton = styled.button.attrs((props) => ({
     switch (p.variant) {
       case "navigation":
         return "115px";
+
+      case "small":
+        return "130px";
+
+      case "delay":
+        return "90px";
+
       default:
-        return "151px";
+        return "160px";
     }
   }};
 
   height: ${(p) => {
     switch (p.variant) {
+      case "delay":
+        return "35px";
+
+      case "small":
+        return "50px";
+
       default:
         return "50px";
     }
@@ -84,6 +102,10 @@ const StyledButton = styled.button.attrs((props) => ({
 
   font-size: ${(p) => {
     switch (p.variant) {
+      case "small":
+        return "12px";
+      case "delay":
+        return "12px";
       default:
         return "14px";
     }
@@ -91,7 +113,8 @@ const StyledButton = styled.button.attrs((props) => ({
 
   > div {
     display: flex;
-    justify-content: flex-start;
+    justify-content: ${(p) =>
+      p.type === "tertiary" || p.variant === "small" ? "center" : "flex-start"};
     align-items: center;
     margin: auto 0;
 
@@ -112,12 +135,27 @@ const StyledButton = styled.button.attrs((props) => ({
     svg {
       stroke-width: 1.5px;
       padding-top: ${(p) => (p.variant === "navigation" ? "0" : "1px")};
-      padding-left: ${(p) => (p.variant === "navigation" ? "15px" : "20px")};
-      padding-right: ${(p) => (p.variant === "navigation" ? "10px" : "15px")};
+      padding-left: ${(p) =>
+        p.variant === "navigation"
+          ? "15px"
+          : p.variant === "delay"
+          ? "5px"
+          : p.variant === "small"
+          ? "5px"
+          : "20px"};
+      padding-right: ${(p) =>
+        p.variant === "navigation"
+          ? "10px"
+          : p.variant === "delay"
+          ? "5px"
+          : p.variant === "small"
+          ? "5px"
+          : "15px"};
       font-size: ${(p) => {
         switch (p.variant) {
           case "navigation":
             return "25px";
+
           default:
             return "20px";
         }
