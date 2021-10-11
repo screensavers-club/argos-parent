@@ -427,6 +427,13 @@ export default function StreamRoom({ context, send, parents }) {
                                 </Button>
                               </div>
                             </div>
+                            <CueMix
+                              context={context}
+                              send={send}
+                              room={room}
+                              audioTracks={audioTracks}
+                              participants={participants}
+                            />
                             <div className="streamLinks">
                               <label>
                                 <Link />
@@ -567,7 +574,7 @@ export default function StreamRoom({ context, send, parents }) {
               </div>
             );
 
-          case "cue mix":
+          case "Cue mix":
             return (
               <CueMix
                 context={context}

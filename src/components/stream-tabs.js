@@ -55,6 +55,7 @@ export default function StreamTabs({ setSelectTab, selectedTab }) {
           { tab: "Stream controls", icon: <Radio /> },
           { tab: "Monitor layout", icon: <Grid /> },
           { tab: "Audio mixer", icon: <Controls /> },
+          { tab: "Cue mix", icon: <Controls /> },
         ]).map(function ({ tab, icon }, i) {
           let key = `key_${i}`;
           return (
