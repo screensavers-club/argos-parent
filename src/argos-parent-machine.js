@@ -463,8 +463,12 @@ let argosParentMachine = createMachine(
       }),
       DISCONNECT: {
         target: "server_connected",
-        room: "Not Connected",
-        color: [],
+        actions: assign({
+          room: "Not Connected",
+          color: (context, event) => {
+            return [];
+          },
+        }),
       },
     },
   },

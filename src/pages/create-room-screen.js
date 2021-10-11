@@ -7,35 +7,49 @@ import "../animate.min.css";
 import axios from "axios";
 
 const StyledPage = styled.div`
-  display: block;
-  margin: auto;
-  padding: auto;
+  display: flex;
+  flex-direction: column;
   text-align: center;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: #252529;
 
   div.section {
-    display: block;
-    width: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
     max-width: 400px;
-    margin: 2rem auto 0 auto;
 
     label {
-      display: block;
-      margin: 0 0 1em 0;
+      color: white;
+      font-size: 36px;
+      font-weight: 200;
     }
   }
 
   div.nameBox {
     display: flex;
     position: relative;
-    border: 1px solid black;
-    height: 3rem;
+    width: 630px;
+    height: 70px;
+    background: #434349;
+    border-radius: 50px;
     justify-content: center;
     align-items: center;
-    margin: auto;
-    font-size: 1.5rem;
 
     span {
-      flex-grow: 1;
+      background: ${(p) =>
+        `-webkit-linear-gradient(135deg, ${p.color ? p.color[0] : "#fff"}, ${
+          p.color ? p.color[1] : "#fff"
+        })`};
+
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     button {
@@ -74,12 +88,21 @@ const StyledPage = styled.div`
   }
 `;
 
-export default function FetchedRoom({ context, send }) {
+export default function FetchedRoom({ context, send, colors }) {
   let [passcode, setPasscode] = useState();
   let ref = useRef();
 
+  const fruits = context.room.name?.split("-");
+  const colorPair = fruits?.map((fruit, i) => {
+    let key = `key${i}`;
+
+    return Object.keys(colors).find((hex) => {
+      return colors[hex].indexOf(fruit) > -1;
+    });
+  });
+
   return (
-    <StyledPage>
+    <StyledPage color={colorPair}>
       <div className="section">
         <label>Room name</label>
         <div className="nameBox">
@@ -90,7 +113,7 @@ export default function FetchedRoom({ context, send }) {
                 .get(`${process.env.REACT_APP_PEER_SERVER}/generate-room-name`)
                 .then((result) => {
                   if (result.data?.name) {
-                    console.log(result);
+                    // console.log(result);
 
                     send("SET_NEW_ROOM_NAME", { name: result.data.name });
                   }
@@ -102,12 +125,11 @@ export default function FetchedRoom({ context, send }) {
         </div>
       </div>
       <div className="section">
-        <label>Passcode (5 digits)</label>
+        <label>Set passcode</label>
         <input
           ref={ref}
           className="passInput"
-          type="password"
-          placeholder="set passcode (digits only)"
+          type="text"
           value={passcode}
           onChange={(e) => {
             setPasscode(
@@ -132,7 +154,7 @@ export default function FetchedRoom({ context, send }) {
               passcode: passcode,
               identity: context.identity,
             };
-            console.log(payload.passcode);
+            // console.log(payload.passcode);
             if (payload.passcode.length > 0 && payload.passcode.length < 5) {
               {
                 ref.current?.classList?.add(

@@ -70,7 +70,7 @@ const StyledPage = styled.div`
   }
 `;
 
-export default function RoomStartScreen({ send, context }) {
+export default function RoomStartScreen({ send, context, colors }) {
   const animateRef = useRef();
 
   function rotateIcon() {
@@ -90,41 +90,6 @@ export default function RoomStartScreen({ send, context }) {
         console.log(err.response);
       });
   }, []);
-
-  let colors = {
-    "#FD3832": [
-      "apple",
-      "plum",
-      "date",
-      "berry",
-      "wolfberry",
-      "peach",
-      "tomato",
-    ],
-    "#C5F321": [
-      "lime",
-      "pear",
-      "watermelon",
-      "kiwi",
-      "melon",
-      "honeydew",
-      "olive",
-    ],
-    "#F9EEA0": ["lychee", "guava", "melon", "banana", "quince"],
-    "#FCAB1D": [
-      "orange",
-      "mango",
-      "apricot",
-      "persimmon",
-      "kumquat",
-      "papaya",
-      "loquat",
-      "pineapple",
-      "longan",
-      "jackfruit",
-    ],
-    "#5D0AEA": ["grape", "fig", "prune"],
-  };
 
   return (
     <StyledPage>
