@@ -10,19 +10,22 @@ const StyledPage = styled.div`
   display: flex;
   flex-direction: column;
   text-align: center;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   width: 100%;
   height: 100%;
   background: #252529;
 
+  div.top {
+    margin-top: 170px;
+  }
+
   div.section {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     width: 100%;
-    max-width: 400px;
 
     label {
       color: white;
@@ -151,8 +154,8 @@ export default function FetchedRoom({ context, send, colors }) {
 
   return (
     <StyledPage color={colorPair}>
-      <div className="section">
-        <label>Room name</label>
+      <div className="section top">
+        <label className="roomName">Room name</label>
         <div className="nameBox">
           <span>{context.room.name}</span>
           <button
@@ -174,10 +177,9 @@ export default function FetchedRoom({ context, send, colors }) {
       </div>
       <div className="section">
         <label className="setPassword">Set passcode</label>
-        <div className="inputDiv">
+        <div className="inputDiv" ref={ref}>
           <Lock />
           <input
-            ref={ref}
             className="passInput"
             type="text"
             value={passcode}
@@ -208,8 +210,8 @@ export default function FetchedRoom({ context, send, colors }) {
               passcode: passcode,
               identity: context.identity,
             };
-            // console.log(payload.passcode);
-            if (payload.passcode.length > 0 && payload.passcode.length < 5) {
+            console.log(payload.passcode);
+            if (!payload.passcode || payload.passcode.length < 5) {
               {
                 ref.current?.classList?.add(
                   "animate__animated",

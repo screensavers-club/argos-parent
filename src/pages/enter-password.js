@@ -6,13 +6,16 @@ import "../animate.min.css";
 
 const StyledPage = styled.div`
   display: block;
-  margin: auto;
-  padding: auto;
+  position: absolute;
   text-align: center;
+  background: #252529;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  top: 35px;
 
   div.roomName {
     display: block;
-    margin-top: 7%;
   }
 
   div.nameBox {
