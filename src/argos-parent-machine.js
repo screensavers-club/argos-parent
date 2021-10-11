@@ -328,7 +328,7 @@ let argosParentMachine = createMachine(
             target: "enter_password",
             actions: assign({
               joining_room: (context, event) => {
-                return event.room;
+                return event.name;
               },
               color: (context, event) => {
                 return event.colorPair;
