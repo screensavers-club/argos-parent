@@ -52,19 +52,19 @@ export default function StreamTabs({ setSelectTab, selectedTab }) {
     <Tabs>
       <div className="tabsContainer">
         {(tabs = [
-          { tab: "Stream controls", icon: <Radio /> },
-          { tab: "Monitor layout", icon: <Grid /> },
-          { tab: "Audio mixer", icon: <Controls /> },
-          { tab: "Cue mix", icon: <Controls /> },
-        ]).map(function ({ tab, icon }, i) {
+          { tab: "Stream controls", icon: <Radio />, state: "stream-controls" },
+          { tab: "Monitor layout", icon: <Grid />, state: "monitor-layout" },
+          { tab: "Audio mixer", icon: <Controls />, state: "audio-mixer" },
+          { tab: "Cue mix", icon: <Controls />, state: "cue-mix" },
+        ]).map(function ({ tab, icon, state }, i) {
           let key = `key_${i}`;
           return (
             <div
               key={key}
               onClick={() => {
-                setSelectTab(tab);
+                setSelectTab(state);
               }}
-              className={selectedTab === tab ? "selected" : ""}
+              className={selectedTab === state ? "selected" : ""}
             >
               {icon}
               {tab}

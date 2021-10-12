@@ -44,9 +44,8 @@ const StyledPage = styled.div`
   }
 
   div.streamLinks {
-    position: absolute;
-    width: 75%;
-    bottom: 15px;
+    grid-column: 2 / span 3;
+    grid-row: 5 / span 1;
     right: 0;
     display: flex;
     align-items: center;
@@ -153,7 +152,7 @@ const StyledPage = styled.div`
 `;
 export default function StreamRoom({ context, send, parents }) {
   const { room, connect, participants, audioTracks } = useRoom();
-  const [selectTab, setSelectTab] = useState("Stream controls");
+  const [selectTab, setSelectTab] = useState("stream-controls");
   const [renderState, setRenderState] = useState(0);
   let [exiting, setExiting] = useState(false);
   const exitingModalRef = useRef();
@@ -358,7 +357,7 @@ export default function StreamRoom({ context, send, parents }) {
       <StreamTabs setSelectTab={setSelectTab} selectedTab={selectTab} />
       {(function () {
         switch (selectTab) {
-          case "Stream controls":
+          case "stream-controls":
             return (
               <MainControlView>
                 <div>
@@ -374,60 +373,64 @@ export default function StreamRoom({ context, send, parents }) {
                         )?.nickname;
                         return (
                           <div key={key} className="child">
-                            <span className="name">
-                              <UserIcon /> {nickname} (
-                              <UserPing
-                                ping={context?.ping?.[p.sid]}
-                                sendPing={() => {
-                                  sendPing(p.sid);
-                                }}
-                              />
-                              )
-                            </span>
-
-                            <div>
-                              <div
-                                className={`delayDiv ${
-                                  expanded === true ? "expanded" : ""
-                                }`}
-                                onClick={() => {
-                                  console.log(expanded);
-                                  expanded === true
-                                    ? setExpanded(false)
-                                    : setExpanded(true);
-                                }}
-                              >
-                                <span>
-                                  <Stopwatch /> Ref audio delay
-                                </span>
-                                <input
-                                  type="text"
-                                  value={`${
-                                    JSON.parse(p.metadata)?.audio_delay || 0
-                                  }ms`}
-                                  id={`audio_delay_${key}`}
-                                />
-                                <Button
-                                  variant="delay"
-                                  type="tertiary"
-                                  onClick={() => {
-                                    let _delay = parseInt(
-                                      document.getElementById(
-                                        `audio_delay_${key}`
-                                      ).value
-                                    );
-                                    setDelay({
-                                      id: p.identity,
-                                      delay: _delay,
-                                      room: room.name,
-                                    });
+                            <div className="leftPanel">
+                              <span className="heading">
+                                <UserIcon /> {nickname} (
+                                <UserPing
+                                  ping={context?.ping?.[p.sid]}
+                                  sendPing={() => {
+                                    sendPing(p.sid);
                                   }}
+                                />
+                                )
+                              </span>
+
+                              <div>
+                                <div
+                                  className={`delayDiv ${
+                                    expanded === true ? "expanded" : ""
+                                  }`}
                                 >
-                                  Update
-                                </Button>
+                                  <span
+                                    onClick={() => {
+                                      console.log(expanded);
+                                      expanded === true
+                                        ? setExpanded(false)
+                                        : setExpanded(true);
+                                    }}
+                                  >
+                                    <Stopwatch /> Ref audio delay
+                                  </span>
+                                  <input
+                                    type="text"
+                                    value={`${
+                                      JSON.parse(p.metadata)?.audio_delay || 0
+                                    }ms`}
+                                    id={`audio_delay_${key}`}
+                                  />
+                                  <Button
+                                    variant="delay"
+                                    type="tertiary"
+                                    onClick={() => {
+                                      let _delay = parseInt(
+                                        document.getElementById(
+                                          `audio_delay_${key}`
+                                        ).value
+                                      );
+                                      setDelay({
+                                        id: p.identity,
+                                        delay: _delay,
+                                        room: room.name,
+                                      });
+                                    }}
+                                  >
+                                    Update
+                                  </Button>
+                                </div>
                               </div>
                             </div>
                             <CueMix
+                              ownerNick={nickname}
                               context={context}
                               send={send}
                               room={room}
@@ -533,7 +536,7 @@ export default function StreamRoom({ context, send, parents }) {
                 </div>
               </MainControlView>
             );
-          case "Monitor layout":
+          case "monitor-layout":
             return (
               <VideoLayoutEditor
                 room={room}
@@ -541,7 +544,7 @@ export default function StreamRoom({ context, send, parents }) {
                 videoTrackRefsState={videoTrackRefsState}
               />
             );
-          case "Audio mixer":
+          case "audio-mixer":
             return (
               <div>
                 <div style={{ display: "flex" }}>
@@ -574,7 +577,7 @@ export default function StreamRoom({ context, send, parents }) {
               </div>
             );
 
-          case "Cue mix":
+          case "cue-mix":
             return (
               <CueMix
                 context={context}
@@ -622,6 +625,7 @@ function VideoFrame({ track }) {
 const MainControlView = styled.div`
   width: 100%;
   height: 100vh;
+  overflow-y: scroll;
 
   .children {
     display: grid;
@@ -632,6 +636,10 @@ const MainControlView = styled.div`
 
     .child,
     .parent {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      gap: 5px;
       position: relative;
       color: white;
       padding: 8px;
@@ -640,6 +648,16 @@ const MainControlView = styled.div`
       width: 100%;
       height: 260px;
       background: #343439;
+
+      div.leftPanel {
+        grid-column: 1 / span 1;
+        grid-row: 1 / span 5;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-sizing: border-box;
+        padding: 5px;
+      }
 
       div.delayDiv {
         display: flex;
@@ -654,6 +672,7 @@ const MainControlView = styled.div`
 
         font-size: 12px;
         padding: 15px 5px;
+        margin-bottom: 80px;
 
         :hover {
           cursor: pointer;
@@ -662,6 +681,8 @@ const MainControlView = styled.div`
         span {
           display: flex;
           align-items: center;
+          width: 100%;
+          text-align: center;
           svg {
             font-size: 12px;
             stroke-width: 1.5px;
@@ -688,6 +709,7 @@ const MainControlView = styled.div`
       }
       div.expanded {
         height: 100px;
+        margin-bottom: 0;
 
         span {
           margin-bottom: 10px;
@@ -701,11 +723,10 @@ const MainControlView = styled.div`
         }
       }
 
-      span.name {
+      span.heading {
         display: flex;
         align-items: center;
         font-weight: 600;
-        margin-bottom: 1em;
 
         svg {
           font-size: 24px;
