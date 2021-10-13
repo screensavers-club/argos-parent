@@ -90,7 +90,6 @@ export default function FetchedRoom({ context, send }) {
                 .get(`${process.env.REACT_APP_PEER_SERVER}/generate-room-name`)
                 .then((result) => {
                   if (result.data?.name) {
-                    // console.log(result);
                     send("SET_NEW_ROOM_NAME", { name: result.data.name });
                   }
                 });
@@ -131,7 +130,6 @@ export default function FetchedRoom({ context, send }) {
               passcode: passcode,
               identity: context.identity,
             };
-            console.log(payload.passcode);
             if (payload.passcode.length > 0 && payload.passcode.length < 5) {
               {
                 ref.current?.classList?.add(
@@ -153,7 +151,10 @@ export default function FetchedRoom({ context, send }) {
                 )
                 .then((result) => {
                   // console.log(result);
-                  return send("RECEIVE_TOKEN", { token: result.data.token });
+                  return send("RECEIVE_TOKEN", {
+                    token: result.data.token,
+                    passcode,
+                  });
                 });
             }
           }}

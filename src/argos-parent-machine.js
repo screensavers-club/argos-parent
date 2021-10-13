@@ -350,8 +350,12 @@ let argosParentMachine = createMachine(
           RECEIVE_TOKEN: {
             target: "stream_room",
             actions: assign({
-              token: (context, event) => {
+              token: (_, event) => {
                 return event.token;
+              },
+
+              passcode: (_, event) => {
+                return event.passcode;
               },
             }),
           },
