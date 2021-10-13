@@ -1,41 +1,71 @@
 import styled from "styled-components";
 import Button from "../components/button";
 import React, { useRef, useState } from "react";
-import { Repeat } from "react-ikonate";
+import { Repeat, Lock, ArrowLeft, ArrowRight } from "react-ikonate";
 import "../animate.min.css";
 
 import axios from "axios";
 
 const StyledPage = styled.div`
-  display: block;
-  margin: auto;
-  padding: auto;
+  display: flex;
+  flex-direction: column;
   text-align: center;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: #252529;
+
+  div.top {
+    margin-top: 170px;
+  }
 
   div.section {
-    display: block;
-    width: 70%;
-    max-width: 400px;
-    margin: 2rem auto 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
 
     label {
-      display: block;
-      margin: 0 0 1em 0;
+      color: white;
+      font-size: 36px;
+      font-weight: 200;
+      margin-bottom: 30px;
     }
   }
 
   div.nameBox {
     display: flex;
     position: relative;
-    border: 1px solid black;
-    height: 3rem;
+    width: 630px;
+    height: 70px;
+    background: #434349;
+    border-radius: 50px;
     justify-content: center;
     align-items: center;
-    margin: auto;
-    font-size: 1.5rem;
+    margin-bottom: 60px;
 
     span {
-      flex-grow: 1;
+      background: ${(p) =>
+        `-webkit-linear-gradient(135deg, ${p.color ? p.color[0] : "#fff"}, ${
+          p.color ? p.color[1] : "#fff"
+        })`};
+
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 36px;
+      font-weight: 900;
+    }
+
+    svg {
+      position: absolute;
+      padding-top: 3px;
+      right: 20px;
+      color: white;
+      stroke-width: 1.5px;
+      font-size: 36px;
     }
 
     button {
@@ -52,36 +82,80 @@ const StyledPage = styled.div`
       cursor: pointer;
     }
   }
+  div.inputDiv {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background: #434349;
+    border-radius: 100px;
+    width: 265px;
+    height: 56px;
+    margin: 10px 90px;
 
-  input {
-    font-size: 1.5rem;
-    appearance: none;
-    padding: 0.5em 1em;
-    width: 100%;
-    height: auto;
-    border-radius: 0;
-    border: 1px solid black;
-    text-align: center;
+    svg {
+      stroke-width: 1.5px;
+      font-size: 36px;
+      stroke: white;
+      margin: 0 15px;
+      stroke-linecap: "round";
+      stroke-linejoin: "round";
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+      width: 10px;
+      position: absolute;
+      text-align: center;
+    }
+
+    input,
+    select {
+      padding-left: 15px;
+      font-family: "Noto Sans";
+      font-style: normal;
+      font-weight: 200;
+      background: none;
+      font-size: 36px;
+      color: white;
+      border-style: none;
+      width: 165px;
+      height: 75%;
+      border-left: 1px solid white;
+      outline: none;
+    }
   }
-
   div.buttonBox {
     display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
     justify-content: center;
+    width: 100%;
 
     button {
-      margin: 0 0.5em;
+      margin: 25px 15px;
     }
   }
 `;
 
-export default function FetchedRoom({ context, send }) {
+export default function FetchedRoom({ context, send, colors }) {
   let [passcode, setPasscode] = useState();
   let ref = useRef();
 
+  const fruits = context.room.name?.split("-");
+  const colorPair = fruits?.map((fruit, i) => {
+    let key = `key${i}`;
+
+    return Object.keys(colors).find((hex) => {
+      return colors[hex].indexOf(fruit) > -1;
+    });
+  });
+
   return (
-    <StyledPage>
-      <div className="section">
-        <label>Room name</label>
+    <StyledPage color={colorPair}>
+      <div className="section top">
+        <label className="roomName">Room name</label>
         <div className="nameBox">
           <span>{context.room.name}</span>
           <button
@@ -90,6 +164,8 @@ export default function FetchedRoom({ context, send }) {
                 .get(`${process.env.REACT_APP_PEER_SERVER}/generate-room-name`)
                 .then((result) => {
                   if (result.data?.name) {
+                    // console.log(result);
+
                     send("SET_NEW_ROOM_NAME", { name: result.data.name });
                   }
                 });
@@ -100,37 +176,42 @@ export default function FetchedRoom({ context, send }) {
         </div>
       </div>
       <div className="section">
-        <label>Passcode (5 digits)</label>
-        <input
-          ref={ref}
-          className="passInput"
-          type="password"
-          placeholder="set passcode (digits only)"
-          value={passcode}
-          onChange={(e) => {
-            setPasscode(
-              e.target.value
-                .split("")
-                .filter((c) => {
-                  return "0123456789".indexOf(c) > -1;
-                })
-                .filter((c, i) => {
-                  return i < 5;
-                })
-                .join("")
-            );
-          }}
-        />
+        <label className="setPassword">Set passcode</label>
+        <div className="inputDiv" ref={ref}>
+          <Lock />
+          <input
+            className="passInput"
+            type="text"
+            value={passcode}
+            onChange={(e) => {
+              setPasscode(
+                e.target.value
+                  .split("")
+                  .filter((c) => {
+                    return "0123456789".indexOf(c) > -1;
+                  })
+                  .filter((c, i) => {
+                    return i < 5;
+                  })
+                  .join("")
+              );
+            }}
+          />
+        </div>
       </div>
       <div className="buttonBox section">
         <Button
+          variant="navigation"
+          icon={<ArrowRight />}
+          type="primary"
           onClick={() => {
             const payload = {
               room: context.room.name,
               passcode: passcode,
               identity: context.identity,
             };
-            if (payload.passcode.length > 0 && payload.passcode.length < 5) {
+            console.log(payload.passcode);
+            if (!payload.passcode || payload.passcode.length < 5) {
               {
                 ref.current?.classList?.add(
                   "animate__animated",
@@ -159,9 +240,11 @@ export default function FetchedRoom({ context, send }) {
             }
           }}
         >
-          Go
+          Enter
         </Button>
         <Button
+          variant="navigation"
+          icon={<ArrowLeft />}
           onClick={() => {
             send("DISCONNECT");
           }}

@@ -28,7 +28,9 @@ export default function StartScreen({ send }) {
         .post(`${process.env.REACT_APP_PEER_SERVER}/session/new`)
         .then((result) => {
           setIdentity(result.data.identity);
-          send("SET_IDENTITY", { identity: result.data.identity });
+          send("SET_IDENTITY", {
+            identity: result.data.identity,
+          });
         });
     }
   }, []);

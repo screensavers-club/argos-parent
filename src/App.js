@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import AppFrame from "./components/app-frame";
 import StatusBar from "./components/status-bar";
 
@@ -7,7 +7,6 @@ import RoomStartScreen from "./pages/room-start-screen";
 import ErrorScreen from "./pages/error-screen";
 import FetchedRoom from "./pages/create-room-screen";
 import StreamRoom from "./pages/stream-room";
-import SelectRoom from "./pages/select-room";
 import EnterPassword from "./pages/enter-password";
 import RoomJoined from "./pages/room-joined";
 
@@ -37,7 +36,11 @@ function App() {
   return (
     <div className="App">
       <AppFrame>
-        <StatusBar room={_.get(state, "context.room.name")} version="0.2.0" />
+        <StatusBar
+          context={state.context}
+          room={_.get(state, "context.room.name")}
+          version="0.2.0"
+        />
 
         {supported ? (
           <Screen state={state.value} context={state.context} send={send} />
@@ -58,18 +61,53 @@ function App() {
 export default App;
 
 function Screen({ context, state, send }) {
+  let colors = {
+    "#FD3832": [
+      "apple",
+      "plum",
+      "date",
+      "berry",
+      "wolfberry",
+      "peach",
+      "tomato",
+    ],
+    "#C5F321": [
+      "lime",
+      "pear",
+      "watermelon",
+      "kiwi",
+      "melon",
+      "honeydew",
+      "olive",
+    ],
+    "#F9EEA0": ["lychee", "guava", "melon", "banana", "quince"],
+    "#FCAB1D": [
+      "orange",
+      "mango",
+      "apricot",
+      "persimmon",
+      "kumquat",
+      "papaya",
+      "loquat",
+      "pineapple",
+      "longan",
+      "jackfruit",
+    ],
+    "#5D0AEA": ["grape", "fig", "prune"],
+  };
+
   switch (state) {
     case "start":
       return <StartScreen send={send} />;
 
     case "server_connected":
-      return <RoomStartScreen send={send} />;
+      return <RoomStartScreen send={send} context={context} colors={colors} />;
 
     case "error":
       return <ErrorScreen send={send} context={context} />;
 
     case "create_room":
-      return <FetchedRoom send={send} context={context} />;
+      return <FetchedRoom send={send} context={context} colors={colors} />;
 
     case "stream_room":
       return (
@@ -83,9 +121,6 @@ function Screen({ context, state, send }) {
           ]}
         />
       );
-
-    case "select_room":
-      return <SelectRoom send={send} context={context} />;
 
     case "enter_password":
       return <EnterPassword send={send} context={context} />;
