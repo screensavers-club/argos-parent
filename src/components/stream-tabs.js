@@ -1,29 +1,48 @@
+import reactDom from "react-dom";
 import styled from "styled-components";
+import { Controls, Grid, Radio } from "react-ikonate";
 
 let tabs;
 
 const Tabs = styled.div`
+  width: 100%;
   display: flex;
   justify-content: center;
-  margin: auto;
-  margin-top: 25px;
-  padding: auto;
 
   > div {
-    border: 1px solid black;
-    padding: 10px 50px;
+    display: flex;
+    justify-content: center;
+    background: #434349;
+    border-radius: 50px;
+    width: 510px;
+    height: 50px;
+    padding: 0 10px;
 
-    &:nth-child(n + 2) {
-      margin-left: -1px;
-    }
+    > div {
+      width: 170px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
 
-    &:hover,
-    &.selected {
-      z-index: 1;
-      border-bottom: 5px solid black;
-      margin-bottom: -5px;
-      background: #ddd;
-      cursor: pointer;
+      font-size: 14px;
+      color: white;
+      border-right: 1px solid #252529;
+
+      svg {
+        margin-right: 10px;
+        font-size: 18px;
+        stroke-width: 1.5px;
+      }
+
+      :last-child {
+        border-right: none;
+      }
+
+      :hover {
+        cursor: pointer;
+        background: grey;
+      }
     }
   }
 `;
@@ -31,27 +50,28 @@ const Tabs = styled.div`
 export default function StreamTabs({ setSelectTab, selectedTab }) {
   return (
     <Tabs>
-      {(tabs = [
-        { tab: "stream" },
-        { tab: "layout" },
-        // { tab: "monitor" },
-        // { tab: "out" },
-        { tab: "cue mix" },
-        // { tab: "mixer" },
-      ]).map(function ({ tab }, i) {
-        let key = `key_${i}`;
-        return (
-          <div
-            key={key}
-            onClick={() => {
-              setSelectTab(tab);
-            }}
-            className={selectedTab === tab ? "selected" : ""}
-          >
-            {tab}
-          </div>
-        );
-      })}
+      <div className="tabsContainer">
+        {(tabs = [
+          { tab: "Stream controls", icon: <Radio />, state: "stream-controls" },
+          { tab: "Monitor layout", icon: <Grid />, state: "monitor-layout" },
+          { tab: "Audio mixer", icon: <Controls />, state: "audio-mixer" },
+          { tab: "Cue mix", icon: <Controls />, state: "cue-mix" },
+        ]).map(function ({ tab, icon, state }, i) {
+          let key = `key_${i}`;
+          return (
+            <div
+              key={key}
+              onClick={() => {
+                setSelectTab(state);
+              }}
+              className={selectedTab === state ? "selected" : ""}
+            >
+              {icon}
+              {tab}
+            </div>
+          );
+        })}
+      </div>
     </Tabs>
   );
 }

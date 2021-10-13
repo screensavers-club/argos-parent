@@ -3,117 +3,125 @@ import Button from "../components/button";
 import React, { useState, useRef } from "react";
 import axios from "axios";
 import "../animate.min.css";
+import { ArrowRight, ArrowLeft, Lock } from "react-ikonate";
+import { fromPairs } from "lodash";
 
 const StyledPage = styled.div`
-  display: block;
-  margin: auto;
-  padding: auto;
+  display: flex;
+  flex-direction: column;
   text-align: center;
+  background: #252529;
+  width: 100%;
+  height: 100%;
 
-  div.roomName {
-    display: block;
-    margin-top: 7%;
-  }
-
-  div.nameBox {
-    position: relative;
-    text-align: center;
-    border: 1px solid black;
-    height: 2rem;
+  div.room {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
-    width: 45%;
-    padding: 25px;
-    margin: auto;
-    font-size: 1.5rem;
 
-    > button {
-      position: absolute;
-      right: 0;
-      height: 100%;
-      box-shadow: none;
-      border: none;
-      border-radius: 0;
-      width: 50px;
-      margin-bottom: 0;
+    span {
+      margin-top: 170px;
+      font-size: 36px;
+      font-weight: 200;
+      color: white;
     }
-  }
 
-  Button {
-    display: block;
-    margin: auto;
-    padding: auto;
-    height: 100px;
-    width: 200px;
-    margin-bottom: 25px;
-  }
+    h3 {
+      background: ${(p) =>
+        `-webkit-linear-gradient(135deg, ${
+          p.context.color ? p.context.color[0] : "#fff"
+        }, ${p.context.color ? p.context.color[1] : "#fff"})`};
 
-  div.roomName ~ h3 {
-    margin-top: 50px;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 36px;
+      font-weight: 900;
+      margin: 30px;
+    }
   }
 
   div.password {
     display: flex;
-    margin: 25px;
-    align-items: center;
     justify-content: center;
   }
 
-  div.passwordBox {
-    padding: 25px;
-    margin: 12.5px;
-    width: 45%;
-  }
+  div.inputDiv {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background: #434349;
+    border-radius: 100px;
+    width: 265px;
+    height: 56px;
+    margin: 10px 90px;
 
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-    width: 10px;
-    position: absolute;
-    text-align: center;
-  }
+    svg {
+      stroke-width: 1.5px;
+      font-size: 36px;
+      stroke: white;
+      margin: 0 15px;
+      stroke-linecap: "round";
+      stroke-linejoin: "round";
+    }
 
-  input,
-  select {
-    font-size: 2em;
-    border-style: none;
-    width: 100%;
-    height: auto;
-    border-radius: 0;
-    border: 1px solid black;
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+      width: 10px;
+      position: absolute;
+      text-align: center;
+    }
+
+    input,
+    select {
+      padding-left: 15px;
+      font-family: "Noto Sans";
+      font-style: normal;
+      font-weight: 200;
+      background: none;
+      font-size: 36px;
+      color: white;
+      border-style: none;
+      width: 165px;
+      height: 75%;
+      border-left: 1px solid white;
+      outline: none;
+    }
   }
 
   div.buttonBox {
-    display: block;
-    margin: auto;
-    padding: auto;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    justify-content: center;
+    width: 100%;
+
+    button {
+      margin: 25px 15px;
+    }
   }
 `;
-
-// function passwords({}){
-//   return
-//   <div
-// }
-
-// let [number, setNumber] = useState();
 
 export default function EnterPassword({ send, context }) {
   let [passcode, setPasscode] = useState("");
   let ref = useRef();
+  console.log(context);
   return (
-    <StyledPage>
+    <StyledPage context={context}>
       <div className="room">
+        <span>Enter password for</span>
         <h3>{context.joining_room}</h3>
       </div>
-      <div className="password" ref={ref}>
-        <div className="passwordBox">
+      <div className="password">
+        <div className="inputDiv" ref={ref}>
+          <Lock />
           <input
             className="passInput"
             type="password"
             maxLength="5"
-            placeholder="enter password"
             value={passcode}
             onChange={(e) => {
               setPasscode(e.target.value);
@@ -121,8 +129,12 @@ export default function EnterPassword({ send, context }) {
           />
         </div>
       </div>
+
       <div className="buttonBox">
         <Button
+          variant="navigation"
+          type="primary"
+          icon={<ArrowRight />}
           onClick={() => {
             let payload = {
               room: context.joining_room,
@@ -160,12 +172,14 @@ export default function EnterPassword({ send, context }) {
               });
           }}
         >
-          Go
+          Enter
         </Button>
         <Button
+          variant="navigation"
           onClick={() => {
             send("DISCONNECT");
           }}
+          icon={<ArrowLeft />}
         >
           Back
         </Button>

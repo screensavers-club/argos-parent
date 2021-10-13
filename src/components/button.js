@@ -5,6 +5,7 @@ export default function Button({
   children,
   onClick,
   variant,
+  type,
   icon,
   className,
 }) {
@@ -13,10 +14,14 @@ export default function Button({
       {...style}
       onClick={onClick}
       variant={variant}
+      type={type}
+      icon={icon}
       className={className}
     >
-      {icon}
-      {children}
+      <div>
+        {icon}
+        {children}
+      </div>
     </StyledButton>
   );
 }
@@ -24,59 +29,155 @@ export default function Button({
 const StyledButton = styled.button.attrs((props) => ({
   className: props.className,
 }))`
+  display: block;
+
   appearance: none;
-  border: 1px solid #000;
-  background: #fff;
-  color: #000;
+  font-family: "Noto Sans", sans-serif;
+  text-align: left;
+  font-style: normal;
+  border: none;
+  color: ${(p) => (p.type === "tertiary" ? "#5736FD" : "#fff")};
   cursor: pointer;
-  font-size: 1.5rem;
+  justify-content: flex-start;
+  align-items: flex-end;
 
-  min-width: ${(p) => {
-    if (p.variant === "big") {
-      return "10em";
-    }
-    if (p.variant === "medium") {
-      return "200px";
-    }
-    if (p.variant === "small") {
-      return "auto";
-    }
-    if (p.variant === "tiny") {
-      return "1em";
-    }
+  background: ${(p) => {
+    switch (p.type) {
+      case "primary":
+        return "#5736FD";
 
-    if (p.variant === "custom") {
-      return;
+      case "secondary":
+        return "#AC4545";
+
+      case "tertiary":
+        return "#fff";
+
+      default:
+        return "#434349";
     }
   }};
 
-  min-height: ${(p) => {
-    if (p.variant === "big") {
-      return "3em";
-    }
-    if (p.variant === "medium") {
-      return "100px";
-    }
-    if (p.variant === "small") {
-      return "auto";
-    }
-    if (p.variant === "tiny") {
-      return "1em";
-    }
+  width: ${(p) => {
+    switch (p.variant) {
+      case "navigation":
+        return "115px";
 
-    if (p.variant === "custom") {
-      return;
+      case "small":
+        return "130px";
+
+      case "delay":
+        return "90px";
+
+      default:
+        return "160px";
     }
   }};
 
-  border-radius: 4px;
-  box-shadow: 0 3px black;
-  font-family: "Work Sans";
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: ${(p) => {
+    switch (p.variant) {
+      case "delay":
+        return "35px";
 
-  &:hover {
-    background: #eee;
+      case "small":
+        return "50px";
+
+      default:
+        return "50px";
+    }
+  }};
+
+  border-radius: ${(p) => {
+    switch (p.variant) {
+      default:
+        return "50px";
+    }
+  }};
+
+  font-weight: ${(p) => {
+    switch (p.variant) {
+      default:
+        return "500";
+    }
+  }};
+
+  font-size: ${(p) => {
+    switch (p.variant) {
+      case "small":
+        return "12px";
+      case "delay":
+        return "12px";
+      default:
+        return "14px";
+    }
+  }};
+
+  > div {
+    display: flex;
+    justify-content: ${(p) =>
+      p.type === "tertiary" || p.variant === "small" ? "center" : "flex-start"};
+    align-items: center;
+    margin: auto 0;
+
+    width: ${(p) => {
+      switch (p.variant) {
+        default:
+          return "100%";
+      }
+    }};
+
+    margin: ${(p) => {
+      switch (p.variant) {
+        default:
+          return 0;
+      }
+    }};
+
+    svg {
+      stroke-width: 1.5px;
+      padding-top: ${(p) => (p.variant === "navigation" ? "0" : "1px")};
+      padding-left: ${(p) =>
+        p.variant === "navigation"
+          ? "15px"
+          : p.variant === "delay"
+          ? "5px"
+          : p.variant === "small"
+          ? "5px"
+          : "20px"};
+      padding-right: ${(p) =>
+        p.variant === "navigation"
+          ? "10px"
+          : p.variant === "delay"
+          ? "5px"
+          : p.variant === "small"
+          ? "5px"
+          : "15px"};
+      font-size: ${(p) => {
+        switch (p.variant) {
+          case "navigation":
+            return "25px";
+
+          default:
+            return "20px";
+        }
+      }};
+    }
+  }
+
+  :hover {
+    stroke: #434349;
+    color: #434349;
+    background: white;
+  }
+
+  :active {
+    stroke: #5736fd;
+    color: #5736fd;
+    background: white;
+  }
+
+  :focus {
+    stroke: #5736fd;
+    color: #5736fd;
+    background: white;
   }
 `;
