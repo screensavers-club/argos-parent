@@ -2,19 +2,21 @@ import { useState } from "react";
 import AppFrame from "./components/app-frame";
 import StatusBar from "./components/status-bar";
 
-import StartScreen from "./pages/start-screen";
-import RoomStartScreen from "./pages/room-start-screen";
-import ErrorScreen from "./pages/error-screen";
-import FetchedRoom from "./pages/create-room-screen";
-import StreamRoom from "./pages/stream-room";
-import EnterPassword from "./pages/enter-password";
-import RoomJoined from "./pages/room-joined";
+import StartScreen from "./screens/start-screen";
+import RoomStartScreen from "./screens/room-start-screen";
+import ErrorScreen from "./screens/error-screen";
+import FetchedRoom from "./screens/create-room-screen";
+import StreamRoom from "./screens/stream-room";
+import EnterPassword from "./screens/enter-password";
+import RoomJoined from "./screens/room-joined";
 
 import _ from "lodash";
 
 import { useMachine } from "@xstate/react";
 import argosParentMachine from "./argos-parent-machine.js";
 import { inspect } from "@xstate/inspect";
+
+import { colors } from "./util/fruit-colors";
 
 // inspect({ iframe: false });
 
@@ -28,8 +30,9 @@ function App() {
     (() => {
       let _ac = new AudioContext();
       let msts = _ac.createMediaStreamTrackSource;
+      let _supported = typeof msts === "function";
       _ac = null;
-      return typeof msts === "function";
+      return _supported;
     })()
   );
 
@@ -39,7 +42,7 @@ function App() {
         <StatusBar
           context={state.context}
           room={_.get(state, "context.room.name")}
-          version="0.2.0"
+          version="1.0.0"
         />
 
         {supported ? (
@@ -61,41 +64,6 @@ function App() {
 export default App;
 
 function Screen({ context, state, send }) {
-  let colors = {
-    "#FD3832": [
-      "apple",
-      "plum",
-      "date",
-      "berry",
-      "wolfberry",
-      "peach",
-      "tomato",
-    ],
-    "#C5F321": [
-      "lime",
-      "pear",
-      "watermelon",
-      "kiwi",
-      "melon",
-      "honeydew",
-      "olive",
-    ],
-    "#F9EEA0": ["lychee", "guava", "melon", "banana", "quince"],
-    "#FCAB1D": [
-      "orange",
-      "mango",
-      "apricot",
-      "persimmon",
-      "kumquat",
-      "papaya",
-      "loquat",
-      "pineapple",
-      "longan",
-      "jackfruit",
-    ],
-    "#5D0AEA": ["grape", "fig", "prune"],
-  };
-
   switch (state) {
     case "start":
       return <StartScreen send={send} />;

@@ -38,24 +38,23 @@ const StyledButton = styled.button`
   background: ${(p) => p.gradient};
   border: none;
   color: #fff;
-  min-width: 380px;
-  width: 25%;
-  height: 260px;
+  width: 100%;
+  height: 220px;
   border-radius: 15px;
   text-align: left;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 24px;
-  text-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
+  font-weight: 300;
+  font-size: 2rem;
+  text-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px, rgba(0, 0, 0, 0.5) 0 1px 2px;
   box-shadow: 0 4px 4px #252529;
+  box-sizing: border-bix;
+  padding: 16px;
 
   > div {
     display: flex;
     justify-content: ${(p) =>
       p.variant === "create" ? "center" : "flex-start"};
     align-items: center;
-    width: ${(p) => (p.variant === "create" ? "100%" : "50%")};
-    margin: ${(p) => (p.variant === "create" ? "10px 0" : "0 0 10px 10px;")};
+    width: ${(p) => (p.variant === "create" ? "100%" : "80%")};
 
     span {
       position: absolute;

@@ -54,9 +54,9 @@ export default function CueMix({
 }) {
   let [cueMixState, setCueMixState] = useState({});
 
-  useEffect(() => {
-    participants.forEach((p) => triggerGetCueMixState(room, p));
-  }, [participants]);
+  //useEffect(() => {
+  //  participants.forEach((p) => triggerGetCueMixState(room, p));
+  //}, [participants]);
 
   useEffect(() => {
     room.on(RoomEvent.DataReceived, (payload, participant) => {

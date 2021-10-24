@@ -1,31 +1,38 @@
 import styled from "styled-components";
 import axios from "axios";
 import { User, Plus, Rotate } from "react-ikonate";
-import Card from "../components/cards";
 import { useEffect, useRef } from "react";
 
+import Card from "../components/room-card";
+
 const StyledPage = styled.div`
-  background: #252529;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  background: #222;
+  height: calc(100% - 35px);
   align-items: center;
   justify-content: center;
   font-family: "Noto Sans", sans-serif;
 
   div.header {
     display: flex;
+    justify-content: flex-start;
     color: white;
-    margin-top: 50px;
+    width: calc(100% - 32px);
+    margin: 4px 16px;
+    padding: 2rem 0 0 0;
+
     h3 {
       font-weight: 200;
       font-size: 36px;
+      line-height: 1;
+      margin: 0;
     }
 
     svg.refreshButton {
-      margin: auto 0 auto 50px;
+      margin: auto 0 auto 8px;
       stroke-width: 1px;
       font-size: 42px;
+      position: relative;
+      top: -4px;
 
       :hover {
         cursor: pointer;
@@ -56,17 +63,14 @@ const StyledPage = styled.div`
   }
 
   div.rooms {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     width: 100%;
+    padding: 16px;
     overflow-y: scroll;
-
-    button {
-      margin: 10px;
-    }
+    gap: 16px;
+    box-sizing: border-box;
+    max-height: calc(100% - 82px);
   }
 `;
 
@@ -94,7 +98,7 @@ export default function RoomStartScreen({ send, context, colors }) {
   return (
     <StyledPage>
       <div className="header">
-        <h3>Available rooms</h3>
+        <h3>Rooms</h3>
         <Rotate
           className="refreshButton"
           ref={animateRef}
@@ -111,43 +115,48 @@ export default function RoomStartScreen({ send, context, colors }) {
           }}
         />
       </div>
+
       <div className="rooms">
         <Card
           variant="create"
           icon={<Plus />}
-          gradient={`linear-gradient(135deg, #434349, #252529)`}
+          gradient={`linear-gradient(135deg, #333, #556)`}
           onClick={() => {
             send("CREATE_ROOM");
           }}
         >
           Create room
         </Card>
-        {context.rooms_available.map(function ({ name }, i) {
-          const fruits = name.split("-");
-          const colorPair = fruits.map((fruit) => {
-            let key = `key${i}`;
+        {context.rooms_available
+          .sort((a, b) => {
+            return a.room > b.room ? -1 : 1;
+          })
+          .map(function ({ room }, i) {
+            const fruits = room.split("-");
+            const colorPair = fruits.map((fruit) => {
+              let key = `key${i}`;
 
-            return Object.keys(colors).find((hex) => {
-              return colors[hex].indexOf(fruit) > -1;
+              return Object.keys(colors).find((hex) => {
+                return colors[hex].indexOf(fruit) > -1;
+              });
             });
-          });
 
-          let key = `key_${i}`;
+            let key = `key_${i}`;
 
-          return (
-            <Card
-              key={key}
-              participants="5 / 10"
-              icon={<User />}
-              gradient={`linear-gradient(135deg, ${colorPair[0]}, ${colorPair[1]})`}
-              onClick={() => {
-                send("ROOM_SELECTED", { name, colorPair });
-              }}
-            >
-              {name}
-            </Card>
-          );
-        })}
+            return (
+              <Card
+                key={key}
+                participants="5 / 10"
+                icon={<User />}
+                gradient={`linear-gradient(135deg, ${colorPair[0]}, ${colorPair[1]})`}
+                onClick={() => {
+                  send("ROOM_SELECTED", { name: room, colorPair });
+                }}
+              >
+                {room}
+              </Card>
+            );
+          })}
       </div>
     </StyledPage>
   );

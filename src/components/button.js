@@ -32,7 +32,6 @@ const StyledButton = styled.button.attrs((props) => ({
   display: block;
 
   appearance: none;
-  font-family: "Noto Sans", sans-serif;
   text-align: left;
   font-style: normal;
   border: none;

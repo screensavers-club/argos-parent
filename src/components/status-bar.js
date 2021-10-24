@@ -1,8 +1,7 @@
 import styled from "styled-components";
-
 import { useEffect, useState } from "react";
+import { Calendar, Time, Folder, Disc } from "react-ikonate";
 import moment from "moment";
-import { Calendar, Time, Folder } from "react-ikonate";
 
 export default function StatusBar({ context, room, version }) {
   let [time, setTime] = useState(moment());
@@ -21,6 +20,7 @@ export default function StatusBar({ context, room, version }) {
       setTime(moment());
     }, 1000);
   }, [time]);
+
   return (
     <Bar color={context.color}>
       <div className="left">
@@ -28,24 +28,24 @@ export default function StatusBar({ context, room, version }) {
         {room ? room : "not connected"}
       </div>
       <div className="right">
-        <Folder /> v{version} {renderTime()}
+        <Disc /> v{version} {renderTime()}
       </div>
     </Bar>
   );
 }
 
 const Bar = styled.div`
-  font-family: "Noto Sans";
-  font-size: 10px;
+  font-family: "Rubik", sans-serif;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   pointer-events: none;
   user-select: none;
   display: flex;
-  background: #343439;
+  background: #111;
   color: white;
   align-items: center;
-  padding: 4px 8px;
+  padding: 4px 12px 4px 8px;
   box-sizing: border-box;
   height: 35px;
 
