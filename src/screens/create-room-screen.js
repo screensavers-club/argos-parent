@@ -138,7 +138,7 @@ const StyledPage = styled.div`
     width: 100%;
 
     button {
-      margin: 25px 15px;
+      margin: 25px 8px;
     }
   }
 `;
@@ -188,6 +188,14 @@ export default function FetchedRoom({ context, send, colors }) {
             type="text"
             value={passcode}
             autoFocus={2}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                let btn = document.querySelector(
+                  ".buttonBox button[type=primary]"
+                );
+                btn.click();
+              }
+            }}
             onChange={(e) => {
               setPasscode(
                 e.target.value
