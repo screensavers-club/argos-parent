@@ -127,6 +127,13 @@ export default function EnterPassword({ send, context }) {
             onChange={(e) => {
               setPasscode(e.target.value);
             }}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                document
+                  .querySelector(".buttonBox button[type=primary]")
+                  ?.click();
+              }
+            }}
           />
         </div>
       </div>
