@@ -61,7 +61,7 @@ const StyledButton = styled.button`
       display: flex;
       justify-content: flex-start;
       align-items: center;
-      font-size: 10px;
+      font-size: 0.9rem;
       top: ${(p) => (p.variant === "create" ? "50%" : "10px")};
       right: ${(p) => (p.variant === "create" ? "50%" : "10px")};
       transform: ${(p) =>
@@ -69,8 +69,9 @@ const StyledButton = styled.button`
     }
     svg {
       stroke-width: 1.5;
-      font-size: ${(p) => (p.variant === "create" ? "56px" : "14px")};
+      font-size: ${(p) => (p.variant === "create" ? "56px" : "20px")};
       margin-right: ${(p) => (p.variant === "create" ? "0" : "5px")};
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
     }
   }
 `;

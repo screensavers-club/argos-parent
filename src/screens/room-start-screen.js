@@ -131,7 +131,7 @@ export default function RoomStartScreen({ send, context, colors }) {
           .sort((a, b) => {
             return a.room > b.room ? -1 : 1;
           })
-          .map(function ({ room }, i) {
+          .map(function ({ room, children }, i) {
             const fruits = room.split("-");
             const colorPair = fruits.map((fruit) => {
               let key = `key${i}`;
@@ -146,7 +146,7 @@ export default function RoomStartScreen({ send, context, colors }) {
             return (
               <Card
                 key={key}
-                participants="5 / 10"
+                participants={children.length}
                 icon={<User />}
                 gradient={`linear-gradient(135deg, ${colorPair[0]}, ${colorPair[1]})`}
                 onClick={() => {
