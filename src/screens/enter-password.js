@@ -53,7 +53,7 @@ const StyledPage = styled.div`
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    background: #434349;
+    background: #292933;
     border-radius: 100px;
     width: 300px;
     height: 56px;

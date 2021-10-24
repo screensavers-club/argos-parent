@@ -54,7 +54,7 @@ const Bar = styled.div`
     background: ${(p) =>
       p.color.length > 0
         ? `linear-gradient(135deg, ${p.color[0]}, ${p.color[1]})`
-        : "#434349"};
+        : "#292933"};
     width: 12px;
     height: 12px;
     margin-right: 10px;

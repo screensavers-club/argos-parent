@@ -52,7 +52,7 @@ const StyledButton = styled.button.attrs((props) => ({
         return "#fff";
 
       default:
-        return "#434349";
+        return "#292933";
     }
   }};
 
@@ -163,8 +163,8 @@ const StyledButton = styled.button.attrs((props) => ({
   }
 
   :hover {
-    stroke: #434349;
-    color: #434349;
+    stroke: #292933;
+    color: #292933;
     background: white;
   }
 

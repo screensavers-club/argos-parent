@@ -12,7 +12,7 @@ const Tabs = styled.div`
   > div {
     display: flex;
     justify-content: center;
-    background: #434349;
+    background: #292933;
     border-radius: 50px;
     width: 510px;
     height: 50px;

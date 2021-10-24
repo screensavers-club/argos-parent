@@ -179,7 +179,7 @@ const MixTrack = styled.div`
   row-gap: 20px;
   column-gap: 5px;
   width: 100%;
-  background: #434349;
+  background: #292933;
   box-sizing: border-box;
   border-radius: 8px;
 
@@ -197,7 +197,7 @@ const MixTrack = styled.div`
     flex-grow: 1;
     cursor: pointer;
     background: #fff;
-    color: #434349;
+    color: #292933;
     box-sizing: border-box;
 
     &:hover {

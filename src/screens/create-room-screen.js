@@ -17,7 +17,7 @@ const StyledPage = styled.div`
   background: #191920;
 
   div.top {
-    margin-top: 170px;
+    margin-top: 150px;
   }
 
   div.section {
@@ -30,8 +30,8 @@ const StyledPage = styled.div`
     label {
       color: white;
       font-size: 36px;
-      font-weight: 200;
-      margin-bottom: 30px;
+      font-weight: 400;
+      margin-bottom: 0.3em;
     }
   }
 
@@ -40,7 +40,7 @@ const StyledPage = styled.div`
     position: relative;
     width: 630px;
     height: 70px;
-    background: #434349;
+    background: #292933;
     border-radius: 50px;
     justify-content: center;
     align-items: center;
@@ -56,7 +56,8 @@ const StyledPage = styled.div`
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-size: 36px;
-      font-weight: 900;
+      line-height: 1;
+      font-weight: normal;
     }
 
     svg {
@@ -86,7 +87,7 @@ const StyledPage = styled.div`
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    background: #434349;
+    background: #292933;
     border-radius: 100px;
     width: 265px;
     height: 56px;
@@ -210,7 +211,6 @@ export default function FetchedRoom({ context, send, colors }) {
               passcode: passcode,
               identity: context.identity,
             };
-            console.log(payload.passcode);
             if (!payload.passcode || payload.passcode.length < 5) {
               {
                 ref.current?.classList?.add(
