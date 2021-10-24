@@ -4,7 +4,6 @@ import Button from "../components/button";
 import { DataPacket_Kind, RoomEvent } from "livekit-client";
 import { useRoom } from "livekit-react";
 import { User as UserIcon, Exit } from "react-ikonate";
-import axios from "axios";
 
 import VideoLayouts from "../util/video-layouts";
 
@@ -80,23 +79,11 @@ const StyledPage = styled.div`
     }
   }
 `;
-export default function RoomWorkspace({ context, send, parents }) {
-  const { room, connect, participants, audioTracks } = useRoom();
-
+export default function RoomWorkspace({ context, send }) {
+  const { room, connect, participants } = useRoom();
   const [selectTab, setSelectTab] = useState("stream-controls");
-  const [renderState, setRenderState] = useState(0);
-  let [exiting, setExiting] = useState(false);
+  const [exiting, setExiting] = useState(false);
   const exitingModalRef = useRef();
-  const audioCtx = useRef(new AudioContext());
-  const msDestination = useRef(null);
-  const audioTrackRefs = useRef({});
-  const [audioTrackRefsState, setAudioTrackRefsState] = useState(
-    audioTrackRefs.current
-  );
-  const videoTrackRefs = useRef({});
-  const [videoTrackRefsState, setVideoTrackRefsState] = useState(
-    videoTrackRefs.current
-  );
 
   const handleClick = (e) => {
     if (exitingModalRef.current.contains(e.target)) {
@@ -111,9 +98,6 @@ export default function RoomWorkspace({ context, send, parents }) {
   };
 
   useEffect(() => {
-    //create mediaStreamDestination
-    msDestination.current = audioCtx.current.createMediaStreamDestination();
-
     document.addEventListener("mousedown", handleClick);
     document.addEventListener("keyup", handleEsc);
     return () => {
@@ -138,102 +122,17 @@ export default function RoomWorkspace({ context, send, parents }) {
   }, [room]);
 
   useEffect(() => {
-    let __tracks = [];
-    audioTracks.forEach((audioTrack) => {
-      if (__tracks.indexOf(audioTrack.sid) < 0 && audioTrack.mediaStreamTrack) {
-        __tracks.push(audioTrack.sid);
-        let mst = audioCtx.current.createMediaStreamTrackSource(
-          audioTrack.mediaStreamTrack
-        );
-        let gainNode = new GainNode(audioCtx.current, { gain: 1 });
-        let channelSplitterNode = new ChannelSplitterNode(audioCtx.current, {
-          numberOfOutputs: 2,
-        });
-        audioTrackRefs.current[audioTrack.sid] = {
-          mediaStreamTrackSource: mst,
-          gainNode: gainNode,
-          splitter: channelSplitterNode,
-        };
-        mst
-          .connect(gainNode)
-          .connect(channelSplitterNode)
-          .connect(audioCtx.current.destination);
-        channelSplitterNode.connect(msDestination.current);
-      }
-    });
-
-    Object.keys(audioTrackRefs.current).forEach((key) => {
-      if (__tracks.indexOf(key) < 0) {
-        audioTrackRefs.current[key].mediaStreamTrackSource.disconnect();
-        audioTrackRefs.current[key].gainNode.disconnect();
-        audioTrackRefs.current[key].splitter.disconnect();
-        delete audioTrackRefs.current[key];
-      }
-    });
-
-    setAudioTrackRefsState(audioTrackRefs.current);
-    // setRenderState(renderState + 1);
-  }, [audioTracks]);
-
-  useEffect(() => {
     send("UPDATE_PARTICIPANTS", { participants });
-    let __tracks = [];
-    participants.forEach((participant) => {
-      if (participant.videoTracks.size < 1) {
-        return;
-      }
-      let firstVideo = null;
-      participant.videoTracks.forEach((track, key) => {
-        if (!firstVideo) {
-          firstVideo = { track, key };
-        } else {
-          return;
-        }
-      });
-      if (__tracks.indexOf(firstVideo.key) < 0) {
-        __tracks.push(firstVideo.key);
-        videoTrackRefs.current[firstVideo.key] = {
-          videoTrack: firstVideo.track,
-          identity: participant.identity,
-          nickname: JSON.parse(participant.metadata).nickname,
-        };
-      }
-    });
-    Object.keys(videoTrackRefs.current).forEach((key) => {
-      if (__tracks.indexOf(key) < 0) {
-        delete videoTrackRefs.current[key];
-      }
-    });
-    setVideoTrackRefsState(videoTrackRefs.current);
-    setRenderState(renderState + 1);
   }, [participants]);
-
-  const [control, setControl] = useState(context.input);
 
   useEffect(() => {
     connect(`${process.env.REACT_APP_LIVEKIT_SERVER}`, context.token)
-      .then((room) => {
-        let track = msDestination.current?.stream?.getTracks();
-        if (track[0]) {
-          //publish parent feed
-          // room.localParticipant.publishTrack(track[0]);
-        }
-      })
+      .then((room) => {})
       .catch((err) => console.log({ err }));
     return () => {
       room?.disconnect();
     };
   }, []);
-
-  function setDelay({ id, delay, room }) {
-    axios
-      .post(
-        `${process.env.REACT_APP_PEER_SERVER}/parent/participant/set-delay`,
-        { id, delay, room }
-      )
-      .catch((err) => console.log(err));
-  }
-  let [expanded, setExpanded] = useState(false);
 
   return (
     <StyledPage>
