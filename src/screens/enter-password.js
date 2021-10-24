@@ -38,7 +38,7 @@ const StyledPage = styled.div`
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-size: 36px;
-      font-weight: 500;
+      font-weight: 300;
       line-height: 1.5;
       margin: 0;
     }

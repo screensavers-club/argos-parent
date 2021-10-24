@@ -17,7 +17,7 @@ const StyledPage = styled.div`
   background: #191920;
 
   div.top {
-    margin-top: 150px;
+    margin-top: 120px;
   }
 
   div.section {
@@ -38,35 +38,33 @@ const StyledPage = styled.div`
   div.nameBox {
     display: flex;
     position: relative;
-    width: 630px;
+    width: 30rem;
     height: 70px;
     background: #292933;
     border-radius: 50px;
-    justify-content: center;
+    justify-content: stretch;
     align-items: center;
-    margin-bottom: 60px;
+    margin-bottom: 4rem;
+    padding: 0 16px 0 32px;
+    box-sizing: border-box;
 
     span {
+      flex-grow: 1;
       background: ${(p) =>
         `-webkit-linear-gradient(135deg, ${p.color ? p.color[0] : "#fff"}, ${
           p.color ? p.color[1] : "#fff"
         })`};
-
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-size: 36px;
-      line-height: 1;
+      line-height: 1.2;
       font-weight: normal;
-    }
-
-    svg {
-      position: absolute;
-      padding-top: 3px;
-      right: 20px;
-      color: white;
-      stroke-width: 1.5px;
-      font-size: 36px;
+      text-align: left;
+      overflow-x: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      display: block;
     }
 
     button {
@@ -81,6 +79,14 @@ const StyledPage = styled.div`
       align-items: center;
       font-size: 1.5rem;
       cursor: pointer;
+
+      svg {
+        color: white;
+        stroke-width: 1.5px;
+        font-size: 2rem;
+        position: relative;
+        top: 2px;
+      }
     }
   }
   div.inputDiv {
@@ -89,9 +95,8 @@ const StyledPage = styled.div`
     align-items: center;
     background: #292933;
     border-radius: 100px;
-    width: 265px;
+    width: 300px;
     height: 56px;
-    margin: 10px 90px;
 
     svg {
       stroke-width: 1.5px;
@@ -111,20 +116,18 @@ const StyledPage = styled.div`
       text-align: center;
     }
 
-    input,
-    select {
+    input {
       padding-left: 15px;
-      font-family: "Noto Sans";
       font-style: normal;
-      font-weight: 200;
+      font-weight: 400;
       background: none;
       font-size: 36px;
       color: white;
-      border-style: none;
       width: 165px;
       height: 75%;
-      border-left: 1px solid white;
       outline: none;
+      appearance: 0;
+      border: 0;
     }
   }
   div.buttonBox {
@@ -184,6 +187,7 @@ export default function FetchedRoom({ context, send, colors }) {
             className="passInput"
             type="text"
             value={passcode}
+            autoFocus={2}
             onChange={(e) => {
               setPasscode(
                 e.target.value
