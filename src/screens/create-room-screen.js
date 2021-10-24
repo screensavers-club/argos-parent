@@ -14,7 +14,7 @@ const StyledPage = styled.div`
   align-items: center;
   width: 100%;
   height: 100%;
-  background: #252529;
+  background: #191920;
 
   div.top {
     margin-top: 170px;

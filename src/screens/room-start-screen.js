@@ -6,18 +6,18 @@ import { useEffect, useRef } from "react";
 import Card from "../components/room-card";
 
 const StyledPage = styled.div`
-  background: #222;
+  background: #191920;
   height: calc(100% - 35px);
   align-items: center;
   justify-content: center;
-  font-family: "Noto Sans", sans-serif;
+  display: block;
 
   div.header {
     display: flex;
     justify-content: flex-start;
     color: white;
     width: calc(100% - 32px);
-    margin: 4px 16px;
+    margin: 0 16px;
     padding: 2rem 0 0 0;
 
     h3 {

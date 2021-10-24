@@ -27,7 +27,7 @@ const Tabs = styled.div`
 
       font-size: 14px;
       color: white;
-      border-right: 1px solid #252529;
+      border-right: 1px solid #191920;
 
       svg {
         margin-right: 10px;

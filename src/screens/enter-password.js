@@ -10,7 +10,7 @@ const StyledPage = styled.div`
   display: flex;
   flex-direction: column;
   text-align: center;
-  background: #252529;
+  background: #191920;
   width: 100%;
   height: 100%;
 
@@ -21,8 +21,9 @@ const StyledPage = styled.div`
     align-items: center;
 
     span {
-      margin-top: 170px;
+      margin-top: 100px;
       font-size: 36px;
+      line-height: 1;
       font-weight: 200;
       color: white;
     }
@@ -37,8 +38,9 @@ const StyledPage = styled.div`
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-size: 36px;
-      font-weight: 900;
-      margin: 30px;
+      font-weight: 500;
+      line-height: 1.5;
+      margin: 0;
     }
   }
 
@@ -53,7 +55,7 @@ const StyledPage = styled.div`
     align-items: center;
     background: #434349;
     border-radius: 100px;
-    width: 265px;
+    width: 300px;
     height: 56px;
     margin: 10px 90px;
 
@@ -75,10 +77,8 @@ const StyledPage = styled.div`
       text-align: center;
     }
 
-    input,
-    select {
+    input {
       padding-left: 15px;
-      font-family: "Noto Sans";
       font-style: normal;
       font-weight: 200;
       background: none;
@@ -87,8 +87,8 @@ const StyledPage = styled.div`
       border-style: none;
       width: 165px;
       height: 75%;
-      border-left: 1px solid white;
       outline: none;
+      appearance: none;
     }
   }
 
@@ -108,7 +108,6 @@ const StyledPage = styled.div`
 export default function EnterPassword({ send, context }) {
   let [passcode, setPasscode] = useState("");
   let ref = useRef();
-  console.log(context);
   return (
     <StyledPage context={context}>
       <div className="room">
@@ -122,6 +121,8 @@ export default function EnterPassword({ send, context }) {
             className="passInput"
             type="password"
             maxLength="5"
+            autoFocus="1"
+            autoComplete="false"
             value={passcode}
             onChange={(e) => {
               setPasscode(e.target.value);

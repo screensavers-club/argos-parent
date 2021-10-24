@@ -11,7 +11,7 @@ import { User as UserIcon, Exit, Link, Copy, Stopwatch } from "react-ikonate";
 import axios from "axios";
 
 const StyledPage = styled.div`
-  background: #252529;
+  background: #191920;
   position: relative;
   display: block;
 

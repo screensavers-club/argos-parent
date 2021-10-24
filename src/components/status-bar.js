@@ -42,12 +42,13 @@ const Bar = styled.div`
   pointer-events: none;
   user-select: none;
   display: flex;
-  background: #111;
+  background: #111113;
   color: white;
   align-items: center;
   padding: 4px 12px 4px 8px;
   box-sizing: border-box;
   height: 35px;
+  margin: 0;
 
   div.roomColour {
     background: ${(p) =>
