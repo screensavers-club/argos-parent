@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { DataPacket_Kind } from "livekit-client";
 import { useParticipant } from "livekit-react";
 import {
   User,
@@ -12,6 +13,7 @@ import {
 } from "react-ikonate";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { useRef } from "react";
 
 export default function StreamControlCard({
   room,
@@ -19,31 +21,52 @@ export default function StreamControlCard({
   context,
   send,
 }) {
+  let pingTimeoutRef = useRef();
   let P = useParticipant(participant);
   let meta;
   let hasAudio = P.publications.find((pub) => pub.kind === "audio");
   let hasVideo = P.publications.find((pub) => pub.kind === "video");
 
+  let pingPair = context.ping?.[participant.sid] || [];
+  let ping = pingPair[1] > pingPair[0] ? pingPair[1] - pingPair[0] : "?";
+
   let [mixState, setMixState] = useState(null);
   let [sendingMix, setSendingMix] = useState(false);
 
-  function getMixState(roomName, sid) {
+  function getMixState(roomName, nickname) {
     return axios.get(
-      `${process.env.REACT_APP_PEER_SERVER}/${roomName}/${sid}/mix`
+      `${process.env.REACT_APP_PEER_SERVER}/${roomName}/${nickname}/mix`
     );
   }
 
-  function sendMixState(roomName, sid, mix) {
+  function sendMixState(roomName, nickname, mix) {
     return axios.post(
-      `${process.env.REACT_APP_PEER_SERVER}/${roomName}/${sid}/mix`,
+      `${process.env.REACT_APP_PEER_SERVER}/${roomName}/${nickname}/mix`,
       { mix }
     );
   }
 
+  function sendPing(sid) {
+    if (room) {
+      const payload = JSON.stringify({
+        action: "PING",
+      });
+      const encoder = new TextEncoder();
+      const data = encoder.encode(payload);
+      const targetSid = sid;
+
+      let d = new Date();
+      send("PING", { id: sid, timestamp: d });
+      room.localParticipant.publishData(data, DataPacket_Kind.RELIABLE, [
+        targetSid,
+      ]);
+    }
+  }
+
   useEffect(() => {
-    getMixState(room.name, participant.sid).then((result) => {
+    getMixState(room.name, meta?.nickname).then((result) => {
       if (result.data?.mix === null) {
-        sendMixState(room.name, participant.sid, {
+        sendMixState(room.name, meta?.nickname, {
           mute: [],
           delay: 0,
         }).then((result) => {
@@ -53,6 +76,17 @@ export default function StreamControlCard({
         setMixState(result.data.mix);
       }
     });
+
+    if (pingTimeoutRef) {
+      window.clearInterval(pingTimeoutRef);
+    }
+    pingTimeoutRef = window.setInterval(() => {
+      sendPing(participant.sid);
+    }, 5000);
+
+    return () => {
+      window.clearInterval(pingTimeoutRef);
+    };
   }, []);
 
   try {
@@ -70,7 +104,7 @@ export default function StreamControlCard({
       <div className="top">
         <label className="nickname">
           <User strokeWidth={0.8} />
-          {meta?.nickname}
+          {meta?.nickname} <span className="ping">{ping}</span>
         </label>
         <div className="av-status">
           <Microphone className={hasAudio ? "active" : "inactive"} />
@@ -88,36 +122,39 @@ export default function StreamControlCard({
                 participant.sid !== p.sid
             )
             .sort((a, b) => (a.sid > b.sid ? -1 : 1))
-            .map((p) => (
-              <CueMixTile
-                key={p.sid}
-                status={false}
-                peer={p}
-                mute={mixState.mute.indexOf(p.sid) > -1}
-                onClick={() => {
-                  if (sendingMix) {
-                    return;
-                  }
-                  setSendingMix(true);
-                  let newMixState = { ...mixState };
-                  if (mixState.mute.indexOf(p.sid) > -1) {
-                    // unmute this
-                    newMixState.mute = mixState.mute.filter(
-                      (sid) => sid !== p.sid
-                    );
-                  } else {
-                    // mute this
-                    newMixState.mute.push(p.sid);
-                  }
-                  sendMixState(room.name, participant.sid, newMixState).then(
-                    (result) => {
-                      setSendingMix(false);
-                      setMixState(result.data.mix);
+            .map((p) => {
+              p.nickname = JSON.parse(p.metadata).nickname;
+              return (
+                <CueMixTile
+                  key={p.sid}
+                  status={false}
+                  peer={p}
+                  mute={mixState.mute.indexOf(p.nickname) > -1}
+                  onClick={() => {
+                    if (sendingMix) {
+                      return;
                     }
-                  );
-                }}
-              />
-            ))}
+                    setSendingMix(true);
+                    let newMixState = { ...mixState };
+                    if (mixState.mute.indexOf(p.nickname) > -1) {
+                      // unmute this
+                      newMixState.mute = mixState.mute.filter(
+                        (nickname) => nickname !== p.nickname
+                      );
+                    } else {
+                      // mute this
+                      newMixState.mute.push(p.nickname);
+                    }
+                    sendMixState(room.name, meta?.nickname, newMixState).then(
+                      (result) => {
+                        setSendingMix(false);
+                        setMixState(result.data.mix);
+                      }
+                    );
+                  }}
+                />
+              );
+            })}
         </div>
       </div>
 
@@ -199,7 +236,7 @@ export default function StreamControlCard({
                 let newMixState = { ...mixState };
                 newMixState.delay = delay;
 
-                sendMixState(room.name, participant.sid, newMixState).then(
+                sendMixState(room.name, meta.nickname, newMixState).then(
                   (result) => {
                     setSendingMix(false);
                     setMixState(result.data.mix);
@@ -248,6 +285,12 @@ const Card = styled.div`
       svg {
         font-size: 1.5em;
         margin-right: 10px;
+      }
+
+      span.ping {
+        margin-left: 8px;
+        font-size: 0.8em;
+        color: #aaaaae;
       }
     }
 
@@ -343,6 +386,7 @@ const Card = styled.div`
 
             & + button {
               border-radius: 0px 8px 8px 0;
+              width: 4rem;
             }
           }
         }

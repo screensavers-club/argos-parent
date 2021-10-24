@@ -280,23 +280,6 @@ export default function RoomWorkspace({ context, send, parents }) {
     };
   }, []);
 
-  function sendPing(id) {
-    if (room) {
-      const payload = JSON.stringify({
-        action: "PING",
-      });
-      const encoder = new TextEncoder();
-      const data = encoder.encode(payload);
-      const targetSid = id;
-
-      let d = new Date();
-      send("PING", { id, timestamp: d });
-      room.localParticipant.publishData(data, DataPacket_Kind.RELIABLE, [
-        targetSid,
-      ]);
-    }
-  }
-
   function setDelay({ id, delay, room }) {
     axios
       .post(
@@ -335,183 +318,6 @@ export default function RoomWorkspace({ context, send, parents }) {
                   (p) => JSON.parse(p.metadata)?.type === "CHILD"
                 )}
               />
-            );
-            return (
-              <MainControlView>
-                <div className="children">
-                  {participants
-                    .filter(
-                      (p) => JSON.parse(p?.metadata || "{}")?.type === "CHILD"
-                    )
-                    .map((p, i) => {
-                      const key = p.identity;
-                      const nickname = JSON.parse(
-                        p?.metadata || "{}"
-                      )?.nickname;
-                      return (
-                        <>
-                          <div key={key} className="child">
-                            <div className="leftPanel">
-                              <span className="heading">
-                                <UserIcon /> {nickname} (
-                                <UserPing
-                                  ping={context?.ping?.[p.sid]}
-                                  sendPing={() => {
-                                    sendPing(p.sid);
-                                  }}
-                                />
-                                )
-                              </span>
-
-                              <div>
-                                <div
-                                  className={`delayDiv ${
-                                    expanded === true ? "expanded" : ""
-                                  }`}
-                                >
-                                  <span
-                                    onClick={() => {
-                                      expanded === true
-                                        ? setExpanded(false)
-                                        : setExpanded(true);
-                                    }}
-                                  >
-                                    <Stopwatch /> Ref audio delay
-                                  </span>
-                                  <input
-                                    type="text"
-                                    value={`${
-                                      JSON.parse(p.metadata)?.audio_delay || 0
-                                    }ms`}
-                                    id={`audio_delay_${key}`}
-                                  />
-                                  <Button
-                                    variant="delay"
-                                    type="tertiary"
-                                    onClick={() => {
-                                      let _delay = parseInt(
-                                        document.getElementById(
-                                          `audio_delay_${key}`
-                                        ).value
-                                      );
-                                      setDelay({
-                                        id: p.identity,
-                                        delay: _delay,
-                                        room: room.name,
-                                      });
-                                    }}
-                                  >
-                                    Update
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                            <CueMix
-                              ownerNick={nickname}
-                              context={context}
-                              send={send}
-                              room={room}
-                              audioTracks={audioTracks}
-                              participants={participants}
-                            />
-                            <div className="streamLinks">
-                              <label>
-                                <Link />
-                                Copy stream links
-                              </label>
-                              <div className="buttons">
-                                <div className="stream_code">
-                                  <Button
-                                    variant="small"
-                                    icon={<Copy />}
-                                    onClick={() => {
-                                      let input = document.querySelector(
-                                        `#${`stream_url_${key}`}`
-                                      );
-                                      input.select();
-                                      document.execCommand("copy");
-                                    }}
-                                  >
-                                    Video only
-                                  </Button>
-                                  <input
-                                    type="text"
-                                    style={{
-                                      position: "absolute",
-                                      top: "-100000px",
-                                    }}
-                                    id={`stream_url_${key}`}
-                                    value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}`}
-                                    readOnly
-                                  />
-                                </div>
-                                <div className="stream_code">
-                                  <Button
-                                    variant="small"
-                                    icon={<Copy />}
-                                    onClick={() => {
-                                      let input = document.querySelector(
-                                        `#${`stream_url_a_${key}`}`
-                                      );
-                                      input.select();
-                                      document.execCommand("copy");
-                                    }}
-                                  >
-                                    Video + audio
-                                  </Button>
-                                  <input
-                                    type="text"
-                                    style={{
-                                      position: "absolute",
-                                      top: "-100000px",
-                                    }}
-                                    id={`stream_url_a_${key}`}
-                                    value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}&audio=1`}
-                                    readOnly
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      );
-                    })}
-                  {/* <div className="parent">
-                    <span className="name">
-                      <UserIcon /> PARENT
-                      <AveragePing
-                        pings={context.ping}
-                        participants={participants}
-                      />
-                    </span>
-                    <div className="stream_code">
-                      <label>Parent Audio Mix</label>
-                      <input
-                        type="text"
-                        style={{
-                          position: "absolute",
-                          top: "-100000px",
-                        }}
-                        id={`stream_url_${context.identity}`}
-                        value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${context.identity}&audio=1`}
-                        readOnly
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          let input = document.querySelector(
-                            `#${`stream_url_${context.identity}`}`
-                          );
-                          input.select();
-                          document.execCommand("copy");
-                        }}
-                      >
-                        Copy
-                      </button>
-                    </div>
-                  </div> */}
-                </div>
-              </MainControlView>
             );
 
           case "monitor-layout":
@@ -646,40 +452,40 @@ function VideoLayoutEditor({
   const [previewLayout, setPreviewLayout] = useState(null);
   const encoder = new TextEncoder();
 
-  useEffect(() => {
-    if (room) {
-      room.removeAllListeners(RoomEvent.DataReceived);
-      room.on(RoomEvent.DataReceived, (payload, participant) => {
-        const decoder = new TextDecoder();
-        if (editing === participant.identity) {
-          const str = decoder.decode(payload);
-          const obj = JSON.parse(str);
-          if (!obj?.current_layout) {
-            return;
-          }
-          const targetLayout = {
-            ...VideoLayouts[
-              Object.keys(VideoLayouts).find(
-                (key) => key === obj.current_layout.type
-              )
-            ],
-          };
-          if (targetLayout === {}) {
-            return;
-          }
-          var layout = targetLayout;
-          layout.type = obj.current_layout.type;
+  // useEffect(() => {
+  //   if (room) {
+  //     room.removeAllListeners(RoomEvent.DataReceived);
+  //     room.on(RoomEvent.DataReceived, (payload, participant) => {
+  //       const decoder = new TextDecoder();
+  //       if (editing === participant.identity) {
+  //         const str = decoder.decode(payload);
+  //         const obj = JSON.parse(str);
+  //         if (!obj?.current_layout) {
+  //           return;
+  //         }
+  //         const targetLayout = {
+  //           ...VideoLayouts[
+  //             Object.keys(VideoLayouts).find(
+  //               (key) => key === obj.current_layout.type
+  //             )
+  //           ],
+  //         };
+  //         if (targetLayout === {}) {
+  //           return;
+  //         }
+  //         var layout = targetLayout;
+  //         layout.type = obj.current_layout.type;
 
-          layout.slots = targetLayout.slots.map((slot, i) => {
-            let _slot = { ...slot };
-            _slot.track = obj.current_layout.slots[i].track || "";
-            return _slot;
-          });
-          setPreviewLayout(layout);
-        }
-      });
-    }
-  }, [room, editing]);
+  //         layout.slots = targetLayout.slots.map((slot, i) => {
+  //           let _slot = { ...slot };
+  //           _slot.track = obj.current_layout.slots[i].track || "";
+  //           return _slot;
+  //         });
+  //         setPreviewLayout(layout);
+  //       }
+  //     });
+  //   }
+  // }, [room, editing]);
 
   function UpdateRemoteLayout(layout, targetIdentity) {
     const data = encoder.encode(
