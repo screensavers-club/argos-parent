@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Button from "../components/button";
 import { DataPacket_Kind, RoomEvent } from "livekit-client";
-import { useRoom } from "livekit-react";
+import { useRoom, AudioRenderer } from "livekit-react";
 import { User as UserIcon, Exit } from "react-ikonate";
 
 import VideoLayouts from "../util/video-layouts";
@@ -80,7 +80,7 @@ const StyledPage = styled.div`
   }
 `;
 export default function RoomWorkspace({ context, send }) {
-  const { room, connect, participants } = useRoom();
+  const { room, connect, participants, audioTracks } = useRoom();
   const [selectTab, setSelectTab] = useState("stream-controls");
   const [exiting, setExiting] = useState(false);
   const exitingModalRef = useRef();
@@ -150,6 +150,11 @@ export default function RoomWorkspace({ context, send }) {
         </Button>
       </div>
 
+      <>
+        {audioTracks.map((track) => (
+          <AudioRenderer track={track} />
+        ))}
+      </>
       {(function () {
         switch (selectTab) {
           case "stream-controls":
@@ -187,6 +192,7 @@ export default function RoomWorkspace({ context, send }) {
             <></>;
         }
       })()}
+
       <div
         className={`exitingModal ${exiting === true ? "active" : ""}`}
         ref={exitingModalRef}

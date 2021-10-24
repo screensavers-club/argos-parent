@@ -23,10 +23,10 @@ export default function StreamControlCard({
   parent,
 }) {
   let pingTimeoutRef = useRef();
-  let P = useParticipant(participant);
-  let hasAudio = P.publications.find((pub) => pub.kind === "audio");
-  let hasVideo = P.publications.find((pub) => pub.kind === "video");
-  let meta;
+  let { metadata, publications } = useParticipant(participant);
+  let nickname = parent ? "PARENT" : JSON.parse(metadata || "{}").nickname;
+  let hasAudio = publications.find((pub) => pub.kind === "audio");
+  let hasVideo = publications.find((pub) => pub.kind === "video");
 
   let pingPair = context.ping?.[participant.sid] || [];
   let ping = "";
@@ -69,9 +69,12 @@ export default function StreamControlCard({
   }
 
   useEffect(() => {
-    getMixState(room.name, meta?.nickname).then((result) => {
+    if (!nickname) {
+      return;
+    }
+    getMixState(room.name, nickname).then((result) => {
       if (result.data?.mix === null) {
-        sendMixState(room.name, meta?.nickname, {
+        sendMixState(room.name, nickname, {
           mute: [],
           delay: 0,
         }).then((result) => {
@@ -81,7 +84,9 @@ export default function StreamControlCard({
         setMixState(result.data.mix);
       }
     });
+  }, [nickname]);
 
+  useEffect(() => {
     if (pingTimeoutRef) {
       window.clearInterval(pingTimeoutRef);
     }
@@ -94,17 +99,7 @@ export default function StreamControlCard({
     };
   }, []);
 
-  try {
-    meta = JSON.parse(P.metadata);
-  } catch (e) {
-    console.log(`Failed to parse metadata for ${participant.sid}`, P.metadata);
-  }
-
-  if (parent && meta) {
-    meta.nickname = "PARENT";
-  }
-
-  if (!P.metadata || !mixState?.mute) {
+  if (!metadata || !mixState?.mute) {
     return false;
   }
 
@@ -113,7 +108,7 @@ export default function StreamControlCard({
       <div className="top">
         <label className="nickname">
           <User strokeWidth={0.8} />
-          {meta?.nickname} <span className="ping">{ping}</span>
+          {parent ? "PARENT" : nickname} <span className="ping">{ping}</span>
         </label>
         <div className="av-status">
           <Microphone className={hasAudio ? "active" : "inactive"} />
@@ -154,7 +149,7 @@ export default function StreamControlCard({
                       // mute this
                       newMixState.mute.push(p.nickname);
                     }
-                    sendMixState(room.name, meta?.nickname, newMixState).then(
+                    sendMixState(room.name, nickname, newMixState).then(
                       (result) => {
                         setSendingMix(false);
                         setMixState(result.data.mix);
@@ -245,7 +240,7 @@ export default function StreamControlCard({
                 let newMixState = { ...mixState };
                 newMixState.delay = delay;
 
-                sendMixState(room.name, meta.nickname, newMixState).then(
+                sendMixState(room.name, nickname, newMixState).then(
                   (result) => {
                     setSendingMix(false);
                     setMixState(result.data.mix);
