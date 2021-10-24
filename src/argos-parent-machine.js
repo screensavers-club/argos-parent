@@ -17,278 +17,278 @@ let argosParentMachine = createMachine(
 
       cue_mix_state: {},
 
-      master: {
-        name: "master",
-        vol: [0, 0.5, 1],
-        pan: [0, 0.5, 1],
-        reverb: false,
-        comp: false,
-        eq: [
-          { type: "hpf", in: true, freq: 0, freqMax: 100 },
-          { type: "lpf", in: false, freq: 0, freqMax: 100 },
-          {
-            type: "band1",
-            in: false,
-            freq: 0,
-            amp: 0,
-          },
-          {
-            type: "band2",
-            in: false,
-            freq: 0,
-            amp: 0,
-          },
-          {
-            type: "band3",
-            in: false,
-            freq: 0,
-            amp: 0,
-          },
-          {
-            type: "highShelf",
-            in: false,
-            freq: 0,
-            amp: 0,
-          },
-          {
-            type: "lowShelf",
-            in: false,
-            freq: 0,
-            amp: 0,
-          },
-        ],
-      },
+      // master: {
+      //   name: "master",
+      //   vol: [0, 0.5, 1],
+      //   pan: [0, 0.5, 1],
+      //   reverb: false,
+      //   comp: false,
+      //   eq: [
+      //     { type: "hpf", in: true, freq: 0, freqMax: 100 },
+      //     { type: "lpf", in: false, freq: 0, freqMax: 100 },
+      //     {
+      //       type: "band1",
+      //       in: false,
+      //       freq: 0,
+      //       amp: 0,
+      //     },
+      //     {
+      //       type: "band2",
+      //       in: false,
+      //       freq: 0,
+      //       amp: 0,
+      //     },
+      //     {
+      //       type: "band3",
+      //       in: false,
+      //       freq: 0,
+      //       amp: 0,
+      //     },
+      //     {
+      //       type: "highShelf",
+      //       in: false,
+      //       freq: 0,
+      //       amp: 0,
+      //     },
+      //     {
+      //       type: "lowShelf",
+      //       in: false,
+      //       freq: 0,
+      //       amp: 0,
+      //     },
+      //   ],
+      // },
 
-      input: [
-        {
-          name: "performer 1",
-          id: "p1",
-          track: "aaa",
-          vol: [0, 0.5, 1],
-          solo: false,
-          mute: false,
-          comp: false,
-          reverb: false,
-          pan: [0, 0.5, 1],
-          eq: [
-            { type: "hpf", in: true, freq: 0, freqMax: 100 },
-            { type: "lpf", in: false, freq: 0, freqMax: 100 },
-            {
-              type: "band1",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "band2",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "band3",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "highShelf",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "lowShelf",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-          ],
-        },
-        {
-          name: "performer 2",
-          id: "p2",
-          track: "aaa",
-          vol: [0, 0.5, 1],
-          solo: false,
-          mute: false,
-          comp: false,
-          reverb: false,
-          pan: [0, 0.5, 1],
-          eq: [
-            { type: "hpf", in: true, freq: 0, freqMax: 100 },
-            { type: "lpf", in: false, freq: 0, freqMax: 100 },
-            {
-              type: "band1",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "band2",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "band3",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "highShelf",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "lowShelf",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-          ],
-        },
+      // input: [
+      //   {
+      //     name: "performer 1",
+      //     id: "p1",
+      //     track: "aaa",
+      //     vol: [0, 0.5, 1],
+      //     solo: false,
+      //     mute: false,
+      //     comp: false,
+      //     reverb: false,
+      //     pan: [0, 0.5, 1],
+      //     eq: [
+      //       { type: "hpf", in: true, freq: 0, freqMax: 100 },
+      //       { type: "lpf", in: false, freq: 0, freqMax: 100 },
+      //       {
+      //         type: "band1",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "band2",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "band3",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "highShelf",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "lowShelf",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     name: "performer 2",
+      //     id: "p2",
+      //     track: "aaa",
+      //     vol: [0, 0.5, 1],
+      //     solo: false,
+      //     mute: false,
+      //     comp: false,
+      //     reverb: false,
+      //     pan: [0, 0.5, 1],
+      //     eq: [
+      //       { type: "hpf", in: true, freq: 0, freqMax: 100 },
+      //       { type: "lpf", in: false, freq: 0, freqMax: 100 },
+      //       {
+      //         type: "band1",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "band2",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "band3",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "highShelf",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "lowShelf",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //     ],
+      //   },
 
-        {
-          name: "performer 3",
-          id: "p3",
-          track: "aaa",
-          vol: [0, 0.5, 1],
-          solo: false,
-          mute: false,
-          comp: false,
-          reverb: false,
-          pan: [0, 0.5, 1],
-          eq: [
-            { type: "hpf", in: true, freq: 0, freqMax: 100 },
-            { type: "lpf", in: false, freq: 0, freqMax: 100 },
-            {
-              type: "band1",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "band2",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "band3",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "highShelf",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "lowShelf",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-          ],
-        },
+      //   {
+      //     name: "performer 3",
+      //     id: "p3",
+      //     track: "aaa",
+      //     vol: [0, 0.5, 1],
+      //     solo: false,
+      //     mute: false,
+      //     comp: false,
+      //     reverb: false,
+      //     pan: [0, 0.5, 1],
+      //     eq: [
+      //       { type: "hpf", in: true, freq: 0, freqMax: 100 },
+      //       { type: "lpf", in: false, freq: 0, freqMax: 100 },
+      //       {
+      //         type: "band1",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "band2",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "band3",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "highShelf",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "lowShelf",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //     ],
+      //   },
 
-        {
-          name: "performer 4",
-          id: "p4",
-          track: "aaa",
-          vol: [0, 0.5, 1],
-          solo: false,
-          mute: false,
-          comp: false,
-          reverb: false,
-          pan: [0, 0.5, 1],
-          eq: [
-            { type: "hpf", in: true, freq: 0, freqMax: 100 },
-            { type: "lpf", in: false, freq: 0, freqMax: 100 },
-            {
-              type: "band1",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "band2",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "band3",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "highShelf",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "lowShelf",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-          ],
-        },
+      //   {
+      //     name: "performer 4",
+      //     id: "p4",
+      //     track: "aaa",
+      //     vol: [0, 0.5, 1],
+      //     solo: false,
+      //     mute: false,
+      //     comp: false,
+      //     reverb: false,
+      //     pan: [0, 0.5, 1],
+      //     eq: [
+      //       { type: "hpf", in: true, freq: 0, freqMax: 100 },
+      //       { type: "lpf", in: false, freq: 0, freqMax: 100 },
+      //       {
+      //         type: "band1",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "band2",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "band3",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "highShelf",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "lowShelf",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //     ],
+      //   },
 
-        {
-          name: "performer 5",
-          id: "p5",
-          track: "aaa",
-          vol: [0, 0.5, 1],
-          solo: false,
-          mute: false,
-          comp: false,
-          reverb: false,
-          pan: [0, 0.5, 1],
-          eq: [
-            { type: "hpf", in: true, freq: 0, freqMax: 100 },
-            { type: "lpf", in: false, freq: 0, freqMax: 100 },
-            {
-              type: "band1",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "band2",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "band3",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "highShelf",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-            {
-              type: "lowShelf",
-              in: false,
-              freq: 0,
-              amp: 0,
-            },
-          ],
-        },
-      ],
+      //   {
+      //     name: "performer 5",
+      //     id: "p5",
+      //     track: "aaa",
+      //     vol: [0, 0.5, 1],
+      //     solo: false,
+      //     mute: false,
+      //     comp: false,
+      //     reverb: false,
+      //     pan: [0, 0.5, 1],
+      //     eq: [
+      //       { type: "hpf", in: true, freq: 0, freqMax: 100 },
+      //       { type: "lpf", in: false, freq: 0, freqMax: 100 },
+      //       {
+      //         type: "band1",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "band2",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "band3",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "highShelf",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //       {
+      //         type: "lowShelf",
+      //         in: false,
+      //         freq: 0,
+      //         amp: 0,
+      //       },
+      //     ],
+      //   },
+      // ],
     },
     states: {
       start: {
@@ -398,6 +398,14 @@ let argosParentMachine = createMachine(
 
       stream_room: {
         on: {
+          UPDATE_PARTICIPANTS: {
+            actions: assign({
+              participants: (context, event) => {
+                return event.participants;
+              },
+            }),
+          },
+
           UPDATE_CUE_MIX_STATE: {
             actions: assign({
               cue_mix_state: (context, event) => {
@@ -479,7 +487,6 @@ let argosParentMachine = createMachine(
   {
     actions: {
       assign_room_name: (context, event) => {
-        // console.log(context, event);
         if (event.type === "SUCCESS") {
           context.room.name = event.name;
         }

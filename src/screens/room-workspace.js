@@ -17,11 +17,16 @@ import axios from "axios";
 const StyledPage = styled.div`
   background: #191920;
   position: relative;
-  display: block;
-  padding: 16px;
+  padding: 66px 16px 16px 16px;
+  height: calc(100% - 118px);
 
   div.navigation {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: calc(100% - 32px);
     display: flex;
+    z-index: 3;
   }
 
   div.streamLinks {
@@ -226,6 +231,7 @@ export default function RoomWorkspace({ context, send, parents }) {
   }, [audioTracks]);
 
   useEffect(() => {
+    send("UPDATE_PARTICIPANTS", { participants });
     let __tracks = [];
     participants.forEach((participant) => {
       if (participant.videoTracks.size < 1) {
@@ -323,6 +329,8 @@ export default function RoomWorkspace({ context, send, parents }) {
             return (
               <StreamEditor
                 room={room}
+                context={context}
+                send={send}
                 participants={participants.filter(
                   (p) => JSON.parse(p.metadata)?.type === "CHILD"
                 )}
@@ -626,123 +634,6 @@ const MainControlView = styled.div`
   width: 100%;
   height: 100vh;
   overflow-y: scroll;
-
-  .children {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 20px;
-    padding: 16px 0;
-
-    .child,
-    .parent {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(5, 1fr);
-      gap: 5px;
-      position: relative;
-      color: white;
-      padding: 8px;
-      box-sizing: border-box;
-      border-radius: 15px;
-      width: 100%;
-      height: 260px;
-      background: #343439;
-
-      div.leftPanel {
-        grid-column: 1 / span 1;
-        grid-row: 1 / span 5;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        box-sizing: border-box;
-        padding: 5px;
-      }
-
-      div.delayDiv {
-        display: flex;
-        flex-direction: column;
-        background: #5736fd;
-        width: 140px;
-        height: 20px;
-        border-radius: 25px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        font-size: 12px;
-        padding: 15px 5px;
-        margin-bottom: 80px;
-
-        :hover {
-          cursor: pointer;
-        }
-
-        span {
-          display: flex;
-          align-items: center;
-          width: 100%;
-          text-align: center;
-          svg {
-            font-size: 12px;
-            stroke-width: 1.5px;
-            padding-right: 5px;
-          }
-        }
-
-        input {
-          display: none;
-          height: 35px;
-          border-radius: 50px;
-          width: 88px;
-          background: none;
-          border: 1px solid white;
-          outline: none;
-          margin-bottom: 5px;
-          color: white;
-          align-items: center;
-        }
-
-        button {
-          display: none;
-        }
-      }
-      div.expanded {
-        height: 100px;
-        margin-bottom: 0;
-
-        span {
-          margin-bottom: 10px;
-        }
-
-        input,
-        button {
-          align-items: center;
-          display: flex;
-          text-align: center;
-        }
-      }
-
-      span.heading {
-        display: flex;
-        align-items: center;
-        font-weight: 600;
-
-        svg {
-          font-size: 24px;
-          margin-right: 10px;
-        }
-      }
-
-      .stream_code {
-        display: flex;
-
-        label {
-          width: 50%;
-          font-size: 12px;
-        }
-      }
-    }
-  }
 `;
 
 function VideoLayoutEditor({
