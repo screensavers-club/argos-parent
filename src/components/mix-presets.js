@@ -80,6 +80,10 @@ const Slot = styled.div`
     color: #aaaaae;
     cursor: pointer;
 
+    & + button {
+      border-left: 1px solid #222225;
+    }
+
     &:hover {
       color: #fff;
       background: #aaaaae;
