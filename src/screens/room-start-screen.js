@@ -71,6 +71,10 @@ const StyledPage = styled.div`
     gap: 16px;
     box-sizing: border-box;
     max-height: calc(100% - 82px);
+
+    @media screen and (max-width: 760px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 `;
 
