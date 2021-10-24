@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { DataPacket_Kind, RoomEvent } from "livekit-client";
+import { Music } from "react-ikonate";
 
 function triggerGetCueMixState(room, participant) {
   const payload = JSON.stringify({ action: "GET_CUE_MIX_STATE" });
@@ -49,12 +50,13 @@ export default function CueMix({
   participants,
   send,
   context,
+  ownerNick,
 }) {
   let [cueMixState, setCueMixState] = useState({});
 
-  useEffect(() => {
-    participants.forEach((p) => triggerGetCueMixState(room, p));
-  }, [participants]);
+  //useEffect(() => {
+  //  participants.forEach((p) => triggerGetCueMixState(room, p));
+  //}, [participants]);
 
   useEffect(() => {
     room.on(RoomEvent.DataReceived, (payload, participant) => {
@@ -81,15 +83,18 @@ export default function CueMix({
   }, []);
 
   return (
-    <Grid>
+    <>
       {participants
         .filter((p) => JSON.parse(p?.metadata || "{}").type === "CHILD")
         .map((p) => {
           let nickname = JSON.parse(p?.metadata || "{}").nickname;
-          return (
-            <MixTrack key={p.identity}>
-              <span className="name">{nickname}</span>
-              <div className="slots">
+          if (nickname === ownerNick) {
+            return (
+              <MixTrack key={p.identity}>
+                <span className="heading">
+                  <Music />
+                  Cue mix
+                </span>
                 {audioTracks
                   .map((track) => {
                     let owner = participants.find((p) => {
@@ -134,85 +139,83 @@ export default function CueMix({
                       </div>
                     );
                   })}
-
                 {/* {(() => {
-                  let isMuted = true;
-                  if (cueMixState[p?.identity]) {
-                    isMuted = cueMixState[p.identity].source !== "parent";
-                  }
+          let isMuted = true;
+          if (cueMixState[p?.identity]) {
+            isMuted = cueMixState[p.identity].source !== "parent";
+          }
 
-                  return (
-                    <div
-                      className="slot"
-                      key={room?.localParticipant?.identity}
-                      onClick={() => {
-                        sendToggleParentTrack(room, p, room?.localParticipant);
-                      }}
-                    >
-                      <b className={`status ${isMuted ? " muted" : ""}`} />{" "}
-                      [PMIX]
-                    </div>
-                  );
-                })()} */}
-              </div>
-            </MixTrack>
+          return (
+            <div
+              className="slot"
+              key={room?.localParticipant?.identity}
+              onClick={() => {
+                sendToggleParentTrack(room, p, room?.localParticipant);
+              }}
+            >
+              <b className={`status ${isMuted ? " muted" : ""}`} />{" "}
+              [PMIX]
+            </div>
           );
+        })()} */}
+              </MixTrack>
+            );
+          } else {
+            return <></>;
+          }
         })}
-    </Grid>
+    </>
   );
 }
 
 const MixTrack = styled.div`
-  border: 1px solid #000;
-  display: flex;
-  padding: 5px 8px;
-  border-radius: 4px;
-  align-items: center;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  grid-column: 2 / span 3;
+  grid-row: 1 / span 4;
 
-  span.name {
-    width: 6em;
-    font-weight: 600;
+  padding: 5px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  row-gap: 20px;
+  column-gap: 5px;
+  width: 100%;
+  background: #292933;
+  box-sizing: border-box;
+  border-radius: 8px;
+
+  span.heading {
+    grid-column: 1 / span 4;
+    grid-row: 1 / span 1;
   }
 
-  .slots {
-    display: grid;
+  .slot {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-radius: 50px;
+    padding: 8px;
     flex-grow: 1;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2px;
     cursor: pointer;
+    background: #fff;
+    color: #292933;
+    box-sizing: border-box;
 
-    .slot {
-      display: flex;
-      align-items: center;
-      border: 1px solid #000;
-      padding: 8px;
-      max-width: 100%;
+    &:hover {
+      background: #eee;
+    }
 
-      &:hover {
-        background: #eee;
-      }
+    b.status {
+      width: 15px;
+      height: 15px;
+      background: green;
+      display: block;
+      margin: 2px;
+      margin-right: 8px;
+      border-radius: 8px;
 
-      b.status {
-        width: 15px;
-        height: 15px;
-        background: green;
-        display: block;
-        margin: 2px;
-        margin-right: 8px;
-        border-radius: 8px;
-
-        &.muted {
-          background: #ccc;
-        }
+      &.muted {
+        background: #ccc;
       }
     }
   }
-`;
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  padding: 20px;
-  gap: 20px;
 `;

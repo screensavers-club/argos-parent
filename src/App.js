@@ -1,21 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import AppFrame from "./components/app-frame";
 import StatusBar from "./components/status-bar";
 
-import StartScreen from "./pages/start-screen";
-import RoomStartScreen from "./pages/room-start-screen";
-import ErrorScreen from "./pages/error-screen";
-import FetchedRoom from "./pages/create-room-screen";
-import StreamRoom from "./pages/stream-room";
-import SelectRoom from "./pages/select-room";
-import EnterPassword from "./pages/enter-password";
-import RoomJoined from "./pages/room-joined";
+import StartScreen from "./screens/start-screen";
+import RoomStartScreen from "./screens/room-start-screen";
+import ErrorScreen from "./screens/error-screen";
+import FetchedRoom from "./screens/create-room-screen";
+import StreamRoom from "./screens/stream-room";
+import EnterPassword from "./screens/enter-password";
+import RoomJoined from "./screens/room-joined";
 
 import _ from "lodash";
 
 import { useMachine } from "@xstate/react";
 import argosParentMachine from "./argos-parent-machine.js";
 import { inspect } from "@xstate/inspect";
+
+import { colors } from "./util/fruit-colors";
 
 // inspect({ iframe: false });
 
@@ -29,15 +30,20 @@ function App() {
     (() => {
       let _ac = new AudioContext();
       let msts = _ac.createMediaStreamTrackSource;
+      let _supported = typeof msts === "function";
       _ac = null;
-      return typeof msts === "function";
+      return _supported;
     })()
   );
 
   return (
     <div className="App">
       <AppFrame>
-        <StatusBar room={_.get(state, "context.room.name")} version="0.2.0" />
+        <StatusBar
+          context={state.context}
+          room={_.get(state, "context.room.name")}
+          version="1.0.0"
+        />
 
         {supported ? (
           <Screen state={state.value} context={state.context} send={send} />
@@ -63,13 +69,13 @@ function Screen({ context, state, send }) {
       return <StartScreen send={send} />;
 
     case "server_connected":
-      return <RoomStartScreen send={send} />;
+      return <RoomStartScreen send={send} context={context} colors={colors} />;
 
     case "error":
       return <ErrorScreen send={send} context={context} />;
 
     case "create_room":
-      return <FetchedRoom send={send} context={context} />;
+      return <FetchedRoom send={send} context={context} colors={colors} />;
 
     case "stream_room":
       return (
@@ -83,9 +89,6 @@ function Screen({ context, state, send }) {
           ]}
         />
       );
-
-    case "select_room":
-      return <SelectRoom send={send} context={context} />;
 
     case "enter_password":
       return <EnterPassword send={send} context={context} />;
