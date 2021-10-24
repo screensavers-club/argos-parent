@@ -20,15 +20,20 @@ export default function StreamControlCard({
   participant,
   context,
   send,
+  parent,
 }) {
   let pingTimeoutRef = useRef();
   let P = useParticipant(participant);
-  let meta;
   let hasAudio = P.publications.find((pub) => pub.kind === "audio");
   let hasVideo = P.publications.find((pub) => pub.kind === "video");
+  let meta;
 
   let pingPair = context.ping?.[participant.sid] || [];
-  let ping = pingPair[1] > pingPair[0] ? pingPair[1] - pingPair[0] : "…";
+  let ping = "";
+
+  if (!parent) {
+    ping = pingPair[1] > pingPair[0] ? pingPair[1] - pingPair[0] : "…";
+  }
 
   let [mixState, setMixState] = useState(null);
   let [sendingMix, setSendingMix] = useState(false);
@@ -95,12 +100,16 @@ export default function StreamControlCard({
     console.log(`Failed to parse metadata for ${participant.sid}`, P.metadata);
   }
 
+  if (parent && meta) {
+    meta.nickname = "PARENT";
+  }
+
   if (!P.metadata || !mixState?.mute) {
     return false;
   }
 
   return (
-    <Card className="child">
+    <Card className={parent ? "parent" : "child"}>
       <div className="top">
         <label className="nickname">
           <User strokeWidth={0.8} />
@@ -267,6 +276,10 @@ const Card = styled.div`
   height: 260px;
   background: #343439;
 
+  &.parent {
+    border: 2px solid #aaaaae;
+  }
+
   .top {
     width: 100%;
     height: 25px;
@@ -391,6 +404,12 @@ const Card = styled.div`
           }
         }
       }
+    }
+  }
+
+  &.parent {
+    .bottom {
+      display: none;
     }
   }
 `;

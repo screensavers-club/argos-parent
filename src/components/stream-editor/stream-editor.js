@@ -16,6 +16,13 @@ export default function StreamEditor({
           <NoChildNodes />
         ) : (
           <Grid>
+            <StreamControlCard
+              room={room}
+              participant={room.localParticipant}
+              context={context}
+              send={send}
+              parent
+            />
             {participants
               .sort((a, b) => (a.sid > b.sid ? -1 : 1))
               .map((p) => (
