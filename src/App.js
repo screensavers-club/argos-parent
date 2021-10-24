@@ -48,8 +48,21 @@ function App() {
         {supported ? (
           <Screen state={state.value} context={state.context} send={send} />
         ) : (
-          <div style={{ textAlign: "center", padding: "2em" }}>
-            <h1>Browser not supported.</h1>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "2em",
+              color: "#fff",
+              height: "80%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <h1 style={{ fontWeight: 300, margin: 0 }}>
+              Browser not supported.
+            </h1>
             <p>
               Please access this application using the latest version of
               Firefox.
