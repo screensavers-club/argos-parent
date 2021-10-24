@@ -17,7 +17,7 @@ import { inspect } from "@xstate/inspect";
 
 import { colors } from "./util/fruit-colors";
 
-// inspect({ iframe: false });
+inspect({ iframe: false });
 
 function App() {
   let [state, send] = useMachine(argosParentMachine, {
