@@ -6,9 +6,8 @@ import StartScreen from "./screens/start-screen";
 import RoomStartScreen from "./screens/room-start-screen";
 import ErrorScreen from "./screens/error-screen";
 import FetchedRoom from "./screens/create-room-screen";
-import StreamRoom from "./screens/stream-room";
+import RoomWorkspace from "./screens/room-workspace";
 import EnterPassword from "./screens/enter-password";
-import RoomJoined from "./screens/room-joined";
 
 import _ from "lodash";
 
@@ -91,23 +90,10 @@ function Screen({ context, state, send }) {
       return <FetchedRoom send={send} context={context} colors={colors} />;
 
     case "stream_room":
-      return (
-        <StreamRoom
-          send={send}
-          context={context}
-          error={_.get(state, "context.error.message")}
-          parents={[
-            { id: "Parent 1", status: "host" },
-            { id: "Parent 2", status: "backup" },
-          ]}
-        />
-      );
+      return <RoomWorkspace send={send} context={context} />;
 
     case "enter_password":
       return <EnterPassword send={send} context={context} />;
-
-    case "room_joined":
-      return <RoomJoined send={send} context={context} />;
 
     default:
       return <></>;

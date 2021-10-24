@@ -14,33 +14,10 @@ const StyledPage = styled.div`
   background: #191920;
   position: relative;
   display: block;
+  padding: 16px;
 
-  table.participants {
-    border: 1px solid black;
-    padding: 25px;
-    caption {
-      border: 1px solid black;
-      border-bottom: 2px solid black;
-      font-size: 18px;
-      font-weight: normal;
-    }
-    tr.id {
-      min-width: 200px;
-    }
-    thead {
-      > div {
-        border-top: 2px solid black;
-        padding-top: 10px;
-        margin-bottom: 10px;
-      }
-    }
-    tbody {
-      > div {
-        padding-top: 10px;
-        margin-bottom: 10px;
-        border-top: 2px solid black;
-      }
-    }
+  div.navigation {
+    display: flex;
   }
 
   div.streamLinks {
@@ -90,13 +67,6 @@ const StyledPage = styled.div`
       display: flex;
     }
   }
-  div.button {
-    position: absolute;
-    left: 25px;
-    top: 0;
-    margin: auto;
-    padding: auto;
-  }
   div.controlPanel {
     display: block;
     margin: auto;
@@ -111,35 +81,41 @@ const StyledPage = styled.div`
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      border: 1px solid black;
+      box-shadow: 0 0 15px 1px rgba(200, 200, 255, 0.15);
       color: white;
-      background: #333;
+      background: #111115;
       position: fixed;
-      width: 30%;
-      height: 30%;
+      width: 300px;
+      height: 200px;
+      padding: 16px;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      /* box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
-      rgba(0, 0, 0, 0.3) 0px 8px 16px -8px; */
-      border-radius: 25px;
+      border-radius: 15px;
       z-index: 6;
+
+      p {
+        font-size: 1rem;
+        text-align: center;
+      }
 
       div {
         width: 100%;
-        margin-top: 25px;
         display: inline-flex;
         justify-content: center;
+
         > button {
           padding: 5px;
           display: flex;
           justify-content: center;
-          align-content: center;
+          align-items: center;
           margin: 5px;
           min-width: 50px;
+
           ~ .yes {
             background: #f25555;
             color: white;
+
             :hover {
               cursor: pointer;
               background: #f22222;
@@ -150,7 +126,7 @@ const StyledPage = styled.div`
     }
   }
 `;
-export default function StreamRoom({ context, send, parents }) {
+export default function RoomWorkspace({ context, send, parents }) {
   const { room, connect, participants, audioTracks } = useRoom();
   const [selectTab, setSelectTab] = useState("stream-controls");
   const [renderState, setRenderState] = useState(0);
@@ -188,6 +164,7 @@ export default function StreamRoom({ context, send, parents }) {
       setExiting(false);
     } else return;
   };
+
   useEffect(() => {
     let __tracks = [];
     audioTracks.forEach((audioTrack) => {
@@ -212,6 +189,7 @@ export default function StreamRoom({ context, send, parents }) {
         channelSplitterNode.connect(msDestination.current);
       }
     });
+
     Object.keys(audioTrackRefs.current).forEach((key) => {
       if (__tracks.indexOf(key) < 0) {
         audioTrackRefs.current[key].mediaStreamTrackSource.disconnect();
@@ -220,6 +198,7 @@ export default function StreamRoom({ context, send, parents }) {
         delete audioTrackRefs.current[key];
       }
     });
+
     setAudioTrackRefsState(audioTrackRefs.current);
     setRenderState(renderState + 1);
   }, [audioTracks]);
@@ -260,8 +239,6 @@ export default function StreamRoom({ context, send, parents }) {
   useEffect(() => {
     connect(`${process.env.REACT_APP_LIVEKIT_SERVER}`, context.token)
       .then((room) => {
-        console.log("room connected");
-
         let track = msDestination.current?.stream?.getTracks();
         if (track[0]) {
           room.localParticipant.publishTrack(track[0]);
@@ -287,6 +264,7 @@ export default function StreamRoom({ context, send, parents }) {
       });
     }
   }, [room]);
+
   function sendPing(id) {
     if (room) {
       const payload = JSON.stringify({
@@ -313,9 +291,12 @@ export default function StreamRoom({ context, send, parents }) {
       .catch((err) => console.log(err));
   }
   let [expanded, setExpanded] = useState(false);
+
   return (
     <StyledPage>
-      <div className="button">
+      <div className="navigation">
+        <StreamTabs setSelectTab={setSelectTab} selectedTab={selectTab} />
+
         <Button
           onClick={() => {
             setExiting(true);
@@ -323,216 +304,185 @@ export default function StreamRoom({ context, send, parents }) {
           type="secondary"
           icon={<Exit />}
         >
-          Disconnect
+          Exit
         </Button>
       </div>
-      <div
-        className={`exitingModal ${exiting === true ? "active" : ""}`}
-        ref={exitingModalRef}
-      >
-        Are you sure you want to exit?
-        <div>
-          <Button
-            variant="navigation"
-            className="no"
-            onClick={() => {
-              setExiting(false);
-            }}
-          >
-            no
-          </Button>
-          <Button
-            variant="navigation"
-            className="yes"
-            onClick={() => {
-              room?.disconnect();
-              send("DISCONNECT");
-              setExiting(false);
-            }}
-          >
-            yes
-          </Button>
-        </div>
-      </div>
-      <StreamTabs setSelectTab={setSelectTab} selectedTab={selectTab} />
+
       {(function () {
         switch (selectTab) {
           case "stream-controls":
             return (
               <MainControlView>
-                <div>
-                  <div className="children">
-                    {participants
-                      .filter(
-                        (p) => JSON.parse(p?.metadata || "{}")?.type === "CHILD"
-                      )
-                      .map((p, i) => {
-                        const key = p.identity;
-                        const nickname = JSON.parse(
-                          p?.metadata || "{}"
-                        )?.nickname;
-                        return (
-                          <div key={key} className="child">
-                            <div className="leftPanel">
-                              <span className="heading">
-                                <UserIcon /> {nickname} (
-                                <UserPing
-                                  ping={context?.ping?.[p.sid]}
-                                  sendPing={() => {
-                                    sendPing(p.sid);
-                                  }}
-                                />
-                                )
-                              </span>
+                <div className="children">
+                  {participants
+                    .filter(
+                      (p) => JSON.parse(p?.metadata || "{}")?.type === "CHILD"
+                    )
+                    .map((p, i) => {
+                      const key = p.identity;
+                      const nickname = JSON.parse(
+                        p?.metadata || "{}"
+                      )?.nickname;
+                      return (
+                        <div key={key} className="child">
+                          <div className="leftPanel">
+                            <span className="heading">
+                              <UserIcon /> {nickname} (
+                              <UserPing
+                                ping={context?.ping?.[p.sid]}
+                                sendPing={() => {
+                                  sendPing(p.sid);
+                                }}
+                              />
+                              )
+                            </span>
 
-                              <div>
-                                <div
-                                  className={`delayDiv ${
-                                    expanded === true ? "expanded" : ""
-                                  }`}
+                            <div>
+                              <div
+                                className={`delayDiv ${
+                                  expanded === true ? "expanded" : ""
+                                }`}
+                              >
+                                <span
+                                  onClick={() => {
+                                    expanded === true
+                                      ? setExpanded(false)
+                                      : setExpanded(true);
+                                  }}
                                 >
-                                  <span
-                                    onClick={() => {
-                                      console.log(expanded);
-                                      expanded === true
-                                        ? setExpanded(false)
-                                        : setExpanded(true);
-                                    }}
-                                  >
-                                    <Stopwatch /> Ref audio delay
-                                  </span>
-                                  <input
-                                    type="text"
-                                    value={`${
-                                      JSON.parse(p.metadata)?.audio_delay || 0
-                                    }ms`}
-                                    id={`audio_delay_${key}`}
-                                  />
-                                  <Button
-                                    variant="delay"
-                                    type="tertiary"
-                                    onClick={() => {
-                                      let _delay = parseInt(
-                                        document.getElementById(
-                                          `audio_delay_${key}`
-                                        ).value
-                                      );
-                                      setDelay({
-                                        id: p.identity,
-                                        delay: _delay,
-                                        room: room.name,
-                                      });
-                                    }}
-                                  >
-                                    Update
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                            <CueMix
-                              ownerNick={nickname}
-                              context={context}
-                              send={send}
-                              room={room}
-                              audioTracks={audioTracks}
-                              participants={participants}
-                            />
-                            <div className="streamLinks">
-                              <label>
-                                <Link />
-                                Copy stream links
-                              </label>
-                              <div className="buttons">
-                                <div className="stream_code">
-                                  <Button
-                                    variant="small"
-                                    icon={<Copy />}
-                                    onClick={() => {
-                                      let input = document.querySelector(
-                                        `#${`stream_url_${key}`}`
-                                      );
-                                      input.select();
-                                      document.execCommand("copy");
-                                    }}
-                                  >
-                                    Video only
-                                  </Button>
-                                  <input
-                                    type="text"
-                                    style={{
-                                      position: "absolute",
-                                      top: "-100000px",
-                                    }}
-                                    id={`stream_url_${key}`}
-                                    value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}`}
-                                    readOnly
-                                  />
-                                </div>
-                                <div className="stream_code">
-                                  <Button
-                                    variant="small"
-                                    icon={<Copy />}
-                                    onClick={() => {
-                                      let input = document.querySelector(
-                                        `#${`stream_url_a_${key}`}`
-                                      );
-                                      input.select();
-                                      document.execCommand("copy");
-                                    }}
-                                  >
-                                    Video + audio
-                                  </Button>
-                                  <input
-                                    type="text"
-                                    style={{
-                                      position: "absolute",
-                                      top: "-100000px",
-                                    }}
-                                    id={`stream_url_a_${key}`}
-                                    value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}&audio=1`}
-                                    readOnly
-                                  />
-                                </div>
+                                  <Stopwatch /> Ref audio delay
+                                </span>
+                                <input
+                                  type="text"
+                                  value={`${
+                                    JSON.parse(p.metadata)?.audio_delay || 0
+                                  }ms`}
+                                  id={`audio_delay_${key}`}
+                                />
+                                <Button
+                                  variant="delay"
+                                  type="tertiary"
+                                  onClick={() => {
+                                    let _delay = parseInt(
+                                      document.getElementById(
+                                        `audio_delay_${key}`
+                                      ).value
+                                    );
+                                    setDelay({
+                                      id: p.identity,
+                                      delay: _delay,
+                                      room: room.name,
+                                    });
+                                  }}
+                                >
+                                  Update
+                                </Button>
                               </div>
                             </div>
                           </div>
-                        );
-                      })}
-                    <div className="parent">
-                      <span className="name">
-                        <UserIcon /> PARENT
-                        <AveragePing
-                          pings={context.ping}
-                          participants={participants}
-                        />
-                      </span>
-                      <div className="stream_code">
-                        <label>Parent Audio Mix</label>
-                        <input
-                          type="text"
-                          style={{
-                            position: "absolute",
-                            top: "-100000px",
-                          }}
-                          id={`stream_url_${context.identity}`}
-                          value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${context.identity}&audio=1`}
-                          readOnly
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            let input = document.querySelector(
-                              `#${`stream_url_${context.identity}`}`
-                            );
-                            input.select();
-                            document.execCommand("copy");
-                          }}
-                        >
-                          Copy
-                        </button>
-                      </div>
+                          <CueMix
+                            ownerNick={nickname}
+                            context={context}
+                            send={send}
+                            room={room}
+                            audioTracks={audioTracks}
+                            participants={participants}
+                          />
+                          <div className="streamLinks">
+                            <label>
+                              <Link />
+                              Copy stream links
+                            </label>
+                            <div className="buttons">
+                              <div className="stream_code">
+                                <Button
+                                  variant="small"
+                                  icon={<Copy />}
+                                  onClick={() => {
+                                    let input = document.querySelector(
+                                      `#${`stream_url_${key}`}`
+                                    );
+                                    input.select();
+                                    document.execCommand("copy");
+                                  }}
+                                >
+                                  Video only
+                                </Button>
+                                <input
+                                  type="text"
+                                  style={{
+                                    position: "absolute",
+                                    top: "-100000px",
+                                  }}
+                                  id={`stream_url_${key}`}
+                                  value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}`}
+                                  readOnly
+                                />
+                              </div>
+                              <div className="stream_code">
+                                <Button
+                                  variant="small"
+                                  icon={<Copy />}
+                                  onClick={() => {
+                                    let input = document.querySelector(
+                                      `#${`stream_url_a_${key}`}`
+                                    );
+                                    input.select();
+                                    document.execCommand("copy");
+                                  }}
+                                >
+                                  Video + audio
+                                </Button>
+                                <input
+                                  type="text"
+                                  style={{
+                                    position: "absolute",
+                                    top: "-100000px",
+                                  }}
+                                  id={`stream_url_a_${key}`}
+                                  value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${p.identity}&audio=1`}
+                                  readOnly
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  {/* <div className="parent">
+                    <span className="name">
+                      <UserIcon /> PARENT
+                      <AveragePing
+                        pings={context.ping}
+                        participants={participants}
+                      />
+                    </span>
+                    <div className="stream_code">
+                      <label>Parent Audio Mix</label>
+                      <input
+                        type="text"
+                        style={{
+                          position: "absolute",
+                          top: "-100000px",
+                        }}
+                        id={`stream_url_${context.identity}`}
+                        value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${context.identity}&audio=1`}
+                        readOnly
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          let input = document.querySelector(
+                            `#${`stream_url_${context.identity}`}`
+                          );
+                          input.select();
+                          document.execCommand("copy");
+                        }}
+                      >
+                        Copy
+                      </button>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </MainControlView>
             );
@@ -595,6 +545,35 @@ export default function StreamRoom({ context, send, parents }) {
             <></>;
         }
       })()}
+      <div
+        className={`exitingModal ${exiting === true ? "active" : ""}`}
+        ref={exitingModalRef}
+      >
+        <p>Are you sure you want to exit?</p>
+        <div>
+          <Button
+            variant="navigation"
+            className="no"
+            onClick={() => {
+              setExiting(false);
+            }}
+            icon={<></>}
+          >
+            no
+          </Button>
+          <Button
+            variant="navigation"
+            className="yes"
+            onClick={() => {
+              room?.disconnect();
+              send("DISCONNECT");
+              setExiting(false);
+            }}
+          >
+            yes
+          </Button>
+        </div>
+      </div>
     </StyledPage>
   );
 }
@@ -631,8 +610,7 @@ const MainControlView = styled.div`
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 20px;
-    padding: 8px;
-    margin: 20px;
+    padding: 16px 0;
 
     .child,
     .parent {

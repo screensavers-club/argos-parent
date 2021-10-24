@@ -5,33 +5,39 @@ import { Controls, Grid, Radio } from "react-ikonate";
 let tabs;
 
 const Tabs = styled.div`
-  width: 100%;
+  flex-grow: 1;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 
   > div {
     display: flex;
     justify-content: center;
     background: #292933;
     border-radius: 50px;
-    width: 510px;
     height: 50px;
-    padding: 0 10px;
+    overflow: hidden;
 
     > div {
-      width: 170px;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 10px;
-
-      font-size: 14px;
+      padding: 8px 16px 8px 8px;
+      cursor: pointer;
+      font-size: 1rem;
       color: white;
       border-right: 1px solid #191920;
 
+      &:first-child {
+        padding-left: 16px;
+      }
+
+      &:last-child {
+        padding-right: 24px;
+      }
+
       svg {
         margin-right: 10px;
-        font-size: 18px;
+        font-size: 1.5em;
         stroke-width: 1.5px;
       }
 
@@ -39,9 +45,9 @@ const Tabs = styled.div`
         border-right: none;
       }
 
-      :hover {
-        cursor: pointer;
-        background: grey;
+      &:hover,
+      &.selected {
+        background: #393944;
       }
     }
   }
@@ -54,8 +60,8 @@ export default function StreamTabs({ setSelectTab, selectedTab }) {
         {(tabs = [
           { tab: "Stream controls", icon: <Radio />, state: "stream-controls" },
           { tab: "Monitor layout", icon: <Grid />, state: "monitor-layout" },
-          { tab: "Audio mixer", icon: <Controls />, state: "audio-mixer" },
-          { tab: "Cue mix", icon: <Controls />, state: "cue-mix" },
+          // { tab: "Audio mixer", icon: <Controls />, state: "audio-mixer" },
+          // { tab: "Cue mix", icon: <Controls />, state: "cue-mix" },
         ]).map(function ({ tab, icon, state }, i) {
           let key = `key_${i}`;
           return (

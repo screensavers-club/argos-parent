@@ -59,7 +59,7 @@ const StyledButton = styled.button.attrs((props) => ({
   width: ${(p) => {
     switch (p.variant) {
       case "navigation":
-        return "115px";
+        return "10rem";
 
       case "small":
         return "130px";
@@ -92,12 +92,7 @@ const StyledButton = styled.button.attrs((props) => ({
     }
   }};
 
-  font-weight: ${(p) => {
-    switch (p.variant) {
-      default:
-        return "500";
-    }
-  }};
+  font-weight: normal;
 
   font-size: ${(p) => {
     switch (p.variant) {
@@ -106,7 +101,7 @@ const StyledButton = styled.button.attrs((props) => ({
       case "delay":
         return "12px";
       default:
-        return "14px";
+        return "1rem";
     }
   }};
 
