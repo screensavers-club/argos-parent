@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import NoChildNodes from "./no-child-nodes";
+import NoChildNodes from "../no-child-nodes";
 import StreamControlCard from "./stream-control-card";
 import MixPresetsControl from "./mix-presets";
 

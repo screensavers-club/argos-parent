@@ -28,7 +28,7 @@ export default function StreamControlCard({
   let hasVideo = P.publications.find((pub) => pub.kind === "video");
 
   let pingPair = context.ping?.[participant.sid] || [];
-  let ping = pingPair[1] > pingPair[0] ? pingPair[1] - pingPair[0] : "?";
+  let ping = pingPair[1] > pingPair[0] ? pingPair[1] - pingPair[0] : "…";
 
   let [mixState, setMixState] = useState(null);
   let [sendingMix, setSendingMix] = useState(false);
@@ -273,7 +273,7 @@ const Card = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #111115;
+    border-bottom: 1px solid #222225;
     padding: 0 0 8px 0;
 
     label.nickname {
@@ -321,8 +321,8 @@ const Card = styled.div`
   }
 
   .bottom {
-    border-top: 1px solid #111115;
-    padding-top: 8px;
+    border-top: 1px solid #222225;
+    padding-top: 12px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;

@@ -53,15 +53,13 @@ const Tabs = styled.div`
   }
 `;
 
-export default function StreamTabs({ setSelectTab, selectedTab }) {
+export default function EditorTabs({ setSelectTab, selectedTab }) {
   return (
     <Tabs>
       <div className="tabsContainer">
         {(tabs = [
           { tab: "Stream controls", icon: <Radio />, state: "stream-controls" },
           { tab: "Monitor layout", icon: <Grid />, state: "monitor-layout" },
-          // { tab: "Audio mixer", icon: <Controls />, state: "audio-mixer" },
-          // { tab: "Cue mix", icon: <Controls />, state: "cue-mix" },
         ]).map(function ({ tab, icon, state }, i) {
           let key = `key_${i}`;
           return (

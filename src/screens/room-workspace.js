@@ -1,18 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Button from "../components/button";
-
-import { useRoom, useParticipant } from "livekit-react";
-
-import StreamTabs from "../components/stream-tabs";
-import MixerPage from "../components/mixer-page";
-import CueMix from "../components/cue-mix-panel";
-import VideoLayouts from "../util/video-layouts";
-import StreamEditor from "../components/stream-editor";
-
 import { DataPacket_Kind, RoomEvent } from "livekit-client";
-import { User as UserIcon, Exit, Link, Copy, Stopwatch } from "react-ikonate";
+import { useRoom } from "livekit-react";
+import { User as UserIcon, Exit } from "react-ikonate";
 import axios from "axios";
+
+import VideoLayouts from "../util/video-layouts";
+
+import EditorTabs from "../components/editor-tabs";
+import StreamEditor from "../components/stream-editor/stream-editor";
+import LayoutEditor from "../components/layout-editor";
 
 const StyledPage = styled.div`
   background: #191920;
@@ -27,59 +25,6 @@ const StyledPage = styled.div`
     width: calc(100% - 32px);
     display: flex;
     z-index: 3;
-  }
-
-  div.streamLinks {
-    grid-column: 2 / span 3;
-    grid-row: 5 / span 1;
-    right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 15px;
-    box-sizing: border-box;
-
-    > div.buttons {
-      display: flex;
-      align-items: center;
-
-      button {
-        margin: 0 5px;
-      }
-    }
-
-    label {
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      svg {
-        font-size: 18px;
-        stroke-width: 1.5px;
-        color: white;
-        padding-right: 10px;
-      }
-    }
-  }
-
-  div.stream {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    border: 1px solid black;
-    padding: 10px;
-    margin: 25px;
-
-    div.userVideos {
-      position: relative;
-      border: 1px solid red;
-      min-width: 50%;
-      display: flex;
-    }
-  }
-  div.controlPanel {
-    display: block;
-    margin: auto;
-    padding: auto;
   }
 
   div.exitingModal {
@@ -293,7 +238,7 @@ export default function RoomWorkspace({ context, send, parents }) {
   return (
     <StyledPage>
       <div className="navigation">
-        <StreamTabs setSelectTab={setSelectTab} selectedTab={selectTab} />
+        <EditorTabs setSelectTab={setSelectTab} selectedTab={selectTab} />
 
         <Button
           onClick={() => {
@@ -322,60 +267,23 @@ export default function RoomWorkspace({ context, send, parents }) {
 
           case "monitor-layout":
             return (
-              <VideoLayoutEditor
+              <LayoutEditor
                 room={room}
-                participants={participants}
-                videoTrackRefsState={videoTrackRefsState}
-              />
-            );
-
-          case "audio-mixer":
-            return (
-              <div>
-                <div style={{ display: "flex" }}>
-                  <input
-                    type="text"
-                    id={`stream_url_${context.identity}`}
-                    value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${context.identity}`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      // let input = document.querySelector(
-                      //   `#${`stream_url_${key}`}`
-                      // );
-                      // input.select();
-                      // document.execCommand("copy");
-                    }}
-                  >
-                    Copy
-                  </button>
-                  <button type="button" onClick={() => {}}>
-                    Test
-                  </button>
-                </div>
-                {/* <MixerPage
-                  control={control}
-                  setControl={setControl}
-                  master={context.master}
-                /> */}
-              </div>
-            );
-
-          case "cue-mix":
-            return (
-              <CueMix
                 context={context}
                 send={send}
-                room={room}
-                audioTracks={audioTracks}
-                participants={participants}
+                participants={participants.filter(
+                  (p) => JSON.parse(p.metadata)?.type === "CHILD"
+                )}
               />
             );
-          case "monitor":
-            return <>This is the monitor page</>;
-          case "out":
-            return <>This is the out page</>;
+          // return (
+          //   <VideoLayoutEditor
+          //     room={room}
+          //     participants={participants}
+          //     videoTrackRefsState={videoTrackRefsState}
+          //   />
+          // );
+
           default:
             <></>;
         }
@@ -435,12 +343,6 @@ function VideoFrame({ track }) {
     </div>
   );
 }
-
-const MainControlView = styled.div`
-  width: 100%;
-  height: 100vh;
-  overflow-y: scroll;
-`;
 
 function VideoLayoutEditor({
   onChange,
@@ -759,33 +661,3 @@ const VideoLayoutEditorDiv = styled.div`
     }
   }
 `;
-
-function UserPing({ sendPing, ping }) {
-  useEffect(() => {
-    // const intervalId = window.setInterval(sendPing, 2000);
-    return () => {
-      // window.clearInterval(intervalId);
-    };
-  }, []);
-  if (ping?.length === 2 && ping[1] - ping[0] > 0) {
-    return <span style={{ fontSize: ".6em" }}>{(ping[1] - ping[0]) / 2}</span>;
-  }
-  return <>...</>;
-}
-
-function AveragePing({ pings, participants }) {
-  return (
-    <span style={{ fontSize: ".6em" }}>
-      (AVE{" "}
-      {Math.floor(
-        participants
-          .filter((p) => JSON.parse(p.metadata || "{}").type === "CHILD")
-          .map((p) => pings?.[p.sid])
-          .reduce((p, c, i, a) => {
-            return p + ((c?.[1] || 0) - (c?.[0] || 0)) / a.length / 2;
-          }, 0)
-      )}
-      )
-    </span>
-  );
-}
