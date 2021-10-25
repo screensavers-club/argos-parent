@@ -9,33 +9,31 @@ export default function StreamEditor({
   send,
   participants /* filtered child participants only */,
 }) {
-  return (
+  return participants.length === 0 ? (
+    <NoChildNodes />
+  ) : (
     <>
       <GridContainer>
-        {participants.length === 0 ? (
-          <NoChildNodes />
-        ) : (
-          <Grid>
-            <StreamControlCard
-              room={room}
-              participant={room.localParticipant}
-              context={context}
-              send={send}
-              parent
-            />
-            {participants
-              .sort((a, b) => (a.sid > b.sid ? -1 : 1))
-              .map((p) => (
-                <StreamControlCard
-                  room={room}
-                  participant={p}
-                  key={p.sid}
-                  context={context}
-                  send={send}
-                />
-              ))}
-          </Grid>
-        )}
+        <Grid>
+          <StreamControlCard
+            room={room}
+            participant={room.localParticipant}
+            context={context}
+            send={send}
+            parent
+          />
+          {participants
+            .sort((a, b) => (a.sid > b.sid ? -1 : 1))
+            .map((p) => (
+              <StreamControlCard
+                room={room}
+                participant={p}
+                key={p.sid}
+                context={context}
+                send={send}
+              />
+            ))}
+        </Grid>
       </GridContainer>
       <MixPresetsControl room={room} />
     </>
