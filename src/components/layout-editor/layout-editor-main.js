@@ -4,6 +4,7 @@ import { DataPacket_Kind } from "livekit-client";
 import styled from "styled-components";
 import LayoutParticipantSelector from "./layout-participant-selector";
 import ParticipantLayoutEditor from "./layout-participant-editor";
+import { useEffect } from "react";
 
 export default function LayoutEditorMain({
   room,
@@ -12,6 +13,10 @@ export default function LayoutEditorMain({
   participants,
 }) {
   const [activeLayout, setActiveLayout] = useState(false);
+
+  useEffect(() => {
+    send("SET_EDITING_LAYOUT", null);
+  }, []);
 
   function sendLayout(sid) {
     if (room) {
