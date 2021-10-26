@@ -1,8 +1,9 @@
 import axios from "axios";
+import { DataPacket_Kind } from "livekit-client";
 import { Download, Upload } from "react-ikonate";
 import styled from "styled-components";
 
-export default function MixPresetsControl({ room }) {
+export default function MixPresetsControl({ room, updateMix }) {
   return (
     <PresetsBar>
       <label>Audio Presets</label>
@@ -12,17 +13,34 @@ export default function MixPresetsControl({ room }) {
             <label>Slot {n + 1}</label>
             <button
               onClick={() => {
-                axios
-                  .get(`${process.env.REACT_APP_PEER_SERVER}/inspect-rooms`)
-                  .then(({ data }) => {
-                    let preset = data.find((r) => r.name === room.name)?.mix;
-                    console.log(preset);
-                  });
+                axios.post(
+                  `${process.env.REACT_APP_PEER_SERVER}/${room.name}/mix/save/${n}`
+                );
               }}
             >
               <Download />
             </button>
-            <button>
+            <button
+              onClick={() => {
+                axios
+                  .post(
+                    `${process.env.REACT_APP_PEER_SERVER}/${room.name}/mix/load/${n}`
+                  )
+                  .then(() => {
+                    const payload = JSON.stringify({
+                      action: "MIX",
+                    });
+                    const encoder = new TextEncoder();
+                    const data = encoder.encode(payload);
+
+                    room.localParticipant.publishData(
+                      data,
+                      DataPacket_Kind.RELIABLE
+                    );
+                    updateMix();
+                  });
+              }}
+            >
               <Upload />
             </button>
           </Slot>

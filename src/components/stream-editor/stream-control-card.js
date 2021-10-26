@@ -22,6 +22,7 @@ export default function StreamControlCard({
   send,
   parent,
   updateMix,
+  bumpMix, // for updating UI
 }) {
   let pingTimeoutRef = useRef();
   let { metadata, publications } = useParticipant(participant);
@@ -122,6 +123,12 @@ export default function StreamControlCard({
       window.clearInterval(pingTimeoutRef);
     };
   }, []);
+
+  useEffect(() => {
+    getMixState(room.name, nickname).then((result) => {
+      setMixState(result.data.mix);
+    });
+  }, [bumpMix, room, nickname]);
 
   if (!metadata || !mixState?.mute) {
     return false;
