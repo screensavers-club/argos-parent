@@ -18,8 +18,6 @@ export default function ParticipantLayoutEditor({
     (p) => p.sid === context.editing_layout
   );
 
-  const peers = participants.filter((p) => p.sid !== context.editing_layout);
-
   let nickname = false;
 
   if (participant && participant.metadata) {
@@ -143,7 +141,7 @@ export default function ParticipantLayoutEditor({
                         <VideoSlot
                           nickname={candidateNickname}
                           participant={participant}
-                          participants={peers}
+                          participants={participants}
                           setSlot={(slotNickname) => {
                             let _layout = { ...activeLayout };
                             _layout.slots[i] = {
