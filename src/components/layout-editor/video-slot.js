@@ -19,7 +19,7 @@ export default function VideoSlot({ nickname, participants, setSlot }) {
         <VideoParticipant participant={activeParticipant} />
       )}
       <Selection>
-        {nickname}
+        {nickname || "NONE"}
         <select
           ref={selectRef}
           value={nickname}
@@ -27,7 +27,7 @@ export default function VideoSlot({ nickname, participants, setSlot }) {
             setSlot(e.target.value);
           }}
         >
-          <option value={"--"}>--</option>
+          <option value="NONE">--</option>
           {participants.map((p, i) => {
             let n = JSON.parse(p.metadata || "{}")?.nickname;
             return (
@@ -73,7 +73,7 @@ const Slot = styled.div`
   video {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
   }
 `;
 
