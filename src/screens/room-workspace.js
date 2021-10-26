@@ -152,7 +152,7 @@ export default function RoomWorkspace({ context, send }) {
 
       <>
         {audioTracks.map((track) => (
-          <AudioRenderer track={track} />
+          <AudioRenderer track={track} key={track.sid} isLocal={false} />
         ))}
       </>
       {(function () {

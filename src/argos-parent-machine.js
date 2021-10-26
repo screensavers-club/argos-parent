@@ -437,6 +437,14 @@ let argosParentMachine = createMachine(
               },
             }),
           },
+
+          SET_EDITING_LAYOUT: {
+            actions: assign({
+              editing_layout: (context, event) => {
+                return event.sid;
+              },
+            }),
+          },
         },
       },
 

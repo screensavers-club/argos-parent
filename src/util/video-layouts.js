@@ -54,27 +54,28 @@ const layouts = {
   },
   H: {
     icon: "/images/layout-icons/layout-h.svg",
-    slots: [
-      { size: [33, 33], position: [0, 25] },
-      { size: [33, 33], position: [33, 25] },
-      { size: [33, 33], position: [66, 25] },
-    ],
-  },
-  I: {
-    icon: "/images/layout-icons/layout-i.svg",
-    slots: [
-      { size: [33, 100], position: [0, 0] },
-      { size: [33, 100], position: [33, 0] },
-      { size: [33, 100], position: [66, 0] },
-    ],
-  },
-  J: {
-    icon: "/images/layout-icons/layout-j.svg",
+
     slots: [
       { size: [50, 50], position: [0, 0] },
       { size: [50, 50], position: [50, 0] },
       { size: [50, 50], position: [0, 50] },
       { size: [50, 50], position: [50, 50] },
+    ],
+  },
+  I: {
+    icon: "/images/layout-icons/layout-i.svg",
+    slots: [
+      { size: [33.333, 33.333], position: [0, 33.33] },
+      { size: [33.333, 33.333], position: [33.333, 33.33] },
+      { size: [33.333, 33.333], position: [66.6666, 33.33] },
+    ],
+  },
+  J: {
+    icon: "/images/layout-icons/layout-j.svg",
+    slots: [
+      { size: [33.33, 100], position: [0, 0] },
+      { size: [33.333, 100], position: [33.333, 0] },
+      { size: [33.33, 100], position: [66.666, 0] },
     ],
   },
   K: {

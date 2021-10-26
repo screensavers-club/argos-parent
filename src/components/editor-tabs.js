@@ -45,9 +45,12 @@ const Tabs = styled.div`
         border-right: none;
       }
 
-      &:hover,
-      &.selected {
+      &:hover {
         background: #393944;
+      }
+
+      &.selected {
+        background: #5736fd;
       }
     }
   }
