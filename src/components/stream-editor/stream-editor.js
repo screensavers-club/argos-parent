@@ -7,6 +7,7 @@ export default function StreamEditor({
   room,
   context,
   send,
+  updateMix,
   participants /* filtered child participants only */,
 }) {
   return participants.length === 0 ? (
@@ -20,6 +21,7 @@ export default function StreamEditor({
             participant={room.localParticipant}
             context={context}
             send={send}
+            updateMix={updateMix}
             parent
           />
           {participants

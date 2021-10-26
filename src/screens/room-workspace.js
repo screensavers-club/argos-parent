@@ -1,24 +1,21 @@
+import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Button from "../components/button";
-import { DataPacket_Kind, RoomEvent } from "livekit-client";
+import { RoomEvent } from "livekit-client";
 import { useRoom, AudioRenderer } from "livekit-react";
-import { User as UserIcon, Exit } from "react-ikonate";
-
-import VideoLayouts from "../util/video-layouts";
+import { Exit } from "react-ikonate";
 
 import EditorTabs from "../components/editor-tabs";
 import StreamEditor from "../components/stream-editor/stream-editor";
 import LayoutEditor from "../components/layout-editor";
-import axios from "axios";
 
 export default function RoomWorkspace({ context, send }) {
   const { room, connect, participants, audioTracks } = useRoom();
   const [selectTab, setSelectTab] = useState("stream-controls");
   const [exiting, setExiting] = useState(false);
   const exitingModalRef = useRef();
-
-  const [mix, setMix] = useState({});
+  const [mix, setMix] = useState([]);
 
   const handleClick = (e) => {
     if (exitingModalRef.current.contains(e.target)) {
@@ -48,19 +45,9 @@ export default function RoomWorkspace({ context, send }) {
         const str = decoder.decode(payload);
         const obj = JSON.parse(str);
 
-        console.log("x", obj);
-
         if (obj.type === "PONG") {
           let d = new Date();
           send("PONG", { id: participant.sid, timestamp: d });
-        }
-
-        if (obj.action === "MIX") {
-          axios
-            .get(`${process.env.REACT_APP_PEER_SERVER}/${room.name}/PARENT/mix`)
-            .then((data) => {
-              console.log(data.mix, "xx");
-            });
         }
       });
 
@@ -72,6 +59,7 @@ export default function RoomWorkspace({ context, send }) {
 
   useEffect(() => {
     send("UPDATE_PARTICIPANTS", { participants });
+    updateMix();
   }, [participants]);
 
   useEffect(() => {
@@ -82,6 +70,28 @@ export default function RoomWorkspace({ context, send }) {
       room?.disconnect();
     };
   }, []);
+
+  function updateMix() {
+    if (!room) {
+      return;
+    }
+    axios
+      .get(`${process.env.REACT_APP_PEER_SERVER}/${room.name}/PARENT/mix`)
+      .then(({ data }) => {
+        const _participants = participants
+          .filter((p) => JSON.parse(p.metadata)?.type === "CHILD")
+          .filter((p) => {
+            let _nick = JSON.parse(p.metadata || "{}")?.nickname;
+            return data.mix?.mute?.indexOf(_nick) < 0;
+          });
+        const _mix = _participants.reduce((p, c) => {
+          let _pubs = Array.from(c.audioTracks, ([_, pub]) => pub);
+          console.log(_pubs);
+          return [...p, ..._pubs];
+        }, []);
+        setMix(_mix);
+      });
+  }
 
   return (
     <StyledPage>
@@ -100,9 +110,13 @@ export default function RoomWorkspace({ context, send }) {
       </div>
 
       <>
-        {audioTracks.map((track) => (
-          <AudioRenderer track={track} key={track.sid} isLocal={false} />
-        ))}
+        {mix.map((pub) => {
+          if (pub.track) {
+            return <AudioRenderer key={pub.trackSid} track={pub.track} />;
+          } else {
+            return false;
+          }
+        })}
       </>
       {(function () {
         switch (selectTab) {
@@ -115,6 +129,7 @@ export default function RoomWorkspace({ context, send }) {
                 participants={participants.filter(
                   (p) => JSON.parse(p.metadata)?.type === "CHILD"
                 )}
+                updateMix={updateMix}
               />
             );
 

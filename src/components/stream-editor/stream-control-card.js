@@ -21,6 +21,7 @@ export default function StreamControlCard({
   context,
   send,
   parent,
+  updateMix,
 }) {
   let pingTimeoutRef = useRef();
   let { metadata, publications } = useParticipant(participant);
@@ -51,7 +52,13 @@ export default function StreamControlCard({
         { mix }
       )
       .then((result) => {
-        sendMixPing(participant.sid);
+        if (parent) {
+          if (typeof updateMix === "function") {
+            updateMix();
+          }
+        } else {
+          sendMixPing(participant.sid);
+        }
         return result;
       });
   }
