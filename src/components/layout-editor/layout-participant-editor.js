@@ -24,10 +24,6 @@ export default function ParticipantLayoutEditor({
     nickname = JSON.parse(participant.metadata)?.nickname;
   }
 
-  if (!nickname) {
-    return <></>;
-  }
-
   return (
     <>
       <LayoutSelector
