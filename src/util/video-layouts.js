@@ -9,15 +9,15 @@ const layouts = {
   B: {
     icon: "/images/layout-icons/layout-b.svg",
     slots: [
-      { size: [50, 50], position: [25, 0] },
-      { size: [50, 50], position: [25, 50] },
+      { size: [50, 50], position: [0, 25] },
+      { size: [50, 50], position: [50, 25] },
     ],
   },
   C: {
     icon: "/images/layout-icons/layout-c.svg",
     slots: [
-      { size: [50, 50], position: [0, 25] },
-      { size: [50, 50], position: [50, 25] },
+      { size: [50, 50], position: [25, 0] },
+      { size: [50, 50], position: [25, 50] },
     ],
   },
   D: {

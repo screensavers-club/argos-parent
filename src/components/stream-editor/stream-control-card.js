@@ -45,10 +45,15 @@ export default function StreamControlCard({
   }
 
   function sendMixState(roomName, nickname, mix) {
-    return axios.post(
-      `${process.env.REACT_APP_PEER_SERVER}/${roomName}/${nickname}/mix`,
-      { mix }
-    );
+    return axios
+      .post(
+        `${process.env.REACT_APP_PEER_SERVER}/${roomName}/${nickname}/mix`,
+        { mix }
+      )
+      .then((result) => {
+        sendMixPing(participant.sid);
+        return result;
+      });
   }
 
   function sendPing(sid) {
@@ -65,6 +70,18 @@ export default function StreamControlCard({
       room.localParticipant.publishData(data, DataPacket_Kind.RELIABLE, [
         targetSid,
       ]);
+    }
+  }
+
+  function sendMixPing(sid) {
+    if (room) {
+      const payload = JSON.stringify({
+        action: "MIX",
+      });
+      const encoder = new TextEncoder();
+      const data = encoder.encode(payload);
+
+      room.localParticipant.publishData(data, DataPacket_Kind.RELIABLE, [sid]);
     }
   }
 
