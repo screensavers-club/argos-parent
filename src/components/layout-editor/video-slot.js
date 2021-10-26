@@ -3,7 +3,12 @@ import { useRef } from "react";
 import styled from "styled-components";
 import VideoParticipant from "./video-participant";
 
-export default function VideoSlot({ nickname, participants, setSlot }) {
+export default function VideoSlot({
+  nickname,
+  participants,
+  activeLayout,
+  setSlot,
+}) {
   let selectRef = useRef();
   let activeParticipant = participants.find((p) => {
     let _nick = JSON.parse(p.metadata || "{}")?.nickname;

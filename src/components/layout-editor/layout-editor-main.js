@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import { DataPacket_Kind } from "livekit-client";
 import styled from "styled-components";
 import LayoutParticipantSelector from "./layout-participant-selector";
 import ParticipantLayoutEditor from "./layout-participant-editor";
@@ -11,6 +12,22 @@ export default function LayoutEditorMain({
   participants,
 }) {
   const [activeLayout, setActiveLayout] = useState(false);
+
+  function sendLayout(sid) {
+    if (room) {
+      const payload = JSON.stringify({
+        action: "LAYOUT",
+      });
+      const encoder = new TextEncoder();
+      const data = encoder.encode(payload);
+      const targetSid = sid;
+
+      let d = new Date();
+      room.localParticipant.publishData(data, DataPacket_Kind.RELIABLE, [
+        targetSid,
+      ]);
+    }
+  }
 
   function getLayoutState(room, nickname) {
     return axios.get(
@@ -24,6 +41,12 @@ export default function LayoutEditorMain({
         layout,
       })
       .then(() => {
+        let participant = participants.find(
+          (p) => JSON.parse(p.metadata || "{}")?.nickname === nickname
+        );
+        if (participant) {
+          sendLayout(participant.sid);
+        }
         return getLayoutState(room, nickname);
       });
   }

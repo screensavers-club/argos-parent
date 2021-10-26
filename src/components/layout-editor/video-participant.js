@@ -1,10 +1,10 @@
 import { useParticipant, VideoRenderer } from "livekit-react";
 
 export default function VideoParticipant({ participant }) {
-  const { metadata, cameraPublication, screenSharePublication } =
+  const { metadata, cameraPublication, publications } =
     useParticipant(participant);
 
-  if (cameraPublication) {
+  if (cameraPublication && cameraPublication.track) {
     return (
       <VideoRenderer
         track={cameraPublication.track}

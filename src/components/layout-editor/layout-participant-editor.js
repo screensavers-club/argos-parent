@@ -142,6 +142,7 @@ export default function ParticipantLayoutEditor({
                           nickname={candidateNickname}
                           participant={participant}
                           participants={participants}
+                          activeLayout={activeLayout}
                           setSlot={(slotNickname) => {
                             let _layout = { ...activeLayout };
                             _layout.slots[i] = {
