@@ -11,12 +11,17 @@ export default function LayoutEditorMain({
   send,
   context,
   participants,
+  activeLayoutPending,
 }) {
   const [activeLayout, setActiveLayout] = useState(false);
 
   useEffect(() => {
     send("SET_EDITING_LAYOUT", null);
   }, []);
+
+  useEffect(() => {
+    setActiveLayout(false);
+  }, [activeLayoutPending]);
 
   function sendLayout(sid) {
     if (room) {
@@ -27,7 +32,6 @@ export default function LayoutEditorMain({
       const data = encoder.encode(payload);
       const targetSid = sid;
 
-      let d = new Date();
       room.localParticipant.publishData(data, DataPacket_Kind.RELIABLE, [
         targetSid,
       ]);

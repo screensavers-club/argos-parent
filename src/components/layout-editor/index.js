@@ -1,5 +1,5 @@
+import { useState } from "react";
 import styled from "styled-components";
-
 import NoChildNodes from "../no-child-nodes";
 import LayoutEditorMain from "./layout-editor-main";
 import LayoutPresetsControl from "./layout-presets";
@@ -9,7 +9,9 @@ export default function LayoutEditor({
   context,
   send,
   participants /* filtered child participants only */,
+  pingAllLayouts,
 }) {
+  const [update, setUpdate] = useState(0);
   return participants.length === 0 ? (
     <NoChildNodes />
   ) : (
@@ -20,9 +22,20 @@ export default function LayoutEditor({
           context={context}
           send={send}
           participants={participants}
+          activeLayoutPending={update}
         />
       </GridContainer>
-      <LayoutPresetsControl room={room} />
+      <LayoutPresetsControl
+        room={room}
+        bumpActiveLayout={() => {
+          send("SET_EDITING_LAYOUT", null);
+          if (update > 5) {
+            setUpdate(0);
+          } else {
+            setUpdate(update + 1);
+          }
+        }}
+      />
     </>
   );
 }

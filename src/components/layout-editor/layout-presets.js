@@ -1,8 +1,9 @@
 import axios from "axios";
 import { Download, Upload } from "react-ikonate";
+import { DataPacket_Kind } from "livekit-client";
 import styled from "styled-components";
 
-export default function LayoutPresetsControl({ room }) {
+export default function LayoutPresetsControl({ room, bumpActiveLayout }) {
   return (
     <PresetsBar>
       <label>Layout Presets</label>
@@ -12,17 +13,34 @@ export default function LayoutPresetsControl({ room }) {
             <label>Slot {n + 1}</label>
             <button
               onClick={() => {
-                axios
-                  .get(`${process.env.REACT_APP_PEER_SERVER}/inspect-rooms`)
-                  .then(({ data }) => {
-                    let preset = data.find((r) => r.name === room.name)?.mix;
-                    console.log(preset);
-                  });
+                axios.post(
+                  `${process.env.REACT_APP_PEER_SERVER}/${room.name}/layout/save/${n}`
+                );
               }}
             >
               <Download />
             </button>
-            <button>
+            <button
+              onClick={() => {
+                axios
+                  .post(
+                    `${process.env.REACT_APP_PEER_SERVER}/${room.name}/layout/load/${n}`
+                  )
+                  .then(() => {
+                    const payload = JSON.stringify({
+                      action: "LAYOUT",
+                    });
+                    const encoder = new TextEncoder();
+                    const data = encoder.encode(payload);
+
+                    room.localParticipant.publishData(
+                      data,
+                      DataPacket_Kind.RELIABLE
+                    );
+                    bumpActiveLayout();
+                  });
+              }}
+            >
               <Upload />
             </button>
           </Slot>
