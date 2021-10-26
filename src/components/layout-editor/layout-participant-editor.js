@@ -142,6 +142,7 @@ export default function ParticipantLayoutEditor({
                       return (
                         <VideoSlot
                           nickname={candidateNickname}
+                          participant={participant}
                           participants={peers}
                           setSlot={(slotNickname) => {
                             let _layout = { ...activeLayout };

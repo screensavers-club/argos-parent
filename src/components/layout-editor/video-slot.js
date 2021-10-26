@@ -1,11 +1,23 @@
 import { useParticipant } from "livekit-react";
 import { useRef } from "react";
 import styled from "styled-components";
+import VideoParticipant from "./video-participant";
 
 export default function VideoSlot({ nickname, participants, setSlot }) {
   let selectRef = useRef();
+  let activeParticipant = participants.find((p) => {
+    let _nick = JSON.parse(p.metadata || "{}")?.nickname;
+    if (_nick) {
+      return _nick === nickname;
+    }
+    return false;
+  });
+
   return (
     <Slot>
+      {activeParticipant && (
+        <VideoParticipant participant={activeParticipant} />
+      )}
       <Selection>
         {nickname}
         <select
@@ -57,6 +69,12 @@ const Slot = styled.div`
   align-items: center;
   width: 100%;
   height: 100%;
+
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 `;
 
 const Selection = styled.label`
