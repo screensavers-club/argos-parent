@@ -218,7 +218,7 @@ export default function StreamControlCard({
             type="text"
             className="hidden"
             id={`stream_url_${participant.sid}`}
-            value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${participant.identity}`}
+            value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${nickname}`}
             readOnly
           />
 
@@ -229,7 +229,7 @@ export default function StreamControlCard({
               top: "-100000px",
             }}
             id={`stream_url_a_${participant.sid}`}
-            value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${participant.identity}&audio=1`}
+            value={`${process.env.REACT_APP_VIEWER_BASE_URL}?room=${context.room.name}&passcode=${context.passcode}&target=${nickname}&audio=1`}
             readOnly
           />
         </div>
@@ -259,7 +259,7 @@ export default function StreamControlCard({
                   .value
               );
 
-              if (delay) {
+              if (delay || delay === 0) {
                 setSendingMix(true);
                 let newMixState = { ...mixState };
                 newMixState.delay = delay;
