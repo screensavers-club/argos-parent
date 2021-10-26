@@ -1,24 +1,27 @@
 const layouts = {
+  Default: {
+    icon: "/images/layout-icons/layout-default.svg",
+  },
   A: {
-    icon: "/images/layout-icons/a-1.svg",
+    icon: "/images/layout-icons/layout-a.svg",
     slots: [{ size: [100, 100], position: [0, 0] }],
   },
   B: {
-    icon: "/images/layout-icons/b-1.svg",
+    icon: "/images/layout-icons/layout-b.svg",
     slots: [
       { size: [50, 50], position: [25, 0] },
       { size: [50, 50], position: [25, 50] },
     ],
   },
   C: {
-    icon: "/images/layout-icons/c-1.svg",
+    icon: "/images/layout-icons/layout-c.svg",
     slots: [
       { size: [50, 50], position: [0, 25] },
       { size: [50, 50], position: [50, 25] },
     ],
   },
   D: {
-    icon: "/images/layout-icons/d-1.svg",
+    icon: "/images/layout-icons/layout-d.svg",
     slots: [
       { size: [50, 50], position: [0, 0] },
       { size: [50, 50], position: [50, 0] },
@@ -26,7 +29,7 @@ const layouts = {
     ],
   },
   E: {
-    icon: "/images/layout-icons/e-1.svg",
+    icon: "/images/layout-icons/layout-e.svg",
     slots: [
       { size: [50, 50], position: [25, 0] },
       { size: [50, 50], position: [0, 50] },
@@ -34,7 +37,7 @@ const layouts = {
     ],
   },
   F: {
-    icon: "/images/layout-icons/f-1.svg",
+    icon: "/images/layout-icons/layout-f.svg",
     slots: [
       { size: [50, 50], position: [0, 0] },
       { size: [50, 50], position: [0, 50] },
@@ -42,7 +45,7 @@ const layouts = {
     ],
   },
   G: {
-    icon: "/images/layout-icons/g-1.svg",
+    icon: "/images/layout-icons/layout-g.svg",
     slots: [
       { size: [50, 100], position: [0, 0] },
       { size: [50, 50], position: [50, 0] },
@@ -50,7 +53,7 @@ const layouts = {
     ],
   },
   H: {
-    icon: "/images/layout-icons/h-1.svg",
+    icon: "/images/layout-icons/layout-h.svg",
     slots: [
       { size: [33, 33], position: [0, 25] },
       { size: [33, 33], position: [33, 25] },
@@ -58,7 +61,7 @@ const layouts = {
     ],
   },
   I: {
-    icon: "/images/layout-icons/i-1.svg",
+    icon: "/images/layout-icons/layout-i.svg",
     slots: [
       { size: [33, 100], position: [0, 0] },
       { size: [33, 100], position: [33, 0] },
@@ -66,7 +69,7 @@ const layouts = {
     ],
   },
   J: {
-    icon: "/images/layout-icons/j-1.svg",
+    icon: "/images/layout-icons/layout-j.svg",
     slots: [
       { size: [50, 50], position: [0, 0] },
       { size: [50, 50], position: [50, 0] },
@@ -75,7 +78,7 @@ const layouts = {
     ],
   },
   K: {
-    icon: "/images/layout-icons/k-1.svg",
+    icon: "/images/layout-icons/layout-k.svg",
     slots: [
       { size: [25, 100], position: [0, 0] },
       { size: [25, 100], position: [25, 0] },
