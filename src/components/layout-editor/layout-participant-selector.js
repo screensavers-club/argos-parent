@@ -1,4 +1,7 @@
 import { useParticipant } from "livekit-react";
+import { useEffect } from "react";
+import { useRef } from "react";
+import { useState } from "react";
 import { User } from "react-ikonate";
 import styled from "styled-components";
 import VideoLayout from "../../util/video-layouts";
@@ -10,11 +13,29 @@ export default function LayoutParticipantSelector({
   room,
   setLayoutState,
   getLayoutState,
-  activeLayout,
+  setActiveLayout,
 }) {
   let { metadata } = useParticipant(participant);
 
   const nickname = JSON.parse(metadata || "{}")?.nickname;
+  const [thisLayout, setThisLayout] = useState(null);
+  const timeoutRef = useRef();
+
+  useEffect(() => {
+    if (timeoutRef.current) {
+      window.clearInterval(timeoutRef.current);
+    }
+    timeoutRef.current = window.setInterval(() => {
+      if (nickname) {
+        getLayoutState(room.name, nickname).then(({ data }) => {
+          setThisLayout(data.layout);
+        });
+      }
+    }, 2000);
+    return () => {
+      window.clearInterval(timeoutRef.current);
+    };
+  }, [nickname]);
 
   return (
     <Selector
@@ -23,17 +44,23 @@ export default function LayoutParticipantSelector({
         send("SET_EDITING_LAYOUT", { sid: participant.sid });
         getLayoutState(room.name, nickname).then(({ data }) => {
           if (data.layout === null) {
-            let _l = setLayoutState(room.name, nickname, {
+            setLayoutState(room.name, nickname, {
               ...VideoLayout.Default,
               layout: "Default",
+            }).then(({ data }) => {
+              setActiveLayout(data.layout);
+              setThisLayout(data.layout);
             });
+          } else {
+            setActiveLayout(data.layout);
+            setThisLayout(data.layout);
           }
         });
       }}
     >
       <User />
       <span>{nickname}</span>
-      {activeLayout && <img src={activeLayout.icon} alt="Layout icon" />}
+      {thisLayout && <img src={thisLayout.icon} alt="Layout icon" />}
     </Selector>
   );
 }

@@ -2,6 +2,7 @@ import styled from "styled-components";
 import VideoLayouts from "../../util/video-layouts";
 import { Edit } from "react-ikonate";
 import { useParticipant } from "livekit-react";
+import VideoSlot from "./video-slot";
 
 export default function ParticipantLayoutEditor({
   context,
@@ -9,6 +10,7 @@ export default function ParticipantLayoutEditor({
   room,
   participants,
   activeLayout,
+  setActiveLayout,
   setLayoutState,
   getLayoutState,
 }) {
@@ -16,10 +18,16 @@ export default function ParticipantLayoutEditor({
     (p) => p.sid === context.editing_layout
   );
 
+  const peers = participants.filter((p) => p.sid !== context.editing_layout);
+
   let nickname = false;
 
   if (participant && participant.metadata) {
     nickname = JSON.parse(participant.metadata)?.nickname;
+  }
+
+  if (!nickname) {
+    return <></>;
   }
 
   return (
@@ -41,9 +49,24 @@ export default function ParticipantLayoutEditor({
                   : ""
               }`}
               onClick={() => {
+                // retain selection
+                let _slots = VideoLayouts[layoutKey].slots
+                  ? [...VideoLayouts[layoutKey].slots]
+                  : [];
+
+                // mutation in place ...
+                _slots.forEach((slot, i) => {
+                  slot.participant = {
+                    ...activeLayout?.slots?.[i]?.participant,
+                  };
+                });
+
                 setLayoutState(room.name, nickname, {
                   ...VideoLayouts[layoutKey],
                   layout: layoutKey,
+                  slots: _slots,
+                }).then(({ data }) => {
+                  setActiveLayout(data.layout);
                 });
               }}
             >
@@ -70,7 +93,6 @@ export default function ParticipantLayoutEditor({
       </LayoutSelector>
 
       <Editor className={`layout ${context.editing_layout ? "" : "disabled"}`}>
-        {console.log(activeLayout)}
         <div className="canvas-wrapper">
           <div className="grid-lines">
             {new Array(11).fill(0).map((i, n) => (
@@ -90,7 +112,7 @@ export default function ParticipantLayoutEditor({
           </div>
 
           <div className="video-slots">
-            {activeLayout.layout === "Default" ? (
+            {!activeLayout || activeLayout.layout === "Default" ? (
               <></>
             ) : (
               context.editing_layout &&
@@ -99,16 +121,44 @@ export default function ParticipantLayoutEditor({
                 return (
                   <div
                     className="slot"
-                    key={
-                      slot.participant ? slot.participant.nickname : `slot_${i}`
-                    }
+                    key={`${context.editing_layout}_slot_${i}_${
+                      slot.participant?.nickname || "_"
+                    }`}
                     style={{
                       left: `${slot.position[0]}%`,
                       top: `${slot.position[1]}%`,
                       width: `${slot.size[0]}%`,
                       height: `${slot.size[1]}%`,
                     }}
-                  ></div>
+                  >
+                    {(() => {
+                      let candidateNickname;
+                      if (slot.participant && slot.participant.nickname) {
+                        candidateNickname = slot.participant.nickname;
+                      } else {
+                        candidateNickname = false;
+                      }
+
+                      return (
+                        <VideoSlot
+                          nickname={candidateNickname}
+                          participants={peers}
+                          setSlot={(slotNickname) => {
+                            let _layout = { ...activeLayout };
+                            _layout.slots[i] = {
+                              ...activeLayout.slots[i],
+                              participant: { nickname: slotNickname },
+                            };
+                            setLayoutState(room.name, nickname, _layout).then(
+                              ({ data }) => {
+                                setActiveLayout(data.layout);
+                              }
+                            );
+                          }}
+                        />
+                      );
+                    })()}
+                  </div>
                 );
               })
             )}

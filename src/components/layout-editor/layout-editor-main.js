@@ -10,15 +10,12 @@ export default function LayoutEditorMain({
   context,
   participants,
 }) {
-  let [activeLayout, setActiveLayout] = useState(false);
+  const [activeLayout, setActiveLayout] = useState(false);
 
   function getLayoutState(room, nickname) {
-    return axios
-      .get(`${process.env.REACT_APP_PEER_SERVER}/${room}/${nickname}/layout`)
-      .then(({ data }) => {
-        setActiveLayout(data.layout);
-        return { data };
-      });
+    return axios.get(
+      `${process.env.REACT_APP_PEER_SERVER}/${room}/${nickname}/layout`
+    );
   }
 
   function setLayoutState(room, nickname, layout) {
@@ -46,9 +43,9 @@ export default function LayoutEditorMain({
               send={send}
               room={room}
               active={context.editing_layout === p.sid}
-              activeLayout={activeLayout}
               setLayoutState={setLayoutState}
               getLayoutState={getLayoutState}
+              setActiveLayout={setActiveLayout}
             />
           ))}
       </div>
@@ -61,6 +58,7 @@ export default function LayoutEditorMain({
         participants={participants}
         setLayoutState={setLayoutState}
         getLayoutState={getLayoutState}
+        setActiveLayout={setActiveLayout}
       />
     </Wrapper>
   );
