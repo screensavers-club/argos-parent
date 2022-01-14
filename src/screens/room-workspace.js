@@ -87,7 +87,6 @@ export default function RoomWorkspace({ context, send }) {
           });
         const _mix = _participants.reduce((p, c) => {
           let _pubs = Array.from(c.audioTracks, ([_, pub]) => pub);
-          console.log(_pubs);
           return [...p, ..._pubs];
         }, []);
         setMix(_mix);
