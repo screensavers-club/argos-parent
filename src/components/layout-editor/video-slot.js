@@ -85,10 +85,9 @@ const Slot = styled.div`
 
 const Selection = styled.label`
   height: 1em;
-  position: relative;
+  position: absolute;
   border: 1px solid #fff;
   width: 4rem;
-  position: absolute;
   bottom: 16px;
   right: 16px;
   font-size: 0.8rem;
@@ -96,18 +95,20 @@ const Selection = styled.label`
   padding: 4px;
   border-radius: 4px;
   cursor: pointer;
+  display: block;
 
   select {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     background: transparent;
     appearance: none;
     outline: none;
     border: 0;
     text-indent: -10000em;
     cursor: pointer;
+    display: block;
   }
 `;
