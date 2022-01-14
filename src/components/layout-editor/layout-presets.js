@@ -1,54 +1,107 @@
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { Download, Upload } from "react-ikonate";
 import { DataPacket_Kind } from "livekit-client";
 import styled from "styled-components";
 
 export default function LayoutPresetsControl({ room, bumpActiveLayout }) {
-  return (
-    <PresetsBar>
-      <label>Layout Presets</label>
-      {[0, 1, 2, 3, 4, 5, 6, 7].map((n, i) => {
-        return (
-          <Slot key={`slot_${n}`}>
-            <label>Slot {n + 1}</label>
-            <button
-              onClick={() => {
-                axios.post(
-                  `${process.env.REACT_APP_PEER_SERVER}/${room.name}/layout/save/${n}`
-                );
-              }}
-            >
-              <Download />
-            </button>
-            <button
-              onClick={() => {
-                axios
-                  .post(
-                    `${process.env.REACT_APP_PEER_SERVER}/${room.name}/layout/load/${n}`
-                  )
-                  .then(() => {
-                    const payload = JSON.stringify({
-                      action: "LAYOUT",
-                    });
-                    const encoder = new TextEncoder();
-                    const data = encoder.encode(payload);
+  const [successIndicator, setSuccessIndicator] = useState(null);
 
-                    room.localParticipant.publishData(
-                      data,
-                      DataPacket_Kind.RELIABLE
-                    );
-                    bumpActiveLayout();
-                  });
-              }}
-            >
-              <Upload />
-            </button>
-          </Slot>
-        );
-      })}
-    </PresetsBar>
+  useEffect(() => {
+    if (successIndicator) {
+      window.setTimeout(() => {
+        setSuccessIndicator(null);
+      }, 1000);
+    }
+  }, [successIndicator]);
+
+  return (
+    <>
+      <PresetsBar>
+        <label>Layout Presets</label>
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((n, i) => {
+          return (
+            <Slot key={`slot_${n}`}>
+              <label>Slot {n + 1}</label>
+              <button
+                onClick={() => {
+                  axios
+                    .post(
+                      `${process.env.REACT_APP_PEER_SERVER}/${room.name}/layout/save/${n}`
+                    )
+
+                    .then(() => {
+                      setSuccessIndicator({
+                        action: "Saved",
+                        target: `Slot ${n + 1}`,
+                      });
+                    })
+                    .catch((err) => {
+                      console.log({ err });
+                    });
+                }}
+              >
+                <Download />
+              </button>
+              <button
+                onClick={() => {
+                  axios
+                    .post(
+                      `${process.env.REACT_APP_PEER_SERVER}/${room.name}/layout/load/${n}`
+                    )
+                    .then(() => {
+                      const payload = JSON.stringify({
+                        action: "LAYOUT",
+                      });
+                      const encoder = new TextEncoder();
+                      const data = encoder.encode(payload);
+
+                      room.localParticipant.publishData(
+                        data,
+                        DataPacket_Kind.RELIABLE
+                      );
+                      bumpActiveLayout();
+
+                      setSuccessIndicator({
+                        action: "Loaded",
+                        target: `Slot ${n + 1}`,
+                      });
+                    });
+                }}
+              >
+                <Upload />
+              </button>
+            </Slot>
+          );
+        })}
+      </PresetsBar>
+      <SuccessPopper successIndicator={successIndicator} />
+    </>
   );
 }
+
+function SuccessPopper({ successIndicator }) {
+  return (
+    successIndicator && (
+      <SuccessPopperDiv>
+        {successIndicator.action} slot{" "}
+        <strong>{successIndicator.target}</strong>
+      </SuccessPopperDiv>
+    )
+  );
+}
+
+const SuccessPopperDiv = styled.div`
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #5736fd;
+  color: #fff;
+  padding: 8px 15px;
+  border-radius: 15px;
+  font-size: 1rem;
+`;
 
 const PresetsBar = styled.div`
   width: calc(100% - 32px);

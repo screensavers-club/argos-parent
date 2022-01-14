@@ -5,7 +5,6 @@ import {
   User,
   Microphone,
   Film,
-  Music,
   VolumeLoud,
   VolumeOff,
   Link,
