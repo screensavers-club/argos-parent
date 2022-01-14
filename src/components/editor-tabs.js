@@ -1,13 +1,10 @@
-import reactDom from "react-dom";
 import styled from "styled-components";
-import { Controls, Grid, Radio } from "react-ikonate";
-
-let tabs;
+import { Grid, Radio } from "react-ikonate";
 
 const Tabs = styled.div`
   flex-grow: 1;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
 
   > div {
     display: flex;
@@ -60,10 +57,10 @@ export default function EditorTabs({ setSelectTab, selectedTab }) {
   return (
     <Tabs>
       <div className="tabsContainer">
-        {(tabs = [
+        {[
           { tab: "Stream controls", icon: <Radio />, state: "stream-controls" },
           { tab: "Monitor layout", icon: <Grid />, state: "monitor-layout" },
-        ]).map(function ({ tab, icon, state }, i) {
+        ].map(function ({ tab, icon, state }, i) {
           let key = `key_${i}`;
           return (
             <div

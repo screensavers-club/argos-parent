@@ -9,9 +9,10 @@ import { Exit } from "react-ikonate";
 import EditorTabs from "../components/editor-tabs";
 import StreamEditor from "../components/stream-editor/stream-editor";
 import LayoutEditor from "../components/layout-editor";
+import RoomSaveLoad from "../components/room-save-load";
 
 export default function RoomWorkspace({ context, send }) {
-  const { room, connect, participants, audioTracks } = useRoom();
+  const { room, connect, participants } = useRoom();
   const [selectTab, setSelectTab] = useState("stream-controls");
   const [exiting, setExiting] = useState(false);
   const exitingModalRef = useRef();
@@ -96,6 +97,7 @@ export default function RoomWorkspace({ context, send }) {
   return (
     <StyledPage>
       <div className="navigation">
+        <RoomSaveLoad room={room} />
         <EditorTabs setSelectTab={setSelectTab} selectedTab={selectTab} />
 
         <Button

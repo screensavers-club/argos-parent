@@ -67,6 +67,9 @@ const StyledButton = styled.button.attrs((props) => ({
       case "delay":
         return "90px";
 
+      case "icon":
+        return "50px";
+
       default:
         return "160px";
     }
@@ -100,6 +103,8 @@ const StyledButton = styled.button.attrs((props) => ({
         return "12px";
       case "delay":
         return "12px";
+      case "icon":
+        return "40px";
       default:
         return "1rem";
     }
@@ -108,7 +113,9 @@ const StyledButton = styled.button.attrs((props) => ({
   > div {
     display: flex;
     justify-content: ${(p) =>
-      p.type === "tertiary" || p.variant === "small" ? "center" : "flex-start"};
+      p.type === "tertiary" || p.variant === "small" || p.variant === "icon"
+        ? "center"
+        : "flex-start"};
     align-items: center;
     margin: auto 0;
 
@@ -134,6 +141,8 @@ const StyledButton = styled.button.attrs((props) => ({
           ? "15px"
           : p.variant === "delay"
           ? "5px"
+          : p.variant === "icon"
+          ? "5px"
           : p.variant === "small"
           ? "5px"
           : "20px"};
@@ -141,6 +150,8 @@ const StyledButton = styled.button.attrs((props) => ({
         p.variant === "navigation"
           ? "10px"
           : p.variant === "delay"
+          ? "5px"
+          : p.variant === "icon"
           ? "5px"
           : p.variant === "small"
           ? "5px"
