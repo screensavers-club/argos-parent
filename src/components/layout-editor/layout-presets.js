@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Download, Upload } from "react-ikonate";
 import { DataPacket_Kind } from "livekit-client";
 import styled from "styled-components";
+import Popper from "../message-popper";
 
 export default function LayoutPresetsControl({ room, bumpActiveLayout }) {
   const [successIndicator, setSuccessIndicator] = useState(null);
@@ -75,7 +76,17 @@ export default function LayoutPresetsControl({ room, bumpActiveLayout }) {
           );
         })}
       </PresetsBar>
-      <SuccessPopper successIndicator={successIndicator} />
+
+      <Popper
+        message={
+          successIndicator && (
+            <>
+              {successIndicator.action} slot{" "}
+              <strong>{successIndicator.target}</strong>
+            </>
+          )
+        }
+      />
     </>
   );
 }

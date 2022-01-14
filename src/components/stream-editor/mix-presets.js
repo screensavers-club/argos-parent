@@ -3,6 +3,7 @@ import { DataPacket_Kind } from "livekit-client";
 import { Download, Upload } from "react-ikonate";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import Popper from "../message-popper";
 
 export default function MixPresetsControl({ room, updateMix }) {
   const [successIndicator, setSuccessIndicator] = useState(null);
@@ -74,33 +75,19 @@ export default function MixPresetsControl({ room, updateMix }) {
           );
         })}
       </PresetsBar>
-      <SuccessPopper successIndicator={successIndicator} />
+      <Popper
+        message={
+          successIndicator && (
+            <>
+              {successIndicator.action} slot{" "}
+              <strong>{successIndicator.target}</strong>
+            </>
+          )
+        }
+      />
     </>
   );
 }
-
-function SuccessPopper({ successIndicator }) {
-  return (
-    successIndicator && (
-      <SuccessPopperDiv>
-        {successIndicator.action} slot{" "}
-        <strong>{successIndicator.target}</strong>
-      </SuccessPopperDiv>
-    )
-  );
-}
-
-const SuccessPopperDiv = styled.div`
-  position: fixed;
-  bottom: 100px;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #5736fd;
-  color: #fff;
-  padding: 8px 15px;
-  border-radius: 15px;
-  font-size: 1rem;
-`;
 
 const PresetsBar = styled.div`
   width: calc(100% - 32px);
