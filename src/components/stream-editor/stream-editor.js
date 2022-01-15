@@ -10,6 +10,8 @@ export default function StreamEditor({
   send,
   updateMix,
   participants /* filtered child participants only */,
+  mixSlots,
+  updateSlots,
 }) {
   const [bumpMix, setBumpMix] = useState(0);
   return participants.length === 0 ? (
@@ -43,6 +45,8 @@ export default function StreamEditor({
       </GridContainer>
       <MixPresetsControl
         room={room}
+        mixSlots={mixSlots}
+        updateSlots={updateSlots}
         updateMix={() => {
           updateMix();
           setBumpMix(bumpMix > 5 ? 0 : bumpMix + 1);

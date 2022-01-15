@@ -18,6 +18,11 @@ export default function RoomWorkspace({ context, send }) {
   const exitingModalRef = useRef();
   const [mix, setMix] = useState([]);
 
+  const [mixSlots, setMixSlots] = useState();
+  const [layoutSlots, setLayoutSlots] = useState();
+
+  const updateSlotNames = () => {};
+
   const handleClick = (e) => {
     if (exitingModalRef.current.contains(e.target)) {
       return;
@@ -131,6 +136,8 @@ export default function RoomWorkspace({ context, send }) {
                   (p) => JSON.parse(p.metadata)?.type === "CHILD"
                 )}
                 updateMix={updateMix}
+                mixSlots={mixSlots}
+                updateSlots={updateSlotNames}
               />
             );
 
@@ -143,6 +150,8 @@ export default function RoomWorkspace({ context, send }) {
                 participants={participants.filter(
                   (p) => JSON.parse(p.metadata)?.type === "CHILD"
                 )}
+                layoutSlots={layoutSlots}
+                updateSlots={updateSlotNames}
               />
             );
 

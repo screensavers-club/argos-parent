@@ -5,8 +5,22 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import Popper from "../message-popper";
 
-export default function MixPresetsControl({ room, updateMix }) {
+export default function MixPresetsControl({
+  room,
+  updateMix,
+  mixSlots = [
+    "Slot 1",
+    "Slot 2",
+    "Slot 3",
+    "Slot 4",
+    "Slot 5",
+    "Slot 6",
+    "Slot 7",
+    "Slot 8",
+  ],
+}) {
   const [successIndicator, setSuccessIndicator] = useState(null);
+  const [editing, setEditing] = useState(null);
 
   useEffect(() => {
     if (successIndicator) {
@@ -20,20 +34,45 @@ export default function MixPresetsControl({ room, updateMix }) {
     <>
       <PresetsBar>
         <label>Audio Presets</label>
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((n, i) => {
+        {mixSlots.map((slot, i) => {
           return (
-            <Slot key={`slot_${n}`}>
-              <label>Slot {n + 1}</label>
+            <Slot key={`slot_${slot}`}>
+              {editing === i ? (
+                <div className="rename">
+                  <input
+                    type="text"
+                    placeholder={slot}
+                    maxLength={8}
+                    minLength={3}
+                    autoFocus={1}
+                    onBlur={(e) => {
+                      setEditing(null);
+                      const slotName = e.target.value
+                        .replace(/[^a-zA-Z0-9]+/g, "_")
+                        .toUpperCase();
+                    }}
+                  />
+                </div>
+              ) : (
+                <label
+                  onClick={() => {
+                    setEditing(i);
+                  }}
+                >
+                  {slot}
+                </label>
+              )}
+
               <button
                 onClick={() => {
                   axios
                     .post(
-                      `${process.env.REACT_APP_PEER_SERVER}/${room.name}/mix/save/${n}`
+                      `${process.env.REACT_APP_PEER_SERVER}/${room.name}/mix/save/${i}`
                     )
                     .then(() => {
                       setSuccessIndicator({
                         action: "Saved",
-                        target: `Slot ${n + 1}`,
+                        target: slot,
                       });
                     })
                     .catch((err) => {
@@ -47,7 +86,7 @@ export default function MixPresetsControl({ room, updateMix }) {
                 onClick={() => {
                   axios
                     .post(
-                      `${process.env.REACT_APP_PEER_SERVER}/${room.name}/mix/load/${n}`
+                      `${process.env.REACT_APP_PEER_SERVER}/${room.name}/mix/load/${i}`
                     )
                     .then(() => {
                       const payload = JSON.stringify({
@@ -64,7 +103,7 @@ export default function MixPresetsControl({ room, updateMix }) {
 
                       setSuccessIndicator({
                         action: "Loaded",
-                        target: `Slot ${n + 1}`,
+                        target: slot,
                       });
                     });
                 }}
@@ -115,7 +154,8 @@ const PresetsBar = styled.div`
 `;
 
 const Slot = styled.div`
-  flex-grow: 1;
+  /* flex-grow: 1; */
+  width: calc((100% - 8rem) / 8);
   border-left: 1px solid #222225;
   display: flex;
   flex-wrap: wrap;
@@ -156,5 +196,25 @@ const Slot = styled.div`
     text-transform: uppercase;
     justify-content: center;
     align-items: center;
+  }
+
+  > div.rename {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    width: 100%;
+    height: 50%;
+    order: 3;
+    justify-content: center;
+    align-items: center;
+
+    input[type="text"] {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+    }
   }
 `;
