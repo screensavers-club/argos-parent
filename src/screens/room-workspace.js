@@ -21,7 +21,43 @@ export default function RoomWorkspace({ context, send }) {
   const [mixSlots, setMixSlots] = useState();
   const [layoutSlots, setLayoutSlots] = useState();
 
-  const updateSlotNames = () => {};
+  const updateSlotNames = () => {
+    if (!room) {
+      return;
+    }
+    axios
+      .get(`${process.env.REACT_APP_PEER_SERVER}/${room.name}/slotnames`)
+      .then(({ data }) => {
+        const _mixSlots = [
+          "Slot 1",
+          "Slot 2",
+          "Slot 3",
+          "Slot 4",
+          "Slot 5",
+          "Slot 6",
+          "Slot 7",
+          "Slot 8",
+        ].map((slot, i) => {
+          return data.mix[`slot${i}`] || slot;
+        });
+
+        const _layoutSlots = [
+          "Slot 1",
+          "Slot 2",
+          "Slot 3",
+          "Slot 4",
+          "Slot 5",
+          "Slot 6",
+          "Slot 7",
+          "Slot 8",
+        ].map((slot, i) => {
+          return data.layout[`slot${i}`] || slot;
+        });
+
+        setMixSlots(_mixSlots);
+        setLayoutSlots(_layoutSlots);
+      });
+  };
 
   const handleClick = (e) => {
     if (exitingModalRef.current.contains(e.target)) {
@@ -43,6 +79,12 @@ export default function RoomWorkspace({ context, send }) {
       document.removeEventListener("keyup", handleEsc);
     };
   }, []);
+
+  useEffect(() => {
+    if (room && room.name) {
+      updateSlotNames();
+    }
+  }, [room]);
 
   useEffect(() => {
     if (room) {

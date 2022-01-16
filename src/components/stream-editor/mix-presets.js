@@ -18,6 +18,7 @@ export default function MixPresetsControl({
     "Slot 7",
     "Slot 8",
   ],
+  updateSlots,
 }) {
   const [successIndicator, setSuccessIndicator] = useState(null);
   const [editing, setEditing] = useState(null);
@@ -50,9 +51,17 @@ export default function MixPresetsControl({
                       const slotName = e.target.value
                         .replace(/[^a-zA-Z0-9]+/g, "_")
                         .toUpperCase();
-                      // axios.post(
-                      //   `${process.env.REACT_APP_PEER_SERVER}/${room.name}/mix/save/${i}`
-                      // );
+                      axios
+                        .post(
+                          `${process.env.REACT_APP_PEER_SERVER}/${room.name}/mix/name/${i}`,
+                          { slotName }
+                        )
+                        .then(() => {
+                          updateSlots();
+                        })
+                        .catch((err) => {
+                          console.log(JSON.stringify(err));
+                        });
                     }}
                   />
                 </div>

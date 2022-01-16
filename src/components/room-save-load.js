@@ -42,7 +42,15 @@ export default function RoomSaveLoad({ room }) {
 
       const keysAreValid = Object.keys(roomState).reduce((p, c) => {
         return (
-          p && ["mix", "mixSlots", "layout", "layoutSlots"].indexOf(c) > -1
+          p &&
+          [
+            "mix",
+            "mixSlots",
+            "layout",
+            "layoutSlots",
+            "mixSlotNames",
+            "layoutSlotNames",
+          ].indexOf(c) > -1
         );
       }, true);
 
@@ -57,8 +65,8 @@ export default function RoomSaveLoad({ room }) {
         })
         .then(({ data }) => {
           if (data.ok === true) {
-            const layoutChildren = Object.keys(roomState?.layout);
-            const mixChildren = Object.keys(roomState?.mix);
+            const layoutChildren = Object.keys(roomState?.layout || {});
+            const mixChildren = Object.keys(roomState?.mix || {});
 
             const children = [layoutChildren, mixChildren]
               .flat(1)
