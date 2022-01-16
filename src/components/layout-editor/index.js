@@ -10,6 +10,8 @@ export default function LayoutEditor({
   send,
   participants /* filtered child participants only */,
   pingAllLayouts,
+  layoutSlots,
+  updateSlots,
 }) {
   const [update, setUpdate] = useState(0);
   return participants.length === 0 ? (
@@ -35,6 +37,8 @@ export default function LayoutEditor({
             setUpdate(update + 1);
           }
         }}
+        layoutSlots={layoutSlots}
+        updateSlots={updateSlots}
       />
     </>
   );

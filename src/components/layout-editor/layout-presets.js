@@ -5,8 +5,24 @@ import { DataPacket_Kind } from "livekit-client";
 import styled from "styled-components";
 import Popper from "../message-popper";
 
-export default function LayoutPresetsControl({ room, bumpActiveLayout }) {
+export default function LayoutPresetsControl({
+  room,
+  bumpActiveLayout,
+
+  layoutSlots = [
+    "Slot 1",
+    "Slot 2",
+    "Slot 3",
+    "Slot 4",
+    "Slot 5",
+    "Slot 6",
+    "Slot 7",
+    "Slot 8",
+  ],
+  updateSlots,
+}) {
   const [successIndicator, setSuccessIndicator] = useState(null);
+  const [editing, setEditing] = useState(null);
 
   useEffect(() => {
     if (successIndicator) {
@@ -20,21 +36,57 @@ export default function LayoutPresetsControl({ room, bumpActiveLayout }) {
     <>
       <PresetsBar>
         <label>Layout Presets</label>
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((n, i) => {
+        {layoutSlots.map((slot, i) => {
           return (
-            <Slot key={`slot_${n}`}>
-              <label>Slot {n + 1}</label>
+            <Slot key={`slot_${i}_${slot}`}>
+              {editing === i ? (
+                <div className="rename">
+                  <input
+                    type="text"
+                    placeholder={slot}
+                    maxLength={8}
+                    minLength={3}
+                    autoFocus={1}
+                    onBlur={(e) => {
+                      setEditing(null);
+                      const slotName = e.target.value
+                        .replace(/[^a-zA-Z0-9]+/g, "_")
+                        .toUpperCase();
+                      axios
+                        .post(
+                          `${process.env.REACT_APP_PEER_SERVER}/${room.name}/layout/name/${i}`,
+                          { slotName }
+                        )
+                        .then(() => {
+                          updateSlots();
+                        })
+                        .catch((err) => {
+                          console.log(JSON.stringify(err));
+                        });
+                    }}
+                  />
+                </div>
+              ) : (
+                <label
+                  onClick={() => {
+                    setEditing(i);
+                  }}
+                >
+                  {slot}
+                </label>
+              )}
+              <label>{slot}</label>
               <button
                 onClick={() => {
                   axios
                     .post(
-                      `${process.env.REACT_APP_PEER_SERVER}/${room.name}/layout/save/${n}`
+                      `${process.env.REACT_APP_PEER_SERVER}/${room.name}/layout/save/${i}`
                     )
 
                     .then(() => {
                       setSuccessIndicator({
                         action: "Saved",
-                        target: `Slot ${n + 1}`,
+                        target: slot,
                       });
                     })
                     .catch((err) => {
@@ -48,7 +100,7 @@ export default function LayoutPresetsControl({ room, bumpActiveLayout }) {
                 onClick={() => {
                   axios
                     .post(
-                      `${process.env.REACT_APP_PEER_SERVER}/${room.name}/layout/load/${n}`
+                      `${process.env.REACT_APP_PEER_SERVER}/${room.name}/layout/load/${i}`
                     )
                     .then(() => {
                       const payload = JSON.stringify({
@@ -65,7 +117,7 @@ export default function LayoutPresetsControl({ room, bumpActiveLayout }) {
 
                       setSuccessIndicator({
                         action: "Loaded",
-                        target: `Slot ${n + 1}`,
+                        target: slot,
                       });
                     });
                 }}
@@ -117,7 +169,7 @@ const PresetsBar = styled.div`
 `;
 
 const Slot = styled.div`
-  flex-grow: 1;
+  width: calc((100% - 8rem) / 8);
   border-left: 1px solid #222225;
   display: flex;
   flex-wrap: wrap;
@@ -159,4 +211,24 @@ const Slot = styled.div`
     justify-content: center;
     align-items: center;
   }
+
+
+  > div.rename {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    width: 100%;
+    height: 50%;
+    order: 3;
+    justify-content: center;
+    align-items: center;
+
+    input[type="text"] {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+    }
 `;

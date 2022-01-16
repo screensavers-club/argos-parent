@@ -37,7 +37,7 @@ export default function MixPresetsControl({
         <label>Audio Presets</label>
         {mixSlots.map((slot, i) => {
           return (
-            <Slot key={`slot_${slot}`}>
+            <Slot key={`slot_${i}_${slot}`}>
               {editing === i ? (
                 <div className="rename">
                   <input
