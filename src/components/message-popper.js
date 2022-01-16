@@ -14,4 +14,6 @@ const PopperDiv = styled.div`
   padding: 8px 15px;
   border-radius: 15px;
   font-size: 1rem;
+  text-align: center;
+  max-width: 30em;
 `;

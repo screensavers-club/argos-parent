@@ -50,6 +50,9 @@ export default function MixPresetsControl({
                       const slotName = e.target.value
                         .replace(/[^a-zA-Z0-9]+/g, "_")
                         .toUpperCase();
+                      // axios.post(
+                      //   `${process.env.REACT_APP_PEER_SERVER}/${room.name}/mix/save/${i}`
+                      // );
                     }}
                   />
                 </div>
