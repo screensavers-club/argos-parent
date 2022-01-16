@@ -91,29 +91,6 @@ export default function LayoutPresetsControl({ room, bumpActiveLayout }) {
   );
 }
 
-function SuccessPopper({ successIndicator }) {
-  return (
-    successIndicator && (
-      <SuccessPopperDiv>
-        {successIndicator.action} slot{" "}
-        <strong>{successIndicator.target}</strong>
-      </SuccessPopperDiv>
-    )
-  );
-}
-
-const SuccessPopperDiv = styled.div`
-  position: fixed;
-  bottom: 100px;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #5736fd;
-  color: #fff;
-  padding: 8px 15px;
-  border-radius: 15px;
-  font-size: 1rem;
-`;
-
 const PresetsBar = styled.div`
   width: calc(100% - 32px);
   height: 66px;
