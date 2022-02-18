@@ -41,7 +41,7 @@ function App() {
         <StatusBar
           context={state.context}
           room={_.get(state, "context.room.name")}
-          version="1.2.1"
+          version="1.3.0"
         />
 
         {supported ? (

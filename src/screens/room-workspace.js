@@ -21,6 +21,8 @@ export default function RoomWorkspace({ context, send }) {
   const [mixSlots, setMixSlots] = useState();
   const [layoutSlots, setLayoutSlots] = useState();
 
+  const [showMessage, setShowMessage] = useState(null);
+
   const updateSlotNames = () => {
     if (!room) {
       return;
@@ -37,6 +39,10 @@ export default function RoomWorkspace({ context, send }) {
           "Slot 6",
           "Slot 7",
           "Slot 8",
+          "Slot 9",
+          "Slot 10",
+          "Slot 11",
+          "Slot 12",
         ].map((slot, i) => {
           return data.mix[`slot${i}`] || slot;
         });
@@ -50,6 +56,10 @@ export default function RoomWorkspace({ context, send }) {
           "Slot 6",
           "Slot 7",
           "Slot 8",
+          "Slot 9",
+          "Slot 10",
+          "Slot 11",
+          "Slot 12",
         ].map((slot, i) => {
           return data.layout[`slot${i}`] || slot;
         });
@@ -69,6 +79,10 @@ export default function RoomWorkspace({ context, send }) {
     if (e.key === "Escape") {
       setExiting(false);
     } else return;
+  };
+
+  const flashMessage = ({ sender, message }) => {
+    setShowMessage({ sender, message });
   };
 
   useEffect(() => {
@@ -93,9 +107,13 @@ export default function RoomWorkspace({ context, send }) {
         const str = decoder.decode(payload);
         const obj = JSON.parse(str);
 
-        if (obj.type === "PONG") {
+        if (obj?.type === "PONG") {
           let d = new Date();
           send("PONG", { id: participant.sid, timestamp: d });
+        }
+
+        if (obj?.action === "MESSAGE") {
+          flashMessage({ message: obj.message, sender: obj.sender });
         }
       });
 
