@@ -161,7 +161,7 @@ export default function EnterPassword({ send, context }) {
                 });
               })
               .catch((err) => {
-                console.log(err.response);
+                console.log(err, err.response);
                 if (
                   err.response.data.err ===
                   `Wrong passcode provided for room ${context.joining_room}`

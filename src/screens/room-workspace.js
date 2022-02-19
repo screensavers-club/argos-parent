@@ -2,9 +2,9 @@ import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Button from "../components/button";
-import { RoomEvent } from "livekit-client";
+import { DataPacket_Kind, RoomEvent } from "livekit-client";
 import { useRoom, AudioRenderer } from "livekit-react";
-import { Exit } from "react-ikonate";
+import { Chat, Exit } from "react-ikonate";
 
 import EditorTabs from "../components/editor-tabs";
 import StreamEditor from "../components/stream-editor/stream-editor";
@@ -21,7 +21,12 @@ export default function RoomWorkspace({ context, send }) {
   const [mixSlots, setMixSlots] = useState();
   const [layoutSlots, setLayoutSlots] = useState();
 
-  const [showMessage, setShowMessage] = useState(null);
+  const [showMessage, setShowMessage] = useState(false);
+  const showMessageTimeout = useRef();
+
+  const [enterMessage, setEnterMessage] = useState("");
+  const [showEnterMessage, setShowEnterMessage] = useState(false);
+  const enterMessageRef = useRef();
 
   const updateSlotNames = () => {
     if (!room) {
@@ -70,19 +75,43 @@ export default function RoomWorkspace({ context, send }) {
   };
 
   const handleClick = (e) => {
-    if (exitingModalRef.current.contains(e.target)) {
-      return;
+    if (!exitingModalRef.current.contains(e.target)) {
+      setExiting(false);
     }
-    setExiting(false);
+
+    if (!enterMessageRef.current.contains(e.target)) {
+      setShowEnterMessage(false);
+      setEnterMessage("");
+    }
   };
   const handleEsc = (e) => {
     if (e.key === "Escape") {
       setExiting(false);
+      setShowEnterMessage(false);
+      setEnterMessage("");
     } else return;
   };
 
   const flashMessage = ({ sender, message }) => {
     setShowMessage({ sender, message });
+  };
+
+  const sendMessage = () => {
+    const payload = {
+      sender: "PARENT",
+      message: enterMessage,
+      action: "MESSAGE",
+    };
+    const data = new TextEncoder().encode(JSON.stringify(payload));
+    if (typeof room.localParticipant.publishData === "function") {
+      room.localParticipant
+        .publishData(data, DataPacket_Kind.RELIABLE)
+        .then(() => {
+          setEnterMessage("");
+          setShowEnterMessage(false);
+          setShowMessage(payload);
+        });
+    }
   };
 
   useEffect(() => {
@@ -137,6 +166,20 @@ export default function RoomWorkspace({ context, send }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (showMessage === false) {
+      return;
+    }
+
+    if (showMessageTimeout.current) {
+      window.clearTimeout(showMessageTimeout.current);
+    }
+
+    showMessageTimeout.current = window.setTimeout(() => {
+      setShowMessage(false);
+    }, 5000);
+  }, [showMessage]);
+
   function updateMix() {
     if (!room) {
       return;
@@ -160,9 +203,27 @@ export default function RoomWorkspace({ context, send }) {
 
   return (
     <StyledPage>
+      {showMessage !== false && (
+        <div className="flashMessage">
+          <div className="sender">{showMessage.sender}</div>
+          <div className="message">{showMessage.message}</div>
+        </div>
+      )}
       <div className="navigation">
         <RoomSaveLoad room={room} />
         <EditorTabs setSelectTab={setSelectTab} selectedTab={selectTab} />
+        <Button
+          icon={<Chat />}
+          onClick={() => {
+            setShowEnterMessage(true);
+            const input = enterMessageRef.current.querySelector("input");
+            setTimeout(() => {
+              input.focus();
+            }, 50);
+          }}
+        >
+          Message
+        </Button>
 
         <Button
           onClick={() => {
@@ -249,6 +310,26 @@ export default function RoomWorkspace({ context, send }) {
           </Button>
         </div>
       </div>
+
+      <div
+        className="enterMessage"
+        ref={enterMessageRef}
+        style={{ display: showEnterMessage ? "flex" : "none" }}
+      >
+        <input
+          type="text"
+          value={enterMessage}
+          onChange={(e) => {
+            setEnterMessage(e.target.value.toUpperCase().slice(0, 50));
+          }}
+          onKeyUp={(e) => {
+            if (e.key === "Enter") {
+              sendMessage();
+            }
+          }}
+        />
+        <label>Enter to send, esc to cancel</label>
+      </div>
     </StyledPage>
   );
 }
@@ -266,6 +347,39 @@ const StyledPage = styled.div`
     width: calc(100% - 32px);
     display: flex;
     z-index: 3;
+  }
+
+  div.flashMessage {
+    max-width: 500px;
+    right: 16px;
+    top: 76px;
+    z-index: 10;
+    position: absolute;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 25px;
+    font-size: 14px;
+    border-radius: 25px;
+
+    .sender {
+      font-weight: bold;
+    }
+  }
+
+  div.enterMessage {
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    font-size: 24px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 20;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    border-radius: 20px;
+
+    input {
+    }
   }
 
   div.exitingModal {
